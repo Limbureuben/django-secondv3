@@ -127,6 +127,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#this is basic setup
+# GRAPHENE = {
+#     'SCHEMA': 'myapp.schema.schema',  # Adjust with your actual schema path
+#     'GRAPHIQL': True,  # Make sure this is True
+# }
 
 GRAPHENE = {
     "SCHEMA": "config.schema.schema",
