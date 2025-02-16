@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    #third party apps
+    "rest_framework",
+    "graphene_django",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
