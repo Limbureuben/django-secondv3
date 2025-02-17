@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import graphene
-from openspace.openspaceBuilders import *
+from openspace.openspaceBuilders.openspaceBuilders import *
 from openspace.openspace_dto.openspace import *
 
 
