@@ -1,6 +1,6 @@
 import graphene
 
-class RegistrationInput(graphene.InputObjectType):
+class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
     email = graphene.String()
     password = graphene.String()

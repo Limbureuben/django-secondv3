@@ -10,7 +10,7 @@ class RegistrationMutation(graphene.Mutation):
     output = graphene.Field(RegistrationResponse)
 
     class Arguments:
-        input =  RegistrationInput(required=True)
+        input =  RegistrationInputObject(required=True)
 
     def mutate(self, info, input):
-        return 
+        return  register_user(input)
