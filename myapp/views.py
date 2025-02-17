@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import graphene
 from openspace.openspaceBuilders import *
-from openspace.openspace_dto import *
+from openspace.openspace_dto.openspace import *
 
 
 class RegistrationMutation(graphene.Mutation):
