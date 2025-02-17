@@ -13,4 +13,4 @@ class RegistrationMutation(graphene.Mutation):
         input =  RegistrationInput(required=True)
 
     def mutate(self, info, input):
-        
+        return 
