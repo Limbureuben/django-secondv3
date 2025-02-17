@@ -166,3 +166,23 @@ CORS_ALLOW_ALL_ORIGINS = True #allow all origin
 # ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'limbureubenn@gmail.com'
+EMAIL_HOST_PASSWORD = 'bqxg asvo ziey eknt'
+DEFAULT_FROM_EMAIL = 'limbureubenn@gmail.com'
+FRONTEND_URL = 'http://localhost:4200'
+BACKEND_URL = 'http://127.0.0.1:8000'
+
+
+# Celery settings
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use Redis as the message broker
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'UTC'
