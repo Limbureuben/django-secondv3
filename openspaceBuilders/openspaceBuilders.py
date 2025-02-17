@@ -1,5 +1,10 @@
 from openspace.openspace_dto.Response import *
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+import uuid
+from django.conf import settings
+from django.http import HttpResponse
+from myapp.models import *
 
 # class register_user:
 #     def __init__(self, input):
@@ -12,21 +17,18 @@ from django.contrib.auth.models import User
 #         if self.password != self.passwordConfirm:
 #             return RegistrationResponse(message="Passwords do not match", success=False)
 
+class UserBuilder:
+    @staticmethod
+    def register_user(username, email, password, passwordConfirm):
 
-def register_user(input):
-    username = input.username,
-    email = input.email,
-    password = input.password,
-    passwordConfirm = input.passwordConfirm
+        if password != passwordConfirm:
+            raise ValidationError("Passwords do not match")
+        
+        if len(password) < 8:
+            raise ValidationError("Password must be at least 8 characters long")
+        
+        user = User.objects.create(username=username, email=email)
+        user.set_password(password)
+        user.save()
 
-    if password != passwordConfirm:
-        return RegistrationResponse(message="Passwords do not match", success=False)
-    
-    if len(password) < 8:
-        return RegistrationResponse(message="Password must be atleast 8 characters long", success=False)
-     
-    user = User.objects.create(username=username, email=email)
-    user.set_password(password)
-    user.save()
-
-    return RegistrationResponse(message="User registred successfully", success=True)
+        return RegistrationResponse(message="User registred successfully", success=True)
