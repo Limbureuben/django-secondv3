@@ -45,6 +45,7 @@ class UserBuilder:
 
         verification_url = f"{settings.BACKEND_URL}/verify-email/{user_profile.verification_token}/"
         send_verification_email.delay(email, verification_url)
+        
         return user
     
 def register_user(input):
