@@ -6,7 +6,7 @@ from openspace.openspace_dto.Response import *
 
 
 class RegistrationMutation(graphene.Mutation):
-
+    user = graphene.Field(RegistrationObject)
     output = graphene.Field(RegistrationResponse)
 
     class Arguments:
