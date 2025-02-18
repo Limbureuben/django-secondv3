@@ -147,7 +147,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 GRAPHENE = {
-    'SCHEMA': 'openspace.schema.schema',  # Adjust with your actual schema path
+    'SCHEMA': 'myapp.schema.schema',  # Adjust with your actual schema path
     'GRAPHIQL': True,  # Make sure this is True
 }
 

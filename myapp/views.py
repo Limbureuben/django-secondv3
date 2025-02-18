@@ -1,11 +1,11 @@
 from django.shortcuts import render
 import graphene
-from openspace.openspaceBuilders.openspaceBuilders import *
-from openspace.openspace_dto.openspace import *
-from openspace.openspace_dto.Response import *
+from openspaceBuilders.openspaceBuilders import *
+from openspace_dto.openspace import *
+from openspace_dto.Response import *
 
 
-class Registration(graphene.Mutation):
+class RegistrationMutation(graphene.Mutation):
     user = graphene.Field(RegistrationObject)
     output = graphene.Field(RegistrationResponse)
 

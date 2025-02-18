@@ -1,22 +1,11 @@
-from openspace.openspace_dto.Response import *
-from django.contrib.auth.models import User, UserProfile
+from openspace_dto.Response import *
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import uuid
 from django.conf import settings
 from django.http import HttpResponse
 from myapp.models import *
 from myapp.tasks import send_verification_email
-
-# class register_user:
-#     def __init__(self, input):
-#         self.username = input.username
-#         self.email = input.email
-#         self.password = input.password
-#         self.passwordConfirm = input.passwordConfirm
-
-#     def validate_password(self):
-#         if self.password != self.passwordConfirm:
-#             return RegistrationResponse(message="Passwords do not match", success=False)
 
 class UserBuilder:
     @staticmethod
