@@ -5,7 +5,7 @@ from openspace.openspace_dto.openspace import *
 from openspace.openspace_dto.Response import *
 
 
-class RegistrationMutation(graphene.Mutation):
+class Registration(graphene.Mutation):
     user = graphene.Field(RegistrationObject)
     output = graphene.Field(RegistrationResponse)
 
