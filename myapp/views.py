@@ -4,7 +4,7 @@ from django.shortcuts import render
 import graphene
 from .models import UserProfile
 from openspaceBuilders.openspaceBuilders import register_user
-from openspace_dto.openspace import RegistrationInputObject, RegistrationObject
+from openspace_dto.openspace import *
 from openspace_dto.Response import RegistrationResponse
 
 class RegistrationMutation(graphene.Mutation):
@@ -30,5 +30,30 @@ def verify_email(request, token):
         return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")
     except UserProfile.DoesNotExist:
         return HttpResponse("Invalid verification token.", status=400)
+
+
+class LoginUser(graphene.Mutation):
+    user = graphene.Field(LoginObject)
+    message = graphene.String()
+    success = graphene.Boolean()
+
+    class Arguments:
+        input = LoginInputObject(required=True)
+
+    def mutate(self, info, input):
+        username = input.username,
+        password = input.password
+
+        try:
+            #authenticate the user to login
+            result = UserBuilder.login_user(username, password)
+            user = result['user']
+
+         #angalia kama ni superuser
+         is_superuser = user.is_superuser
+        
+        
+
+
 
 
