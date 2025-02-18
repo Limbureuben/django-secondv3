@@ -1,3 +1,4 @@
+from openspace_dto.openspace import RegistrationObject
 from openspace_dto.Response import RegistrationResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -38,16 +39,17 @@ class UserBuilder:
 def register_user(input):
     try:
         user = UserBuilder.register_user(input.username, input.email, input.password, input.passwordConfirm)
+
         return RegistrationResponse(
             message="Registration successful. Please check your email to verify your account",
             success=True,
-            user=user
+            user=RegistrationObject(username=user.username, email=user.email)  # ✅ Return user data
         )
     except ValidationError as e:
-        return RegistrationResponse(message=str(e), success=False)
-    
+        return RegistrationResponse(message=str(e), success=False, user=None)
 
-    
+
+
 # class UserBuilder:
 #     @staticmethod
 #     def register_user(username, email, password, password_confirm):
