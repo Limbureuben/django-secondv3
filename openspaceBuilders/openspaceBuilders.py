@@ -6,6 +6,8 @@ import uuid
 from django.conf import settings
 from myapp.models import UserProfile
 from myapp.tasks import send_verification_email
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
 
 class UserBuilder:
     @staticmethod
@@ -35,6 +37,25 @@ class UserBuilder:
         send_verification_email.delay(email, verification_url)
         
         return user
+    
+    @staticmethod
+    def login_user(username, password):
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise ValidationError("Invalid username or password")
+        
+        #check the email kama ni valid otherwise is superuser
+        if  user.is_superuser and not UserProfile.is_email_verified:
+            raise ValidationError("Email not verified")
+        
+        ##tengeneza token kwa authenticated user
+        refresh = RefreshToken.for_user(user)
+        return {
+            'user': user,
+            'refresh_token': str(refresh),
+            'access_token': str(refresh.access_token)
+        }
+
 
 def register_user(input):
     try:

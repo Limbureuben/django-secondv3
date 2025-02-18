@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 import graphene
 from .models import UserProfile
-from openspaceBuilders.openspaceBuilders import register_user
+from openspaceBuilders.openspaceBuilders import register_user, UserBuilder
 from openspace_dto.openspace import *
 from openspace_dto.Response import RegistrationResponse
 
@@ -50,9 +50,31 @@ class LoginUser(graphene.Mutation):
             user = result['user']
 
          #angalia kama ni superuser
-         is_superuser = user.is_superuser
-        
-        
+            is_superuser = user.is_superuser
+            
+            return LoginUser(
+                user=LoginObject(
+                    id=user.id,
+                    username=user.username,
+                    email=user.email,
+                    refresh_token=result['refresh_token'],
+                    access_token=result['access_token'],
+                    isSuperuser=is_superuser
+                ),
+                success = True,
+                message = "Login successful"
+            )
+        except ValueError as e:
+            return LoginUser(
+                success=False,
+                message=str(e)
+            )
+        except Exception as e:
+            return LoginUser(
+                success=False,
+                message="An error occurred"
+            )
+
 
 
 
