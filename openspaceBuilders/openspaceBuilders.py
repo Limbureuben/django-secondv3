@@ -17,7 +17,7 @@ class UserBuilder:
         if len(password) < 8:
             raise ValidationError("Password must be at least 8 characters long")
         
-        if user.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exists():
             raise ValidationError("Username already taken")
         
         if User.objects.filter(email=email).exists():
@@ -44,3 +44,14 @@ def register_user(input):
     except ValidationError as e:
         return RegistrationResponse(message=str(e), success=False)
     
+
+# class UserBuilder:
+#     @staticmethod
+#     def register_user(username, email, password, password_confirm):
+#         if password != password_confirm:
+#             raise ValidationError("Password do not match")
+        
+#         user = User(username=username, email=email)
+#         user.set_password(password)
+#         user.save()
+#         return user

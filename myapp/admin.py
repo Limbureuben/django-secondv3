@@ -1,10 +1,9 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(Registration)
-class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ['name', 'email']
-    search_fields = ['name', 'email']
+admin.site.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user']
 
 admin.site.register(Login)
 class LoginAdmin(admin.ModelAdmin):

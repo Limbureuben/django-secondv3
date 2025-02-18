@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-az!-qw*3r32ng7r7hs*wphv5k^8)9eaju6bf3m32f*m1gq0arz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "corsheaders",
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -147,15 +149,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 GRAPHENE = {
-    'SCHEMA': 'myapp.schema.schema',  # Adjust with your actual schema path
-    'GRAPHIQL': True,  # Make sure this is True
-}
-
-GRAPHENE = {
+    'SCHEMA': 'myapp.schema.schema',
+    'GRAPHIQL': True,
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ],
-    'SCHEMA': 'myapp.schema.schema',  # Replace with your schema location
+}
+
+
+import datetime
+
+GRAPHENE_JWT = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=10),  # Set token expiration
 }
 
 AUTHENTICATION_BACKENDS = [
