@@ -7,7 +7,7 @@ from .views import *
 import graphql_jwt
 
 class Mutation(graphene.ObjectType):
-    register_users = RegistrationMutation.Field()
+    register_users = RegisterUser.Field()
 
 class Query(graphene.ObjectType):
     pass
