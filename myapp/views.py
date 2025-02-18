@@ -5,7 +5,7 @@ from openspaceBuilders.openspaceBuilders import *
 from openspace_dto.openspace import *
 from openspace_dto.Response import *
 from django.conf import settings
-
+from django.views.decorators.csrf import csrf_exempt
 
 # class RegistrationMutation(graphene.Mutation):
 #     user = graphene.Field(RegistrationObject)
