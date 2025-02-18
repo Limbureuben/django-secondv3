@@ -64,7 +64,7 @@ def register_user(input):
         return RegistrationResponse(
             message="Registration successful. Please check your email to verify your account",
             success=True,
-            user=RegistrationObject(username=user.username, email=user.email)  # ✅ Return user data
+            user=RegistrationObject(id=str(user.id), username=user.username, email=user.email)  # ✅
         )
     except ValidationError as e:
         return RegistrationResponse(message=str(e), success=False, user=None)
