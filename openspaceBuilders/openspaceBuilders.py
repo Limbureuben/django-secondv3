@@ -1,16 +1,14 @@
-from openspace_dto.Response import *
+from openspace_dto.Response import RegistrationResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import uuid
 from django.conf import settings
-from django.http import HttpResponse
-from myapp.models import *
+from myapp.models import UserProfile
 from myapp.tasks import send_verification_email
 
 class UserBuilder:
     @staticmethod
     def register_user(username, email, password, passwordConfirm):
-
         if password != passwordConfirm:
             raise ValidationError("Passwords do not match")
         
@@ -36,15 +34,20 @@ class UserBuilder:
         send_verification_email.delay(email, verification_url)
         
         return user
-    
+
 def register_user(input):
     try:
         user = UserBuilder.register_user(input.username, input.email, input.password, input.passwordConfirm)
-        return RegistrationResponse(message="Registration successful. Please check your email to verify your account", success=True)
+        return RegistrationResponse(
+            message="Registration successful. Please check your email to verify your account",
+            success=True,
+            user=user
+        )
     except ValidationError as e:
         return RegistrationResponse(message=str(e), success=False)
     
 
+    
 # class UserBuilder:
 #     @staticmethod
 #     def register_user(username, email, password, password_confirm):

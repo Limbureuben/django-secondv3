@@ -1,22 +1,22 @@
-from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 import graphene
-from openspaceBuilders.openspaceBuilders import *
-from openspace_dto.openspace import *
-from openspace_dto.Response import *
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
+from .models import UserProfile
+from openspaceBuilders.openspaceBuilders import register_user
+from openspace_dto.openspace import RegistrationInputObject, RegistrationObject
+from openspace_dto.Response import RegistrationResponse
 
 class RegistrationMutation(graphene.Mutation):
     user = graphene.Field(RegistrationObject)
     output = graphene.Field(RegistrationResponse)
 
     class Arguments:
-        input =  RegistrationInputObject(required=True)
+        input = RegistrationInputObject(required=True)
 
     def mutate(self, info, input):
-        return  register_user(input)
-    
+        response = register_user(input)
+        return RegistrationMutation(user=response.user, output=response)
 
 def verify_email(request, token):
     try:
@@ -26,12 +26,9 @@ def verify_email(request, token):
         user_profile.user.save()
         print("Data pass here")
         user_profile.save()
-        # return redirect('/login')
-        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")  # or '/login' for angular
-        # return HttpResponseRedirect(f"{settings.FRONTEND_URL}/") # for vue
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")
     except UserProfile.DoesNotExist:
         return HttpResponse("Invalid verification token.", status=400)
-
 
 # class RegisterUser(graphene.Mutation):
 #     user = graphene.Field(RegistrationObject)
