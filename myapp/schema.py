@@ -10,3 +10,9 @@ import graphql_jwt
 
 class Mutation(graphene.ObjectType):
     register_users = Registration.Field()
+
+
+class Query(graphene.ObjectType):
+    pass
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
