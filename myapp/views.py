@@ -4,6 +4,7 @@ import graphene
 from openspaceBuilders.openspaceBuilders import *
 from openspace_dto.openspace import *
 from openspace_dto.Response import *
+from django.conf import settings
 
 
 # class RegistrationMutation(graphene.Mutation):
