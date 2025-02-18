@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(UserProfile)
+
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('username', 'verification_token', 'is_email_verified')
     def username(self, obj):
