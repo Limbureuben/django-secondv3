@@ -13,7 +13,7 @@ class RegistrationObject(graphene.ObjectType):
 
 class LoginInputObject(graphene.InputObjectType):
     username = graphene.String()
-    passoword = graphene.String()
+    password = graphene.String()
 
 class LoginObject(graphene.ObjectType):
     id = graphene.ID()
