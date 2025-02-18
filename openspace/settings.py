@@ -133,11 +133,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     'GRAPHIQL': True,  # Make sure this is True
 # }
 
+# GRAPHENE = {
+#     "SCHEMA": "config.schema.schema",
+#     "MIDDLEWARE": [
+#         "graphql_jwt.middleware.JSONWebTokenMiddleware",
+#     ],
+# }
+
+# filepath: /home/rooben/Desktop/BackendOpenspace/openspace/settings.py
+# GRAPHENE = {
+#     'SCHEMA': 'openspace.myapp.schema.schema',  # Where your Graphene schema lives
+# }
+
+
 GRAPHENE = {
-    "SCHEMA": "config.schema.schema",
-    "MIDDLEWARE": [
-        "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    ],
+    'SCHEMA': 'openspace.schema.schema',  # Adjust with your actual schema path
+    'GRAPHIQL': True,  # Make sure this is True
 }
 
 AUTHENTICATION_BACKENDS = [
