@@ -16,5 +16,14 @@ class LoginInputObject(graphene.InputObjectType):
     passoword = graphene.String()
 
 class LoginObject(graphene.ObjectType):
-    
-    
+    id = graphene.ID()
+    username = graphene.String()
+    email = graphene.String()
+    refresh_token = graphene.String()
+    access_token = graphene.String()
+    isSuperuser  = graphene.Boolean()
+
+class UserProfileObject(graphene.ObjectType):
+    id = graphene.ID()
+    username = graphene.String()
+    email = graphene.String()
