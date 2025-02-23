@@ -53,7 +53,7 @@ class UserBuilder:
         return {
             'user': user,
             'refresh_token': str(refresh),
-            'access_token': str(refresh.access_token)
+            
         }
 
 
