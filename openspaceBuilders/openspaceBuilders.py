@@ -1,3 +1,5 @@
+
+from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
 from openspace_dto.Response import RegistrationResponse
 from django.contrib.auth.models import User
@@ -10,33 +12,58 @@ from django.contrib.auth import authenticate
 
 class UserBuilder:
     @staticmethod
-    def register_user(username, email, password, password_confirm):
-        if password != password_confirm:
-            raise ValidationError("Password do not match")
+    def register_user(username, email, password, passwordConfirm):
+        if password != passwordConfirm:
+            raise ValidationError("Passwords do not match")
+        
+        if len(password) < 8:
+            raise ValidationError("Password must be at least 8 characters long")
+        
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Username already taken")
+        
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Email already taken")
         
         user = User(username=username, email=email)
         user.set_password(password)
+        user.is_superuser = False
+        user.is_staff = False
         user.save()
+
+        user_profile = UserProfile(user=user, verification_token=uuid.uuid4())
+        user_profile.save()
+
+        verification_url = f"{settings.BACKEND_URL}/verify-email/{user_profile.verification_token}/"
+        send_verification_email.delay(email, verification_url)
+        
         return user
     
     @staticmethod
     def login_user(username, password):
         user = authenticate(username=username, password=password)
+
         if user is None:
-            raise ValidationError('Invalid username or password')
+            raise ValidationError("Invalid username or password")
 
-    # Check if the user's email is verified unless they are a superuser
-        if user.is_superuser and not UserProfile.is_email_verified:
-            print('pass')
-            raise ValidationError('Email not verified')
+        # Ensure the user has a profile
+        try:
+            user_profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            raise ValidationError("User profile not found. Please contact support.")
 
-    # Create tokens for the authenticated user
+        # Check if email is verified
+        if not user_profile.is_email_verified:
+            raise ValidationError("Email not verified. Please check your inbox for a verification link.")
+
+        # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
         return {
-            'user': user,
-            'refresh_token': str(refresh),
-            'access_token': str(refresh.access_token),
+            "user": user,
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token),
         }
+
 
 
 class UserProfileBuilder:
@@ -50,14 +77,14 @@ class UserProfileBuilder:
         }
 
 
-# def register_user(input):
-#     try:
-#         user = UserBuilder.register_user(input.username, input.email, input.password, input.passwordConfirm)
+def register_user(input):
+    try:
+        user = UserBuilder.register_user(input.username, input.email, input.password, input.passwordConfirm)
 
-#         return RegistrationResponse(
-#             message="Registration successful. Please check your email to verify your account",
-#             success=True,
-#             user=RegistrationObject(id=str(user.id), username=user.username, email=user.email)
-#         )
-#     except ValidationError as e:
-#         return RegistrationResponse(message=str(e), success=False, user=None)
+        return RegistrationResponse(
+            message="Registration successful.Please verify your email",
+            success=True,
+            user=RegistrationObject(id=str(user.id), username=user.username, email=user.email)
+        )
+    except ValidationError as e:
+        return RegistrationResponse(message=str(e), success=False, user=None)
