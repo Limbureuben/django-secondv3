@@ -1,4 +1,5 @@
-import graphene
+import graphene # type: ignore
+from myapp.models import *
 
 class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
@@ -11,11 +12,11 @@ class RegistrationObject(graphene.ObjectType):
     username = graphene.String()
     email = graphene.String()
 
-class LoginInputObject(graphene.InputObjectType):
+class UserLoginInputObject(graphene.InputObjectType):
     username = graphene.String()
     password = graphene.String()
 
-class LoginObject(graphene.ObjectType):
+class UserLoginObject(graphene.ObjectType):
     id = graphene.ID()
     username = graphene.String()
     email = graphene.String()

@@ -1,24 +1,67 @@
+import uuid
 from django.conf import settings
+from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-import graphene
-from .models import UserProfile
-from openspaceBuilders.openspaceBuilders import register_user, UserBuilder
+import graphene # type: ignore
+from .tasks import send_verification_email # type: ignore
+from .models import *
+from openspaceBuilders.openspaceBuilders import UserBuilder
 from openspace_dto.openspace import *
 from openspace_dto.Response import RegistrationResponse
+from django.contrib.auth.models import User
 
-class RegistrationMutation(graphene.Mutation):
+
+class RegisterUser(graphene.Mutation):
     user = graphene.Field(RegistrationObject)
-    output = graphene.Field(RegistrationResponse)
-
+    success = graphene.Boolean()
+    message = graphene.String()
+    
     class Arguments:
         input = RegistrationInputObject(required=True)
-
+        
     def mutate(self, info, input):
-        response = register_user(input)
+        username = input.username
+        email = input.email
+        password = input.password
+        passwordConfirm = input.passwordConfirm
+        
+        ##check if the user exist
+        if User.objects.filter(username=username).exists():
+            return RegisterUser(success=False, message="username alredy exists")
+        
+        ##check if the email exist
+        if User.objects.filter(email=email).exists():
+            return RegisterUser(success=False, message="Email alredy exists")
+        
+        if password != passwordConfirm:
+            return RegisterUser(success=False, message="Passwords do not match")
+        
+        user = User(username=username, email=email)
+        user.set_password(password)
+        user.is_superuser = False
+        user.is_staff = False
+        user.save()
+        
+        user_profile = UserProfile(user=user, verification_token=uuid.uuid4())
+        user_profile.save()
+        print("Token are created here")
+        
+        # Generate verification URL
+        # verification_url = f"{settings.FRONTEND_URL}/verify-email/{user_profile.verification_token}/"
+        verification_url = f"{settings.BACKEND_URL}/verify-email/{user_profile.verification_token}/"
 
-        return RegistrationMutation(user=response.user, output=response)
+        print("Token can also pass here 2")
+        # Call Celery task
+        send_verification_email.delay(email, verification_url)
+        
+        return RegisterUser(
+            user=RegistrationObject(id=user.id, username=user.username, email=user.email),
+            success=True,
+            message="Registration successful. Please check your email to verify your account."
+        )
 
+        
 def verify_email(request, token):
     try:
         user_profile = UserProfile.objects.get(verification_token=token)
@@ -27,33 +70,36 @@ def verify_email(request, token):
         user_profile.user.save()
         print("Data pass here")
         user_profile.save()
-        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")
+        # return redirect('/login')
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")  # or '/login' for angular
+        # return HttpResponseRedirect(f"{settings.FRONTEND_URL}/") # for vue
     except UserProfile.DoesNotExist:
         return HttpResponse("Invalid verification token.", status=400)
 
 
 class LoginUser(graphene.Mutation):
-    user = graphene.Field(LoginObject)
-    message = graphene.String()
+    user = graphene.Field(UserLoginObject)
     success = graphene.Boolean()
+    message = graphene.String()
 
     class Arguments:
-        input = LoginInputObject(required=True)
-
+        input = UserLoginInputObject(required=True)
+        
     def mutate(self, info, input):
-        username = input.username,
+        username = input.username
         password = input.password
 
         try:
-            #authenticate the user to login
+            # Authenticate and log in the user
             result = UserBuilder.login_user(username, password)
+            print('excuted')
             user = result['user']
-
-         #angalia kama ni superuser
+            
+            # Check if the user is a superuser
             is_superuser = user.is_superuser
             
             return LoginUser(
-                user=LoginObject(
+                user=UserLoginObject(
                     id=user.id,
                     username=user.username,
                     email=user.email,
@@ -61,19 +107,95 @@ class LoginUser(graphene.Mutation):
                     access_token=result['access_token'],
                     isSuperuser=is_superuser
                 ),
-                success = True,
-                message = "Login successful"
+                success=True,
+                message="Login successful",
             )
-        except ValueError as e:
-            return LoginUser(
-                success=False,
-                message=str(e)
-            )
+        except ValidationError as e:
+            return LoginUser(success=False, message=str(e))
         except Exception as e:
-            return LoginUser(
-                success=False,
-                message="An error occurred"
-            )
+            return LoginUser(success=False, message="An error occurred during login.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class RegistrationMutation(graphene.Mutation):
+#     user = graphene.Field(RegistrationObject)
+#     output = graphene.Field(RegistrationResponse)
+
+#     class Arguments:
+#         input = RegistrationInputObject(required=True)
+
+#     def mutate(self, info, input):
+#         response = register_user(input)
+
+#         return RegistrationMutation(user=response.user, output=response)
+
+# def verify_email(request, token):
+#     try:
+#         user_profile = UserProfile.objects.get(verification_token=token)
+#         user_profile.is_email_verified = True
+#         user_profile.user.is_active = True
+#         user_profile.user.save()
+#         print("Data pass here")
+#         user_profile.save()
+#         return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")
+#     except UserProfile.DoesNotExist:
+#         return HttpResponse("Invalid verification token.", status=400)
+
+
+# class LoginUser(graphene.Mutation):
+#     user = graphene.Field(UserLoginObject)
+#     message = graphene.String()
+#     success = graphene.Boolean()
+
+#     class Arguments:
+#         input = UserLoginInputObject(required=True)
+
+#     def mutate(self, info, input):
+#         username = input.username
+#         password = input.password
+
+#         try:
+#             #authenticate the user to login
+#             result = UserBuilder.login_user(username, password)
+#             user = result['user']
+
+#          #angalia kama ni superuser
+#             is_superuser = user.is_superuser
+            
+#             return LoginUser(
+#                 user=UserLoginObject(
+#                     id=user.id,
+#                     username=user.username,
+#                     email=user.email,
+#                     refresh_token=result['refresh_token'],
+#                     access_token=result['access_token'],
+#                     isSuperuser=is_superuser
+#                 ),
+#                 success = True,
+#                 message = "Login successful"
+#             )
+#         except ValidationError as e:
+#             return LoginUser( success=False, message=str(e))
+#         except Exception as e:
+#             return LoginUser( success=False, message="An error occurred")
 
 
 
