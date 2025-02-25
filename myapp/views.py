@@ -180,6 +180,7 @@ class LoginUser(graphene.Mutation):
                     id=user.id,
                     username=user.username,
                     email=user.email,
+                    emailVerified=result["email_verified"],
                     refresh_token=result["refresh_token"],
                     access_token=result["access_token"],
                     isSuperuser=user.is_superuser,

@@ -47,19 +47,35 @@ class UserBuilder:
             raise ValidationError("Invalid username or password")
 
         # Ensure the user has a profile
+        # try:
+        #     user_profile = UserProfile.objects.get(user=user)
+        # except UserProfile.DoesNotExist:
+        #     raise ValidationError("User profile not found. Please contact support.")
+
+        # # Check if email is verified
+        # if not user_profile.is_email_verified and not user.is_superuser:
+        #     raise ValidationError("Email not verified. Please check your inbox for a verification link.")
+
+        if user.is_superuser:
+            refresh = RefreshToken.for_user(user)
+            return {
+                "user": user,
+                "email_verified": True,
+                "refresh_token": str(refresh),
+                "access_token": str(refresh.access_token),
+            }
         try:
             user_profile = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
             raise ValidationError("User profile not found. Please contact support.")
-
-        # Check if email is verified
+        
         if not user_profile.is_email_verified:
             raise ValidationError("Email not verified. Please check your inbox for a verification link.")
-
-        # Generate JWT tokens
+        
         refresh = RefreshToken.for_user(user)
         return {
             "user": user,
+            "email_verified": user_profile.is_email_verified, #rudisha email verification
             "refresh_token": str(refresh),
             "access_token": str(refresh.access_token),
         }

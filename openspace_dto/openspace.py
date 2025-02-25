@@ -20,6 +20,7 @@ class UserLoginObject(graphene.ObjectType):
     id = graphene.ID()
     username = graphene.String()
     email = graphene.String()
+    emailVerified = graphene.Boolean()
     refresh_token = graphene.String()
     access_token = graphene.String()
     isSuperuser  = graphene.Boolean()
