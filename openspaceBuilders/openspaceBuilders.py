@@ -60,7 +60,8 @@ class UserBuilder:
         refresh = RefreshToken.for_user(user)
         return {
             "user": user,
-
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token),
         }
 
 
