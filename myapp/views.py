@@ -153,7 +153,7 @@ def verify_email(request, token):
         user_profile.user.save()
         print("Data pass here")
         user_profile.save()
-        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/verification-success")
+        return HttpResponseRedirect(f"{settings.FRONTEND_URL}/login")
     except UserProfile.DoesNotExist:
         return HttpResponse("Invalid verification token.", status=400)
 
