@@ -10,7 +10,7 @@ class Mutation(graphene.ObjectType):
     register_user = RegistrationMutation.Field()
     login_user =   LoginUser.Field()
 
-class Query(graphene.ObjectType):
+class Query(ProfileQuery,AllUsersQuery, graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")
     pass
 

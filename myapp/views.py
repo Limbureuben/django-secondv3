@@ -91,3 +91,9 @@ class ProfileQuery(graphene.ObjectType):
             )
         except User.DoesNotExist:
             return None
+
+class AllUsersQuery(graphene.ObjectType):
+    all_users  = graphene.List(RegistrationObject)
+
+    def resolve_all_users(self, info):
+        return User.objects.all()
