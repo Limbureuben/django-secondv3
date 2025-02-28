@@ -29,3 +29,15 @@ class UserProfileObject(graphene.ObjectType):
     id = graphene.ID()
     username = graphene.String()
     email = graphene.String()
+
+class ReportInputObject(graphene.InputObjectType):
+    description = graphene.String()
+    email = graphene.String()
+    district = graphene.String()
+    date = graphene.String()
+
+class ReportObject(graphene.ObjectType):
+    description = graphene.String()
+    email = graphene.String()
+    district = graphene.String()
+    date = graphene.String()

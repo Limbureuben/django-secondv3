@@ -77,3 +77,17 @@ class LoginUser(graphene.Mutation):
 
 
 
+class ProfileQuery(graphene.ObjectType):
+    user_profile = graphene.Field(UserProfileObject, id=graphene.ID(required=True))
+
+    def resolve_user_profile(self, info, id):
+        try:
+            user = User.objects.get(id=id)
+            user_profile = user.userprofile
+            return UserProfileObject(
+                id = user_profile.id,
+                username = user.username,
+                email = user.email
+            )
+        except User.DoesNotExist:
+            return None
