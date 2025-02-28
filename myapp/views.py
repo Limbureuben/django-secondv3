@@ -75,6 +75,39 @@ class LoginUser(graphene.Mutation):
         except Exception:
             return LoginUser(success=False, message="An error occurred. Please try again.")
 
+class RequestPasswordReset(graphene.Mutation):
+    success = graphene.Boolean()
+    message = graphene.String()
+
+
+    class Arguments:
+        email = graphene.String(required=True)
+
+    def mutate(self, info, email):
+        try:
+            UserBuilder.request_password_reset(email)
+            return RequestPasswordReset(success=True, message="Password reset email sent")
+        except Exception as e:
+            return RequestPasswordReset(success=False, message=str(e))
+        
+
+        
+class ResetPassword(graphene.Mutation):
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    class Arguments:
+        token = graphene.String(required=True)
+        new_password = graphene.String(required=True)
+        password_confirm = graphene.String(required=True)
+
+    def mutate(self, info, token, new_password, password_confirm):
+        try:
+            UserBuilder.reset_password(token, new_password, password_confirm)
+            return ResetPassword(success=True, message="Password rest successful")
+        except ValidationError as e:
+            return ResetPassword(success=False, message=str(e))
+
 
 
 class ProfileQuery(graphene.ObjectType):
