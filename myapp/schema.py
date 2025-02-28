@@ -9,6 +9,8 @@ import graphql_jwt
 class Mutation(graphene.ObjectType):
     register_user = RegistrationMutation.Field()
     login_user =   LoginUser.Field()
+    request_password_reset = RequestPasswordReset.Field()
+    reset_password = ResetPassword.Field()
 
 class Query(ProfileQuery,AllUsersQuery, graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")

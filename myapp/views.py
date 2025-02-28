@@ -79,7 +79,6 @@ class RequestPasswordReset(graphene.Mutation):
     success = graphene.Boolean()
     message = graphene.String()
 
-
     class Arguments:
         email = graphene.String(required=True)
 
@@ -91,7 +90,7 @@ class RequestPasswordReset(graphene.Mutation):
             return RequestPasswordReset(success=False, message=str(e))
         
 
-        
+
 class ResetPassword(graphene.Mutation):
     success = graphene.Boolean()
     message = graphene.String()

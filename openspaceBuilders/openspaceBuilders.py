@@ -8,6 +8,7 @@ import uuid
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.core.mail import send_mail
 
 
 class UserBuilder:
@@ -69,6 +70,44 @@ class UserBuilder:
             "refresh_token": str(refresh),
             "access_token": str(refresh.access_token),
         }
+
+    @staticmethod
+    def request_password_reset(email):
+        try:
+            user = User.objects.get(email=email)
+            reset_token = uuid.uuid4()
+            user_profile = user.userprofile
+            user_profile.reset_token = reset_token
+            user_profile.save()
+
+            reset_url = f"{settings.FRONTEND_URL}/reset-password/{reset_token}/"
+            send_mail(
+                'Password Reset Request',
+                f'Please click the following link to reset your password: { reset_url}',
+                'no-reply@example.com',
+                [email],
+                fail_silently=False
+            )
+            return True
+        except User.DoesNotExist:
+            raise ValidationError("User with this email does not exist")
+        
+    @staticmethod
+    def reset_password(token, new_password, new_password_confirm):
+        try:
+            user_profile = UserProfile.objects.get(reset_token=token)
+            if new_password != new_password_confirm:
+                raise ValidationError("Passoword do not match")
+            if len(new_password) < 8:
+                raise ValidationError("Password must be atleast 8 characters long")
+            user = user_profile.user
+            user.set_password(new_password)
+            user.save()
+            user_profile.reset_token = None
+            user_profile.save()
+            return True
+        except UserProfile.DoesNotExist:
+            raise ValidationError("Invalid reset token")
 
 
 def register_user(input):
