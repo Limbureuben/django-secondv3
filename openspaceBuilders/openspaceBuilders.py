@@ -46,16 +46,6 @@ class UserBuilder:
         if user is None:
             raise ValidationError("Invalid username or password")
 
-        # Ensure the user has a profile
-        # try:
-        #     user_profile = UserProfile.objects.get(user=user)
-        # except UserProfile.DoesNotExist:
-        #     raise ValidationError("User profile not found. Please contact support.")
-
-        # # Check if email is verified
-        # if not user_profile.is_email_verified and not user.is_superuser:
-        #     raise ValidationError("Email not verified. Please check your inbox for a verification link.")
-
         if user.is_superuser:
             refresh = RefreshToken.for_user(user)
             return {
@@ -78,18 +68,6 @@ class UserBuilder:
             "email_verified": user_profile.is_email_verified, #rudisha email verification
             "refresh_token": str(refresh),
             "access_token": str(refresh.access_token),
-        }
-
-
-
-class UserProfileBuilder:
-    
-    @staticmethod
-    def create_user_profile(user: User) ->UserProfileObject:
-        return {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email
         }
 
 
