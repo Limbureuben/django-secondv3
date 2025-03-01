@@ -88,7 +88,7 @@ class UserBuilder:
                 [email],
                 fail_silently=False
             )
-            
+            return True
         except User.DoesNotExist:
             raise ValidationError("User with this email does not exist")
         
