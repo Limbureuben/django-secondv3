@@ -76,7 +76,7 @@ class UserBuilder:
         try:
             user = User.objects.get(email=email)
             reset_token = uuid.uuid4()
-            user_profile = user.userprofile
+            
             user_profile.reset_token = reset_token
             user_profile.save()
 
