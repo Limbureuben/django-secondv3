@@ -78,7 +78,7 @@ class UserBuilder:
             reset_token = uuid.uuid4()
             user_profile = user.userprofile
             user_profile.reset_token = reset_token
-            user_profile.save()
+            
 
             reset_url = f"{settings.FRONTEND_URL}/reset-password/{reset_token}/"
             send_mail(
