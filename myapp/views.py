@@ -97,7 +97,7 @@ class ResetPassword(graphene.Mutation):
 
     class Arguments:
         token = graphene.String(required=True)
-        
+        new_password = graphene.String(required=True)
         password_confirm = graphene.String(required=True)
 
     def mutate(self, info, token, new_password, password_confirm):
