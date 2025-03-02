@@ -77,7 +77,7 @@ class LoginUser(graphene.Mutation):
 
 class RequestPasswordReset(graphene.Mutation):
     success = graphene.Boolean()
-    message = graphene.String()
+    
 
     class Arguments:
         email = graphene.String(required=True)
