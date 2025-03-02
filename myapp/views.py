@@ -80,7 +80,7 @@ class RequestPasswordReset(graphene.Mutation):
     message = graphene.String()
 
     class Arguments:
-        
+        email = graphene.String(required=True)
 
     def mutate(self, info, email):
         try:
