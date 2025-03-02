@@ -82,7 +82,7 @@ class RequestPasswordReset(graphene.Mutation):
     class Arguments:
         email = graphene.String(required=True)
 
-    def mutate(self, info):
+    def mutate(self, info, email):
         try:
             UserBuilder.request_password_reset(email)
             return RequestPasswordReset(success=True, message="Password reset email sent")
