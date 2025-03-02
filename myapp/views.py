@@ -87,7 +87,7 @@ class RequestPasswordReset(graphene.Mutation):
             UserBuilder.request_password_reset(email)
             return RequestPasswordReset(success=True, message="Password reset email sent")
         except Exception as e:
-            return RequestPasswordReset(success=False, message=str(e))
+            
         
 
 
