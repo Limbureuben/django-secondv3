@@ -85,7 +85,8 @@ class UserBuilder:
                 'Password Reset Request',
                 f'Please click the following link to reset your password: { reset_url}',
                 'no-reply@example.com',
-                
+                [email],
+                fail_silently=False
             )
             return True
         except User.DoesNotExist:
