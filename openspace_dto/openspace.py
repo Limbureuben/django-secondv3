@@ -52,5 +52,5 @@ class OpenspaceObject(graphene.ObjectType):
     name = graphene.String()
     latitude = graphene.Float()
     longitude = graphene.Float()
-    district = graphene.Float()
+    district = graphene.String()
     

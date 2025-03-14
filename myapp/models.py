@@ -12,16 +12,17 @@ class UserProfile(models.Model):
         return f"{self.user.username} Profile"
 
 class OpenSpace(models.Model):
-    name = models.CharField(max_length=255)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    district = models.CharField(max_length=255, choices=[
+    DISTRICT_CHOICES = [
         ('Kinondoni', 'Kinondoni'),
         ('Ilala', 'Ilala'),
         ('Ubungo', 'Ubungo'),
         ('Temeke', 'Temeke'),
         ('Kigamboni', 'Kigamboni'),
-    ])
+    ]
+    name = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    district = models.CharField(max_length=50, choices=DISTRICT_CHOICES)
     
     def __str__(self):
         return self.name

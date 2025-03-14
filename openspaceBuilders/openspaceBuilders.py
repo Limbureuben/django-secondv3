@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 
 
 class UserBuilder:
+    VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
     @staticmethod
     def register_user(username, email, password, passwordConfirm):
         if password != passwordConfirm:
@@ -109,8 +110,12 @@ class UserBuilder:
         except UserProfile.DoesNotExist:
             raise ValidationError("Invalid reset token")
 
+ 
     @staticmethod
+    
     def open_space(name, latitude, longitude, district):
+        if district not in UserBuilder.VALID_DISTRICTS:
+            raise ValueError(f"Invalid district: {district}. Must be one of {', '.join(UserBuilder.VALID_DISTRICTS)}")
         openspace=OpenSpace(name=name, latitude=latitude, longitude=longitude, district=district)
         openspace.save()
         return openspace
@@ -134,7 +139,7 @@ def open_space(input):
         return OpenspaceResponse(
             message = "Openspace registred successfully",
             success=True,
-            openspace=OpenspaceResponse(id=str(openspace.id), latitude=openspace.latitude, longitude=openspace.longitude)
+            openspace=OpenspaceObject(name=openspace.name, latitude=openspace.latitude, longitude=openspace.longitude)
         )
     except ValidationError as e:
         return OpenspaceResponse(message=str(e), success=False, openspace=None)
