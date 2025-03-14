@@ -8,3 +8,8 @@ class UserProfileAdmin(admin.ModelAdmin):
         return obj.user.username
     search_fields = ('user__username', 'user__email')
 admin.site.register(UserProfile, UserProfileAdmin)
+
+
+class OpenSpaceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'latitude', 'longitude', 'district')
+admin.site.register(OpenSpace, OpenSpaceAdmin)
