@@ -1,7 +1,7 @@
 
 from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
-from openspace_dto.Response import RegistrationResponse
+from openspace_dto.Response import OpenspaceResponse, RegistrationResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import uuid
@@ -109,6 +109,12 @@ class UserBuilder:
         except UserProfile.DoesNotExist:
             raise ValidationError("Invalid reset token")
 
+    @staticmethod
+    def open_space(name, latitude, longitude, district):
+        openspace=OpenSpace(name=name, latitude=latitude, longitude=longitude, district=district)
+        openspace.save()
+        return openspace
+
 
 def register_user(input):
     try:
@@ -121,3 +127,14 @@ def register_user(input):
         )
     except ValidationError as e:
         return RegistrationResponse(message=str(e), success=False, user=None)
+
+def open_space(input):
+    try:
+        openspace = UserBuilder.open_space(input.name, input.latitude, input.longitude, input.district)
+        return OpenspaceResponse(
+            message = "Openspace registred successfully",
+            success=True,
+            openspace=OpenspaceResponse(id=str(openspace.id), latitude=openspace.latitude, longitude=openspace.longitude)
+        )
+    except ValidationError as e:
+        return OpenspaceResponse(message=str(e), success=False, openspace=None)

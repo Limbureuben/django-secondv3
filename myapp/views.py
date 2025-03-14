@@ -6,9 +6,9 @@ from django.shortcuts import render
 import graphene # type: ignore
 from .tasks import send_verification_email # type: ignore
 from .models import *
-from openspaceBuilders.openspaceBuilders import UserBuilder, register_user
+from openspaceBuilders.openspaceBuilders import UserBuilder, open_space, register_user
 from openspace_dto.openspace import *
-from openspace_dto.Response import RegistrationResponse
+from openspace_dto.Response import OpenspaceResponse, RegistrationResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -130,12 +130,14 @@ class AllUsersQuery(graphene.ObjectType):
 
 
 
-class CreateOpenspace(graphene.Mutation):
-    message = graphene.String()
-    success = graphene.Boolean()
+class CreateOpenspaceMutation(graphene.Mutation):
+    openspace = graphene.Field(OpenspaceObject)
+    output = graphene.Field(OpenspaceResponse)
     
     class Arguments:
         input = OpenspaceInputObject(required=True)
         
     def mutate(self, info, input):
+        response = open_space(input)
         
+        return CreateOpenspaceMutation(openspace=response.openspace, output=response)
