@@ -107,8 +107,6 @@ class ResetPassword(graphene.Mutation):
         except ValidationError as e:
             return ResetPassword(success=False, message=str(e))
 
-
-
 class ProfileQuery(graphene.ObjectType):
     user_profile = graphene.Field(UserProfileObject, id=graphene.ID(required=True))
 
@@ -129,3 +127,15 @@ class AllUsersQuery(graphene.ObjectType):
 
     def resolve_all_users(self, info):
         return User.objects.all()
+
+
+
+class CreateOpenspace(graphene.Mutation):
+    message = graphene.String()
+    success = graphene.Boolean()
+    
+    class Arguments:
+        input = OpenspaceInputObject(required=True)
+        
+    def mutate(self, info, input):
+        

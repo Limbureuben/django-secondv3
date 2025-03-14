@@ -41,3 +41,16 @@ class ReportObject(graphene.ObjectType):
     email = graphene.String()
     district = graphene.String()
     date = graphene.String()
+    
+class OpenspaceInputObject(graphene.InputObjectType):
+    name = graphene.String()
+    latitude = graphene.Float()
+    longitude = graphene.Float()
+    district = graphene.String()
+    
+class OpenspaceObject(graphene.ObjectType):
+    name = graphene.String()
+    latitude = graphene.Float()
+    longitude = graphene.Float()
+    district = graphene.Float()
+    
