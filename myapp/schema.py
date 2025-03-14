@@ -13,7 +13,7 @@ class Mutation(graphene.ObjectType):
     reset_password = ResetPassword.Field()
     add_space = CreateOpenspaceMutation.Field()
 
-class Query(ProfileQuery,AllUsersQuery, graphene.ObjectType):
+class Query(ProfileQuery,AllUsersQuery, OpenspaceQuery, graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")
     pass
 

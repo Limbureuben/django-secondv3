@@ -89,8 +89,7 @@ class RequestPasswordReset(graphene.Mutation):
         except Exception as e:
             return RequestPasswordReset(success=False, message=str(e))
         
-
-
+        
 class ResetPassword(graphene.Mutation):
     success = graphene.Boolean()
     message = graphene.String()
@@ -141,3 +140,10 @@ class CreateOpenspaceMutation(graphene.Mutation):
         response = open_space(input)
         
         return CreateOpenspaceMutation(openspace=response.openspace, output=response)
+    
+
+class OpenspaceQuery(graphene.ObjectType):
+    all_open_spaces = graphene.List(OpenspaceObject)
+    
+    def resolve_all_open_spaces(self, info):
+        return OpenSpace.objects.all()
