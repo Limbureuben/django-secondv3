@@ -178,7 +178,7 @@ REST_FRAMEWORK = {
 }
 
 
-CORS_ALLOW_ALL_ORIGINS = True #allow all origin
+CORS_ALLOW_ALL_ORIGINS = True
 
 # for speficic  origin
 # CORS_ALLOWED_ORIGINS = [
