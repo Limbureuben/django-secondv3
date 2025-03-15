@@ -147,3 +147,18 @@ class OpenspaceQuery(graphene.ObjectType):
     
     def resolve_all_open_spaces(self, info):
         return OpenSpace.objects.all()
+    
+class DeleteOpenspace(graphene.Mutation):
+    message = graphene.String()
+    success = graphene.Boolean()
+    
+    class Arguments:
+        id = graphene.ID(required=True)
+        
+    def mutate(self, info, id):
+        try:
+            open_space = OpenSpace.objects.get(pk=id)
+            open_space.delete()
+            return DeleteOpenspace(success=True, message="Openspace delete successfully")
+        except OpenSpace.DoesNotExist:
+            return DeleteOpenspace(success=False, message="Fail to delete openspace")
