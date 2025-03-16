@@ -162,3 +162,9 @@ class DeleteOpenspace(graphene.Mutation):
             return DeleteOpenspace(success=True, message="Openspace delete successfully")
         except OpenSpace.DoesNotExist:
             return DeleteOpenspace(success=False, message="Fail to delete openspace")
+        
+class TotalOpenSpaceQuery(graphene.ObjectType):
+    total_openspaces = graphene.Int()
+    
+    def resolve_total_openspaces(self, info):
+        return OpenSpace.objects.count()

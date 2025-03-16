@@ -14,7 +14,7 @@ class Mutation(graphene.ObjectType):
     add_space = CreateOpenspaceMutation.Field()
     delete_open_space = DeleteOpenspace.Field()
 
-class Query(ProfileQuery,AllUsersQuery, OpenspaceQuery, graphene.ObjectType):
+class Query(ProfileQuery,AllUsersQuery, OpenspaceQuery, TotalOpenSpaceQuery, graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")
     pass
 
