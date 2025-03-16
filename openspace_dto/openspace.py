@@ -49,6 +49,7 @@ class OpenspaceInputObject(graphene.InputObjectType):
     district = graphene.String()
     
 class OpenspaceObject(graphene.ObjectType):
+    id = graphene.ID()
     name = graphene.String()
     latitude = graphene.Float()
     longitude = graphene.Float()
