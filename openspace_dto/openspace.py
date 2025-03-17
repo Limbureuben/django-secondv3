@@ -54,4 +54,5 @@ class OpenspaceObject(graphene.ObjectType):
     latitude = graphene.Float()
     longitude = graphene.Float()
     district = graphene.String()
+    is_active = graphene.Boolean()
     

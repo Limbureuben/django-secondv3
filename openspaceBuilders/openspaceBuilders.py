@@ -112,11 +112,10 @@ class UserBuilder:
 
  
     @staticmethod
-    
     def open_space(name, latitude, longitude, district):
         if district not in UserBuilder.VALID_DISTRICTS:
             raise ValueError(f"Invalid district: {district}. Must be one of {', '.join(UserBuilder.VALID_DISTRICTS)}")
-        openspace=OpenSpace(name=name, latitude=latitude, longitude=longitude, district=district)
+        openspace=OpenSpace(name=name, latitude=latitude, longitude=longitude, district=district, is_active=True)
         openspace.save()
         return openspace
 

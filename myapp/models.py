@@ -24,6 +24,7 @@ class OpenSpace(models.Model):
     longitude = models.FloatField()
     district = models.CharField(max_length=50, choices=DISTRICT_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name
