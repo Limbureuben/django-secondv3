@@ -129,6 +129,15 @@ class AllUsersQuery(graphene.ObjectType):
 
 
 
+
+
+
+
+
+
+
+
+
 class CreateOpenspaceMutation(graphene.Mutation):
     openspace = graphene.Field(OpenspaceObject)
     output = graphene.Field(OpenspaceResponse)
@@ -142,12 +151,6 @@ class CreateOpenspaceMutation(graphene.Mutation):
         return CreateOpenspaceMutation(openspace=response.openspace, output=response)
     
 
-class OpenspaceQuery(graphene.ObjectType):
-    all_open_spaces = graphene.List(OpenspaceObject)
-    
-    def resolve_all_open_spaces(self, info):
-        return OpenSpace.objects.all()
-    
 class DeleteOpenspace(graphene.Mutation):
     message = graphene.String()
     success = graphene.Boolean()
@@ -162,6 +165,30 @@ class DeleteOpenspace(graphene.Mutation):
             return DeleteOpenspace(success=True, message="Openspace delete successfully")
         except OpenSpace.DoesNotExist:
             return DeleteOpenspace(success=False, message="Fail to delete openspace")
+        
+        
+class ToggleOpenSpaceStatus(graphene.Mutation):
+    class Arguments:
+        input = graphene.ID(required=True)
+        
+    openspace = graphene.Field(OpenspaceObject)
+    
+    def mutate(self, info, id):
+        try:
+            openspace = OpenSpace.objects.get(pk=id)
+            openspace.is_active = not openspace.is_active
+            openspace.save()
+            return ToggleOpenSpaceStatus(openspace=openspace)
+        except OpenSpace.DoesNotExist:
+            raise Exception("Open space not found")
+
+class OpenspaceQuery(graphene.ObjectType):
+    all_open_spaces = graphene.List(OpenspaceObject)
+    
+    def resolve_all_open_spaces(self, info):
+        return OpenSpace.objects.all()
+    
+
         
 class TotalOpenSpaceQuery(graphene.ObjectType):
     total_openspaces = graphene.Int()
