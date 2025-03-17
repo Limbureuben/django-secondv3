@@ -186,13 +186,15 @@ class ToggleOpenspaceMutation(graphene.Mutation):
 
 
 class OpenspaceQuery(graphene.ObjectType):
-    all_open_spaces = graphene.List(OpenspaceObject, only_active=graphene.Boolean(default_value=True))
+    all_open_spaces_admin = graphene.List(OpenspaceObject)
     
-    def resolve_all_open_spaces(self, info, only_active):
-        if only_active:
-            return OpenSpace.objects.filter(is_active=True)
+    all_open_spaces_user = graphene.List(OpenspaceObject)
+    
+    def resolve_all_open_spaces_admin(self, info):
         return OpenSpace.objects.all()
     
+    def resolve_all_open_spaces_user(self, info):
+        return OpenSpace.objects.filter(is_active=True)
 
         
 class TotalOpenSpaceQuery(graphene.ObjectType):
