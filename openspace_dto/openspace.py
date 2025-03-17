@@ -56,3 +56,6 @@ class OpenspaceObject(graphene.ObjectType):
     district = graphene.String()
     is_active = graphene.Boolean()
     
+class ToggleOpenspaceInput(graphene.InputObjectType):
+    id = graphene.ID()
+    is_active = graphene.Boolean()

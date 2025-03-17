@@ -167,25 +167,30 @@ class DeleteOpenspace(graphene.Mutation):
             return DeleteOpenspace(success=False, message="Fail to delete openspace")
         
         
-class ToggleOpenSpaceStatus(graphene.Mutation):
+
+
+class ToggleOpenspaceMutation(graphene.Mutation):
     class Arguments:
-        input = graphene.ID(required=True)
-        
+        input = ToggleOpenspaceInput(required=True)
+
     openspace = graphene.Field(OpenspaceObject)
-    
-    def mutate(self, info, id):
+
+    def mutate(self, info, input):
         try:
-            openspace = OpenSpace.objects.get(pk=id)
-            openspace.is_active = not openspace.is_active
+            openspace = OpenSpace.objects.get(pk=input.id)
+            openspace.is_active = input.is_active  # Toggle the status
             openspace.save()
-            return ToggleOpenSpaceStatus(openspace=openspace)
+            return ToggleOpenspaceMutation(openspace=openspace)
         except OpenSpace.DoesNotExist:
-            raise Exception("Open space not found")
+            raise Exception("OpenSpace not found")
+
 
 class OpenspaceQuery(graphene.ObjectType):
-    all_open_spaces = graphene.List(OpenspaceObject)
+    all_open_spaces = graphene.List(OpenspaceObject, only_active=graphene.Boolean(default_value=True))
     
-    def resolve_all_open_spaces(self, info):
+    def resolve_all_open_spaces(self, info, only_active):
+        if only_active:
+            return OpenSpace.objects.filter(is_active=True)
         return OpenSpace.objects.all()
     
 
