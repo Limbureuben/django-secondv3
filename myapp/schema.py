@@ -8,14 +8,15 @@ import graphql_jwt
 
 class Mutation(graphene.ObjectType):
     register_user = RegistrationMutation.Field()
+    # register_user = RegisterUserMutation.Field()
     login_user =   LoginUser.Field()
-    request_password_reset = RequestPasswordReset.Field()
-    reset_password = ResetPassword.Field()
+    # request_password_reset = RequestPasswordReset.Field()
+    # reset_password = ResetPassword.Field()
     add_space = CreateOpenspaceMutation.Field()
     delete_open_space = DeleteOpenspace.Field()
     toggle_openspace_status = ToggleOpenspaceMutation.Field()
 
-class Query(ProfileQuery,AllUsersQuery, OpenspaceQuery, TotalOpenSpaceQuery, graphene.ObjectType):
+class Query(OpenspaceQuery, TotalOpenSpaceQuery, graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")
     pass
 

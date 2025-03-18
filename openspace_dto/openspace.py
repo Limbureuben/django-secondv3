@@ -3,7 +3,6 @@ from myapp.models import *
 
 class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
-    email = graphene.String()
     password = graphene.String()
     passwordConfirm = graphene.String()
 
@@ -11,6 +10,21 @@ class RegistrationObject(graphene.ObjectType):
     id = graphene.ID()
     username = graphene.String()
     email = graphene.String()
+    
+class RegisterObject(graphene.ObjectType):
+    id = graphene.ID()
+    username = graphene.String()
+    
+class UserRegistrationInput(graphene.InputObjectType):
+    username = graphene.String(required=True)
+    password = graphene.String(required=True)
+    passwordConfirm = graphene.String(required=True)
+    
+class UserRegistrationObject(graphene.ObjectType):
+    id = graphene.ID()
+    username = graphene.String()
+    access_token = graphene.String()
+    refresh_token = graphene.String()
 
 class UserLoginInputObject(graphene.InputObjectType):
     username = graphene.String()
@@ -19,16 +33,14 @@ class UserLoginInputObject(graphene.InputObjectType):
 class UserLoginObject(graphene.ObjectType):
     id = graphene.ID()
     username = graphene.String()
-    email = graphene.String()
-    emailVerified = graphene.Boolean()
     refresh_token = graphene.String()
     access_token = graphene.String()
-    isSuperuser  = graphene.Boolean()
+    isStaff = graphene.Boolean()
 
-class UserProfileObject(graphene.ObjectType):
-    id = graphene.ID()
-    username = graphene.String()
-    email = graphene.String()
+# class UserProfileObject(graphene.ObjectType):
+#     id = graphene.ID()
+#     username = graphene.String()
+#     email = graphene.String()
 
 class ReportInputObject(graphene.InputObjectType):
     description = graphene.String()
