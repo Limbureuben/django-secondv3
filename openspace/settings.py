@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    'myapprest',
     #third party apps
     "rest_framework",
     "graphene_django",

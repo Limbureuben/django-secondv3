@@ -29,3 +29,9 @@ class OpenSpace(models.Model):
     def __str__(self):
         return self.name
     
+class Report(models.Model):
+    description = models.TextField()
+    email = models.EmailField()
+    file = models.FileField(upload_to='uploads/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    

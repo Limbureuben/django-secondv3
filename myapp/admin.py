@@ -13,3 +13,7 @@ admin.site.register(UserProfile, UserProfileAdmin)
 class OpenSpaceAdmin(admin.ModelAdmin):
     list_display = ('name', 'latitude', 'longitude', 'district', 'created_at', 'is_active')
 admin.site.register(OpenSpace, OpenSpaceAdmin)
+
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('description', 'email', 'file', 'created_at')
+admin.site.register(Report, ReportAdmin)
