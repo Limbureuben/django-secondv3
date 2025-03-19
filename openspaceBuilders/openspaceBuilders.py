@@ -97,8 +97,7 @@ class UserBuilder:
                 fail_silently=False,
             )
 
-        return {"message": "Report submitted successfully", "report_id": report_id}
-
+        return report
 
     # @staticmethod
     # def request_password_reset(email):
