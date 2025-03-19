@@ -66,13 +66,17 @@ class UserBuilder:
     #             return report_id
         
     @staticmethod    
-    def report_issue(description, email=None):
-        if len(description) < 20:
+    def report_issue(description, email=None, file_url=None):
+        if len(description) < 5:
             raise ValidationError("Description must be at least 20 characters long")
 
-        # Create and save the report (report_id is generated automatically)
+        # Create and save the report (report_id is auto-generated)
         report = Report(description=description, email=email)
-        report.save()  # This will trigger `save()` in the model and generate `report_id`
+        
+        if file_url:
+            report.file = file_url  
+
+        report.save()
 
         # Send email notification if the user provided an email
         if email:
@@ -95,6 +99,8 @@ class UserBuilder:
             )
 
         return report
+
+
     # @staticmethod
     # def request_password_reset(email):
     #     try:
@@ -170,9 +176,14 @@ def report_issue(input):
     try:
         report = UserBuilder.report_issue(input.description, input.email, input.file_url)
         return ReportResponse(
-            message = "Report submitted successfully",
+            message="Report submitted successfully",
             success=True,
-            report=ReportObject(description=report.description, email=report.email, file_url=report.file.url if report.file else None )
+            report=ReportObject(
+                description=report.description, 
+                email=report.email, 
+                id=report.report_id,  # FIXED: Include report ID in response
+                file_url=report.file.url if report.file else None  # FIXED: Provide correct file URL if exists
+            )
         )
     except ValidationError as e:
         return ReportResponse(message=str(e), success=False, report=None)

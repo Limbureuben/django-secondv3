@@ -11,6 +11,7 @@ class Mutation(graphene.ObjectType):
     # register_user = RegisterUserMutation.Field()
     login_user =   LoginUser.Field()
     register_report = ReportMutation.Field()
+    create_report = CreateReport.Field()
     # request_password_reset = RequestPasswordReset.Field()
     # reset_password = ResetPassword.Field()
     add_space = CreateOpenspaceMutation.Field()

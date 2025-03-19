@@ -3,7 +3,8 @@ from django.conf import settings
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-import graphene # type: ignore
+import graphene
+from graphene_django import DjangoObjectType # type: ignore
 # from .tasks import send_verification_email # type: ignore
 from .models import *
 from openspaceBuilders.openspaceBuilders import UserBuilder, open_space, register_user, report_issue
@@ -214,3 +215,25 @@ class ReportMutation(graphene.Mutation):
     def mutate(self, info, input):
         response = report_issue(input)
         return ReportMutation(report=response.report, output=response)
+    
+    
+class ReportType(DjangoObjectType):
+    class Meta:
+        model = Report
+        fields = "__all__"
+class CreateReport(graphene.Mutation):
+    class Arguments:
+        description = graphene.String(required=True)
+        email = graphene.String(required=False)
+        file_path = graphene.String(required=False)
+
+    report = graphene.Field(ReportType)
+
+    def mutate(self, info, description, email=None, file_path=None):
+        report = Report(
+            description=description,
+            email=email,
+            file=file_path
+        )
+        report.save()
+        return CreateReport(report=report)
