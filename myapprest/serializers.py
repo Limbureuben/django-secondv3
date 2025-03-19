@@ -5,5 +5,4 @@ from rest_framework import serializers
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fiels = ['file']
-        depth = 1
+        fields = '__all__'

@@ -1,3 +1,5 @@
+import random
+import string
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
@@ -30,11 +32,26 @@ class OpenSpace(models.Model):
         return self.name
     
 class Report(models.Model):
-    report_id = models.CharField(max_length=10, unique=True)
+    report_id = models.CharField(max_length=10, unique=True, blank=True)
     description = models.TextField()
     email = models.EmailField()
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return f"Report {self.report_id}"
+    
+    def save(self, *args, **kwargs):
+        if not self.report_id:  # Generate only if it's not already set
+            self.report_id = self.generate_report_id()
+        super().save(*args, **kwargs)
+
+    def generate_report_id(self, length=8):
+        """Generate a unique alphanumeric report ID."""
+        while True:
+            report_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+            if not Report.objects.filter(report_id=report_id).exists():  # Ensure uniqueness
+                return report_id
+
     def __str__(self):
         return f"Report {self.report_id}"

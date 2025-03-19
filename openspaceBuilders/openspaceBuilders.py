@@ -57,34 +57,31 @@ class UserBuilder:
             "user": user,
         }
         
-    @staticmethod    
-    def generate_report_id(length=8):
-        """Generate a unique alphanumeric report ID."""
-        while True:
-            report_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-            if not Report.objects.filter(report_id=report_id).exists():  # Ensure uniqueness
-                return report_id
+    # @staticmethod    
+    # def generate_report_id(length=8):
+    #     """Generate a unique alphanumeric report ID."""
+    #     while True:
+    #         report_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+    #         if not Report.objects.filter(report_id=report_id).exists():  # Ensure uniqueness
+    #             return report_id
         
-    @staticmethod
+    @staticmethod    
     def report_issue(description, email=None):
         if len(description) < 20:
             raise ValidationError("Description must be at least 20 characters long")
 
-        # Generate unique report ID
-        report_id = UserBuilder.generate_report_id()
-
-        # Save the report to the database
-        report = Report(description=description, email=email, report_id=report_id)
-        report.save()
+        # Create and save the report (report_id is generated automatically)
+        report = Report(description=description, email=email)
+        report.save()  # This will trigger `save()` in the model and generate `report_id`
 
         # Send email notification if the user provided an email
         if email:
             if "@" not in email:
                 raise ValidationError("Invalid email")
 
-            email_subject = f"Issue Report Received - Report ID: {report_id}"
+            email_subject = f"Issue Report Received - Report ID: {report.report_id}"
             email_body = (
-                f"Thank you for reporting an issue. Your report ID is: {report_id}.\n\n"
+                f"Thank you for reporting an issue. Your report ID is: {report.report_id}.\n\n"
                 f"Description:\n{description}\n\n"
                 "Our team will review your report as soon as possible. Thank you for helping us improve our environment."
             )
@@ -98,7 +95,6 @@ class UserBuilder:
             )
 
         return report
-
     # @staticmethod
     # def request_password_reset(email):
     #     try:
@@ -172,11 +168,11 @@ def open_space(input):
     
 def report_issue(input):
     try:
-        report = UserBuilder.report_issue(input.description, input.email)
+        report = UserBuilder.report_issue(input.description, input.email, input.file_url)
         return ReportResponse(
             message = "Report submitted successfully",
             success=True,
-            report=ReportObject(description=report.description, email=report.email)
+            report=ReportObject(description=report.description, email=report.email, file_url=report.file.url if report.file else None )
         )
     except ValidationError as e:
         return ReportResponse(message=str(e), success=False, report=None)
