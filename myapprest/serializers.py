@@ -6,3 +6,4 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fiels = ['file']
+        depth = 1
