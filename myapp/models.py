@@ -30,10 +30,11 @@ class OpenSpace(models.Model):
         return self.name
     
 class Report(models.Model):
+    report_id = models.CharField(max_length=10, unique=True)
     description = models.TextField()
     email = models.EmailField()
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Issue Report - {self.id}"
+        return f"Report {self.report_id}"

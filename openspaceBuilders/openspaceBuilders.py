@@ -1,4 +1,6 @@
 
+import random
+import string
 from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
 from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
@@ -55,12 +57,48 @@ class UserBuilder:
             "user": user,
         }
         
+    @staticmethod    
+    def generate_report_id(length=8):
+        """Generate a unique alphanumeric report ID."""
+        while True:
+            report_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+            if not Report.objects.filter(report_id=report_id).exists():  # Ensure uniqueness
+                return report_id
+        
     @staticmethod
-    def report_issue(description, email):
+    def report_issue(description, email=None):
         if len(description) < 20:
-            raise ValidationError("Description must be atleast 20 characters long")
-        if not email:
-            raise ValidationError("Email is required")
+            raise ValidationError("Description must be at least 20 characters long")
+
+        # Generate unique report ID
+        report_id = UserBuilder.generate_report_id()
+
+        # Save the report to the database
+        report = Report(description=description, email=email, report_id=report_id)
+        report.save()
+
+        # Send email notification if the user provided an email
+        if email:
+            if "@" not in email:
+                raise ValidationError("Invalid email")
+
+            email_subject = f"Issue Report Received - Report ID: {report_id}"
+            email_body = (
+                f"Thank you for reporting an issue. Your report ID is: {report_id}.\n\n"
+                f"Description:\n{description}\n\n"
+                "Our team will review your report as soon as possible. Thank you for helping us improve our environment."
+            )
+
+            send_mail(
+                subject=email_subject,
+                message=email_body,
+                from_email='limbureubenn@gmail.com',
+                recipient_list=[email],
+                fail_silently=False,
+            )
+
+        return {"message": "Report submitted successfully", "report_id": report_id}
+
 
     # @staticmethod
     # def request_password_reset(email):

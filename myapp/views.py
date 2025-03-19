@@ -6,7 +6,7 @@ from django.shortcuts import render
 import graphene # type: ignore
 # from .tasks import send_verification_email # type: ignore
 from .models import *
-from openspaceBuilders.openspaceBuilders import UserBuilder, open_space, register_user
+from openspaceBuilders.openspaceBuilders import UserBuilder, open_space, register_user, report_issue
 from openspace_dto.openspace import *
 from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
 from django.contrib.auth.models import User
