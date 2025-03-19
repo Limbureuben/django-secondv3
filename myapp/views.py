@@ -203,3 +203,15 @@ class TotalOpenSpaceQuery(graphene.ObjectType):
     
     def resolve_total_openspaces(self, info):
         return OpenSpace.objects.count()
+
+class ReportMutation(graphene.Mutation):
+    report = graphene.Field(ReportObject)
+    message = graphene.String()
+    success = graphene.Boolean()
+    
+    class Arguments:
+        input = ReportInputObject(required=True)
+        
+    def mutate(self, info, input):
+        try:
+            
