@@ -1,4 +1,4 @@
-from openspace.myapp.models import Report
+from myapp.models import Report
 from .models import *
 from rest_framework import serializers
 

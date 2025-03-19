@@ -11,5 +11,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path('', include('myapp.urls')),
+    path('', include('myapprest.urls')),
     # path('verify-email/<uuid:token>/', verify_email, name='verify_email'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
