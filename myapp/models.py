@@ -35,3 +35,5 @@ class Report(models.Model):
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return f"Issue Report - {self.id}"

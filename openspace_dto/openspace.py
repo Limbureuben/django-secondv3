@@ -71,3 +71,7 @@ class OpenspaceObject(graphene.ObjectType):
 class ToggleOpenspaceInput(graphene.InputObjectType):
     id = graphene.ID()
     is_active = graphene.Boolean()
+    
+class ReportInputObject(graphene.InputObjectType):
+    description = graphene.String()
+    email = graphene.String()
