@@ -1,7 +1,7 @@
 
 from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
-from openspace_dto.Response import OpenspaceResponse, RegistrationResponse
+from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import uuid
@@ -54,6 +54,13 @@ class UserBuilder:
             "access": str(refresh.access_token),
             "user": user,
         }
+        
+    @staticmethod
+    def report_issue(description, email):
+        if len(description) < 20:
+            raise ValidationError("Description must be atleast 20 characters long")
+        if not email:
+            raise ValidationError("Email is required")
 
     # @staticmethod
     # def request_password_reset(email):
@@ -125,3 +132,14 @@ def open_space(input):
         )
     except ValidationError as e:
         return OpenspaceResponse(message=str(e), success=False, openspace=None)
+    
+def report_issue(input):
+    try:
+        report = UserBuilder.report_issue(input.description, input.email)
+        return ReportResponse(
+            message = "Report submitted successfully",
+            success=True,
+            report=ReportObject(description=report.description, email=report.email)
+        )
+    except ValidationError as e:
+        return ReportResponse(message=str(e), success=False, report=None)

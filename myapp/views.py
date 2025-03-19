@@ -8,7 +8,7 @@ import graphene # type: ignore
 from .models import *
 from openspaceBuilders.openspaceBuilders import UserBuilder, open_space, register_user
 from openspace_dto.openspace import *
-from openspace_dto.Response import OpenspaceResponse, RegistrationResponse
+from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -206,12 +206,11 @@ class TotalOpenSpaceQuery(graphene.ObjectType):
 
 class ReportMutation(graphene.Mutation):
     report = graphene.Field(ReportObject)
-    message = graphene.String()
-    success = graphene.Boolean()
+    output = graphene.Field(ReportResponse)
     
     class Arguments:
         input = ReportInputObject(required=True)
         
     def mutate(self, info, input):
-        try:
-            
+        response = report_issue(input)
+        return ReportMutation(report=response.report, output=response)

@@ -77,5 +77,6 @@ class ReportInputObject(graphene.InputObjectType):
     email = graphene.String()
     
 class ReportObject(graphene.ObjectType):
+    id = graphene.ID()
     description = graphene.String()
     email = graphene.String()
