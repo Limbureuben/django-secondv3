@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,24 +131,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#this is basic setup
-# GRAPHENE = {
-#     'SCHEMA': 'myapp.schema.schema',  # Adjust with your actual schema path
-#     'GRAPHIQL': True,  # Make sure this is True
-# }
-
-# GRAPHENE = {
-#     "SCHEMA": "myapp.schema.schema",
-#     "MIDDLEWARE": [
-#         "graphql_jwt.middleware.JSONWebTokenMiddleware",
-#     ],
-# }
-
-# filepath: /home/rooben/Desktop/BackendOpenspace/openspace/settings.py
-# GRAPHENE = {
-#     'SCHEMA': 'openspace.myapp.schema.schema',  # Where your Graphene schema lives
-# }
-
 
 GRAPHENE = {
     'SCHEMA': 'myapp.schema.schema',
@@ -203,10 +186,7 @@ FRONTEND_URL = 'http://localhost:4200'
 BACKEND_URL = 'http://127.0.0.1:8000'
 
 
-# Celery settings
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use Redis as the message broker
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = 'UTC'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 
