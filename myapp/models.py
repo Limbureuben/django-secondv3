@@ -34,6 +34,7 @@ class OpenSpace(models.Model):
         return self.name
     
 class ReportHistory(models.Model):
+    report_id = models.CharField(max_length=8, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
