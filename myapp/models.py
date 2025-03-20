@@ -36,7 +36,7 @@ class OpenSpace(models.Model):
 class ReportHistory(models.Model):
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
-    file_path = models.CharField(max_length=500, blank=True, null=True)
+    file = models.CharField(max_length=500, blank=True, null=True)
     confirmed_at = models.DateTimeField(auto_now_add=True)
 
 class Report(models.Model):

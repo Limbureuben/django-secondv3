@@ -19,5 +19,5 @@ class ReportAdmin(admin.ModelAdmin):
 admin.site.register(Report, ReportAdmin)
 
 class ReportHistoryAdmin(admin.ModelAdmin):
-    list_display = ('description', 'email', 'file_path', 'confirmed_at')
+    list_display = ('description', 'email', 'file', 'confirmed_at')
 admin.site.register(ReportHistory, ReportHistoryAdmin)

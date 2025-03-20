@@ -15,7 +15,8 @@ class Mutation(graphene.ObjectType):
     # request_password_reset = RequestPasswordReset.Field()
     # reset_password = ResetPassword.Field()
     add_space = CreateOpenspaceMutation.Field()
-    delete_open_space = DeleteOpenspace.Field()
+    confirm_report = ConfirmReport.Field()
+    delete_report = DeleteReport.Field()
     delete_report = DeleteReport.Field()
     toggle_openspace_status = ToggleOpenspaceMutation.Field()
 

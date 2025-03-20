@@ -250,18 +250,49 @@ class ReportQuery(graphene.ObjectType):
     def resolve_all_reports(self, info):
         return Report.objects.all()
     
-class DeleteReport(graphene.Mutation):
+
+class ConfirmReport(graphene.Mutation):
     message = graphene.String()
     success = graphene.Boolean()
     
     class Arguments:
-        id = graphene.ID(required=True)
+        report_id = graphene.ID(required=True)
         
-    def mutate(self, info, id):
+    def mutate(self, info, report_id):
         try:
-            report = Report.objects.get(pk=id)
-            report.delete()
-            return DeleteReport(success=True, message="Report delete successfully")
-        except Report.DoesNotExist:
-            return DeleteReport(success=False, message="Fail to delete report")
+            report = Report.objects.get(id=report_id)
             
+            ReportHistory.objects.create(
+                description = report.description,
+                email = report.email,
+                file = report.file if report.file else None
+            )
+            #tume email kama user ameweka
+            if report.email:
+                send_mail(
+                    subject="Report Confirmation",
+                    message="Your report has been reviewed and confirmed.",
+                    from_email="limbureubenn@gmail.com",
+                    recipient_list=[report.email],
+                    fail_silently=True
+                )
+                
+                report.delete()
+            return ConfirmReport(success=True, message="Report confirmed and moved to history.")
+        except Report.DoesNotExist:
+            return ConfirmReport(success=False, message="Report not found.")
+        
+class DeleteReport(graphene.Mutation):
+    message = graphene.String()
+    success = graphene.String()
+    
+    class Arguments:
+        report_id = graphene.ID(required=True)
+        
+    def mutate(self, info, report_id):
+        try:
+            report = Report.objects.get(pk=report_id)
+            report.delete()
+            return DeleteReport(success=True, message="Report deleted successfully")
+        except report.DoesNotExist:
+            return DeleteReport(success=False, message="Report not found")
