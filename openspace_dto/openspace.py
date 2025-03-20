@@ -82,4 +82,6 @@ class ReportObject(graphene.ObjectType):
     email = graphene.String()
     fileUrl = graphene.String()
 
-
+class HistoryObject(graphene.ObjectType):
+    description = graphene.String()
+    created_at = graphene.String()

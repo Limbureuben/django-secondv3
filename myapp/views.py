@@ -305,7 +305,7 @@ class DeleteReport(graphene.Mutation):
             return DeleteReport(success=False, message="Report not found")
         
 class HistoryReportQuery(graphene.ObjectType):
-    all_historys = graphene.List(ReportObject)
+    all_historys = graphene.List(HistoryObject)
     
     def resolve_all_historys(self, info):
         return Report.objects.all()
