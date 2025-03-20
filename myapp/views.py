@@ -256,17 +256,20 @@ class ConfirmReport(graphene.Mutation):
     success = graphene.Boolean()
     
     class Arguments:
-        report_id = graphene.ID(required=True)
+        report_id = graphene.String(required=True)
         
     def mutate(self, info, report_id):
         try:
-            report = Report.objects.get(id=report_id)
+            report = Report.objects.get(report_id=report_id)
             
             ReportHistory.objects.create(
                 description = report.description,
                 email = report.email,
                 file = report.file if report.file else None
             )
+            
+            #futa report kwanza
+            report.delete()
             #tume email kama user ameweka
             if report.email:
                 send_mail(
@@ -277,7 +280,6 @@ class ConfirmReport(graphene.Mutation):
                     fail_silently=True
                 )
                 
-                report.delete()
             return ConfirmReport(success=True, message="Report confirmed and moved to history.")
         except Report.DoesNotExist:
             return ConfirmReport(success=False, message="Report not found.")
@@ -288,7 +290,6 @@ class DeleteReport(graphene.Mutation):
     
     class Arguments:
         report_id = graphene.ID(required=True)
-        
     def mutate(self, info, report_id):
         try:
             report = Report.objects.get(pk=report_id)
