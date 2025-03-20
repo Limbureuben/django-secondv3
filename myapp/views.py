@@ -221,6 +221,11 @@ class ReportType(DjangoObjectType):
     class Meta:
         model = Report
         fields = "__all__"
+        
+    def resolve_file_url(self, info):
+        if self.file:
+            return f"{settings.MEDIA_URL}{self.file}"
+        return None
 class CreateReport(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
@@ -242,6 +247,7 @@ class CreateReport(graphene.Mutation):
             longitude=longitude
         )
         report.save()
+        file_url = f"{settings.MEDIA_URL}{report.file}" if report.file else None
         return CreateReport(report=report)
     
 class ReportQuery(graphene.ObjectType):
@@ -297,3 +303,9 @@ class DeleteReport(graphene.Mutation):
             return DeleteReport(success=True, message="Report deleted successfully")
         except report.DoesNotExist:
             return DeleteReport(success=False, message="Report not found")
+        
+class HistoryReportQuery(graphene.ObjectType):
+    all_historys = graphene.List(ReportObject)
+    
+    def resolve_all_historys(self, info):
+        return Report.objects.all()

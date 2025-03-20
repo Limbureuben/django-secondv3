@@ -20,7 +20,7 @@ class Mutation(graphene.ObjectType):
     delete_report = DeleteReport.Field()
     toggle_openspace_status = ToggleOpenspaceMutation.Field()
 
-class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, graphene.ObjectType):
+class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")
     pass
 
