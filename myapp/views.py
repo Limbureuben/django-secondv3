@@ -243,3 +243,25 @@ class CreateReport(graphene.Mutation):
         )
         report.save()
         return CreateReport(report=report)
+    
+class ReportQuery(graphene.ObjectType):
+    all_reports = graphene.List(ReportType)
+    
+    def resolve_all_reports(self, info):
+        return Report.objects.all()
+    
+class DeleteReport(graphene.Mutation):
+    message = graphene.String()
+    success = graphene.Boolean()
+    
+    class Arguments:
+        id = graphene.ID(required=True)
+        
+    def mutate(self, info, id):
+        try:
+            report = Report.objects.get(pk=id)
+            report.delete()
+            return DeleteReport(success=True, message="Report delete successfully")
+        except Report.DoesNotExist:
+            return DeleteReport(success=False, message="Fail to delete report")
+            
