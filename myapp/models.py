@@ -43,6 +43,7 @@ class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)  # Optional email field
+    session_id = models.CharField(max_length=255)
     file = models.FileField(upload_to='reports/', blank=True, null=True)  # Optional file field
     created_at = models.DateTimeField(auto_now_add=True)
     

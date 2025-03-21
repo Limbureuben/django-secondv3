@@ -75,6 +75,7 @@ class ToggleOpenspaceInput(graphene.InputObjectType):
 class ReportInputObject(graphene.InputObjectType):
     description = graphene.String(required=True)
     email = graphene.String(required=False)
+    session_id=graphene.String(required=True)
     file_path = graphene.String(required=False)
     
 class ReportObject(graphene.ObjectType):

@@ -230,6 +230,7 @@ class CreateReport(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
         email = graphene.String(required=False)
+        sessionId = graphene.String(required=True)
         file_path = graphene.String(required=False)
         space_name = graphene.String(required=False)
         latitude = graphene.Float(required=False) 
@@ -237,10 +238,11 @@ class CreateReport(graphene.Mutation):
 
     report = graphene.Field(ReportType)
 
-    def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None):
+    def mutate(self, info, description, email=None, sessionId=None, file_path=None, space_name=None, latitude=None, longitude=None):
         report = Report(
             description=description,
             email=email,
+            session_id=sessionId,
             file=file_path,
             space_name=space_name,
             latitude=latitude,
@@ -309,3 +311,15 @@ class HistoryReportQuery(graphene.ObjectType):
     
     def resolve_all_historys(self, info):
         return ReportHistory.objects.all()
+    
+class HistoryCountQuery(graphene.ObjectType):
+    total_historys = graphene.Int()
+    
+    def resolve_total_historys(self, info):
+        return ReportHistory.objects.count()
+    
+class ReportCountQuery(graphene.ObjectType):
+    total_report = graphene.Int()
+    
+    def resolve_total_report(self, info):
+        return Report.objects.count()
