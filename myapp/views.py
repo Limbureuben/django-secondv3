@@ -308,4 +308,4 @@ class HistoryReportQuery(graphene.ObjectType):
     all_historys = graphene.List(HistoryObject)
     
     def resolve_all_historys(self, info):
-        return Report.objects.all()
+        return ReportHistory.objects.all()

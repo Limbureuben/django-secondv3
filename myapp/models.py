@@ -34,11 +34,10 @@ class OpenSpace(models.Model):
         return self.name
     
 class ReportHistory(models.Model):
-    report_id = models.CharField(max_length=8, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
-    confirmed_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)

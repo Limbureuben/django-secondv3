@@ -83,6 +83,5 @@ class ReportObject(graphene.ObjectType):
     fileUrl = graphene.String()
 
 class HistoryObject(graphene.ObjectType):
-    report_id = graphene.String()
     description = graphene.String()
     created_at = graphene.String()
