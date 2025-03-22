@@ -38,6 +38,7 @@ class ReportHistory(models.Model):
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    session_id = models.CharField(max_length=255)
 
 class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)

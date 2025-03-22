@@ -86,3 +86,4 @@ class ReportObject(graphene.ObjectType):
 class HistoryObject(graphene.ObjectType):
     description = graphene.String()
     created_at = graphene.String()
+

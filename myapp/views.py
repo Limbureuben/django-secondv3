@@ -273,6 +273,7 @@ class ConfirmReport(graphene.Mutation):
             ReportHistory.objects.create(
                 description = report.description,
                 email = report.email,
+                session_id = report.session_id,
                 file = report.file if report.file else None
             )
             
@@ -329,3 +330,10 @@ class AnonymousReportQuery(graphene.ObjectType):
     
     def resolve_anonymous_reports(self, info, session_id):
         return Report.objects.filter(session_id=session_id)
+    
+
+class ReportAnonymousQuery(graphene.ObjectType):
+    anonymous = graphene.List(HistoryObject, session_id=graphene.String(required=True))
+    
+    def resolve_anonymous(self, info, session_id):
+        return ReportHistory.objects.filter(session_id=session_id)
