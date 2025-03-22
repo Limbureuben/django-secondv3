@@ -330,3 +330,17 @@ class ReportAnonymousQuery(graphene.ObjectType):
     
     def resolve_anonymous(self, info, session_id):
         return ReportHistory.objects.filter(session_id=session_id)
+
+
+# class ReportAnonymousQuery(graphene.ObjectType):
+#     reports = graphene.List(HistoryObject, session_id=graphene.String(), user_id=graphene.Int())
+
+#     def resolve_reports(self, info, session_id=None, user_id=None):
+#         if user_id:
+#             return ReportHistory.objects.filter(user_id=user_id)
+#         elif session_id:
+#             return ReportHistory.objects.filter(session_id=session_id, user__isnull=True)  # Ensure it's still anonymous
+#         return []
+
+    
+

@@ -5,6 +5,7 @@ class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
     password = graphene.String()
     passwordConfirm = graphene.String()
+    sessionId = graphene.String(required=False)
 
 class RegistrationObject(graphene.ObjectType):
     id = graphene.ID()

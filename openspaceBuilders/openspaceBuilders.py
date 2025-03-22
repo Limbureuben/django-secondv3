@@ -152,6 +152,9 @@ class UserBuilder:
 def register_user(input):
     try:
         user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm)
+        
+        if hasattr(input, 'sessionId') and input.sessionId:
+            Report.objects.filter(submitted_by=input.sessionId).update(submitted_by=user.id)
 
         return RegistrationResponse(
             message="User registration successful",
