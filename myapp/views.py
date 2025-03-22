@@ -325,13 +325,6 @@ class ReportCountQuery(graphene.ObjectType):
     def resolve_total_report(self, info):
         return Report.objects.count()
     
-class AnonymousReportQuery(graphene.ObjectType):
-    anonymous_reports = graphene.List(ReportType, session_id=graphene.String(required=True))
-    
-    def resolve_anonymous_reports(self, info, session_id):
-        return Report.objects.filter(session_id=session_id)
-    
-
 class ReportAnonymousQuery(graphene.ObjectType):
     anonymous = graphene.List(HistoryObject, session_id=graphene.String(required=True))
     
