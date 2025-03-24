@@ -230,7 +230,6 @@ class CreateReport(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
         email = graphene.String(required=False)
-        sessionId = graphene.String(required=True)
         file_path = graphene.String(required=False)
         space_name = graphene.String(required=False)
         latitude = graphene.Float(required=False) 
@@ -238,11 +237,10 @@ class CreateReport(graphene.Mutation):
 
     report = graphene.Field(ReportType)
 
-    def mutate(self, info, description, email=None, sessionId=None, file_path=None, space_name=None, latitude=None, longitude=None):
+    def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None):
         report = Report(
             description=description,
             email=email,
-            session_id=sessionId,
             file=file_path,
             space_name=space_name,
             latitude=latitude,

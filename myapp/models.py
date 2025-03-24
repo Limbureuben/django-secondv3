@@ -39,31 +39,18 @@ class ReportHistory(models.Model):
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    session_id = models.CharField(max_length=255)
-
-# class ReportHistory(models.Model):
-#     description = models.TextField()
-#     email = models.EmailField(blank=True, null=True)
-#     file = models.CharField(max_length=500, blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     session_id = models.CharField(max_length=255, blank=True, null=True)  # Keep session_id for anonymous users
-#     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)  # Link reports to users
-
-#     def __str__(self):
-#         return f"Report {self.id} - {self.description[:30]}"
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
 class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)  # Optional email field
-    session_id = models.CharField(max_length=255)
     file = models.FileField(upload_to='reports/', blank=True, null=True)  # Optional file field
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    # Add new fields for openspace details
     space_name = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def save(self, *args, **kwargs):
         # Generate unique ID if not already set

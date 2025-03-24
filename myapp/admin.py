@@ -15,11 +15,11 @@ class OpenSpaceAdmin(admin.ModelAdmin):
 admin.site.register(OpenSpace, OpenSpaceAdmin)
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('report_id','description', 'space_name', 'email', 'file', 'created_at', 'latitude', 'longitude', 'session_id')
+    list_display = ('report_id','description', 'space_name', 'email', 'file', 'created_at', 'latitude', 'longitude')
 admin.site.register(Report, ReportAdmin)
 
 class ReportHistoryAdmin(admin.ModelAdmin):
-    list_display = ('description', 'email', 'file', 'created_at', 'session_id')
+    list_display = ('description', 'email', 'file', 'created_at')
     list_per_page = 10
     list_max_show_all = 10
 admin.site.register(ReportHistory, ReportHistoryAdmin)
