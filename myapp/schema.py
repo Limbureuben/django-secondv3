@@ -19,6 +19,8 @@ class Mutation(graphene.ObjectType):
     delete_report = DeleteReport.Field()
     delete_report = DeleteReport.Field()
     toggle_openspace_status = ToggleOpenspaceMutation.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
 
 class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, HistoryCountQuery, ReportCountQuery,ReportAnonymousQuery,AuthenticatedUserReport, graphene.ObjectType):
     pass

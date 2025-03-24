@@ -132,6 +132,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# GRAPHENE = {
+#     'SCHEMA': 'myapp.schema.schema',
+#     'GRAPHIQL': True,
+#     'MIDDLEWARE': [
+#         'graphql_jwt.middleware.JSONWebTokenMiddleware',
+#     ],
+# }
+
 GRAPHENE = {
     'SCHEMA': 'myapp.schema.schema',
     'GRAPHIQL': True,
@@ -141,17 +149,21 @@ GRAPHENE = {
 }
 
 
+
 import datetime
 
 GRAPHENE_JWT = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
+
 
 AUTHENTICATION_BACKENDS = [
     "graphql_jwt.backends.JSONWebTokenBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

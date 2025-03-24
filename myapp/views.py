@@ -375,30 +375,19 @@ class ReportAnonymousQuery(graphene.ObjectType):
     def resolve_anonymous(self, info, session_id):
         return ReportHistory.objects.filter(session_id=session_id)
     
-# class AuthenticatedUserReport(graphene.ObjectType):
-#     my_reports = graphene.List(HistoryObject)
-    
-#     def resolve_my_reports(self, info):
-#         user = info.context.user
-#         if not user.is_authenticated:
-#             raise Exception("Authentication required!")
-        
-#         return ReportHistory.objects.filter(user=user)
-    
-    
 class AuthenticatedUserReport(graphene.ObjectType):
     my_reports = graphene.List(HistoryObject)
-
-    def resolve_my_reports(self, info):
-        print("🔍 Received Headers:", info.context.headers)  # Debugging
-
+    
+    def resolve_my_reports(self, info, **kwargs):
         user = info.context.user
-        print("✅ Authenticated User:", user)  # Debugging
+        
+        if user.is_authenticated:
+        
+            return ReportHistory.objects.filter(user=user)
+        
+        return ReportHistory.objects.none()
+    
 
-        if not user.is_authenticated:
-            raise Exception("Authentication required!")
-
-        return ReportHistory.objects.filter(user=user)
 
 
 
