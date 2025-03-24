@@ -20,7 +20,7 @@ class Mutation(graphene.ObjectType):
     delete_report = DeleteReport.Field()
     toggle_openspace_status = ToggleOpenspaceMutation.Field()
 
-class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, HistoryCountQuery, ReportCountQuery,ReportAnonymousQuery, graphene.ObjectType):
+class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, HistoryCountQuery, ReportCountQuery,ReportAnonymousQuery,AuthenticatedUserReport, graphene.ObjectType):
     pass
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

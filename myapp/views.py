@@ -238,13 +238,15 @@ class CreateReport(graphene.Mutation):
     report = graphene.Field(ReportType)
 
     def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None):
+        user = info.context.user if info.context.user.is_authenticated else None
         report = Report(
             description=description,
             email=email,
             file=file_path,
             space_name=space_name,
             latitude=latitude,
-            longitude=longitude
+            longitude=longitude,
+            user=user
         )
         report.save()
         file_url = f"{settings.MEDIA_URL}{report.file}" if report.file else None
@@ -328,17 +330,16 @@ class ReportAnonymousQuery(graphene.ObjectType):
     
     def resolve_anonymous(self, info, session_id):
         return ReportHistory.objects.filter(session_id=session_id)
-
-
-# class ReportAnonymousQuery(graphene.ObjectType):
-#     reports = graphene.List(HistoryObject, session_id=graphene.String(), user_id=graphene.Int())
-
-#     def resolve_reports(self, info, session_id=None, user_id=None):
-#         if user_id:
-#             return ReportHistory.objects.filter(user_id=user_id)
-#         elif session_id:
-#             return ReportHistory.objects.filter(session_id=session_id, user__isnull=True)  # Ensure it's still anonymous
-#         return []
+    
+class AuthenticatedUserReport(graphene.ObjectType):
+    my_reports = graphene.List(HistoryObject)
+    
+    def resolve_my_reports(self, info):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception("Authentication required!")
+        
+        return ReportHistory.objects.filter(user=user)
 
     
 
