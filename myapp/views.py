@@ -313,6 +313,7 @@ class ConfirmReport(graphene.Mutation):
             report = Report.objects.get(report_id=report_id)
             
             ReportHistory.objects.create(
+                report_id = report.report_id,
                 description=report.description,
                 email=report.email,
                 file=report.file if report.file else None,
@@ -387,9 +388,3 @@ class AuthenticatedUserReport(graphene.ObjectType):
         
         return ReportHistory.objects.none()
     
-
-
-
-
-    
-

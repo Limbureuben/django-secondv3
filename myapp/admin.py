@@ -19,7 +19,7 @@ class ReportAdmin(admin.ModelAdmin):
 admin.site.register(Report, ReportAdmin)
 
 class ReportHistoryAdmin(admin.ModelAdmin):
-    list_display = ('description', 'email', 'file', 'user', 'created_at')
+    list_display = ('report_id','description', 'email', 'file', 'user', 'created_at')
     list_per_page = 10
     list_max_show_all = 10
 admin.site.register(ReportHistory, ReportHistoryAdmin)
