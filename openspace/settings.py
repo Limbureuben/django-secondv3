@@ -144,7 +144,8 @@ GRAPHENE = {
 import datetime
 
 GRAPHENE_JWT = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=10),  # Set token expiration
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
 
 AUTHENTICATION_BACKENDS = [

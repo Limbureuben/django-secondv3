@@ -38,8 +38,9 @@ class ReportHistory(models.Model):
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    
 
 class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)

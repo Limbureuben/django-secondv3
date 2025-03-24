@@ -234,11 +234,19 @@ class CreateReport(graphene.Mutation):
         space_name = graphene.String(required=False)
         latitude = graphene.Float(required=False) 
         longitude = graphene.Float(required=False)
+        user_id = graphene.ID(required=False)
 
     report = graphene.Field(ReportType)
 
-    def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None):
-        user = info.context.user if info.context.user.is_authenticated else None
+    def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None, user_id=None):
+        user=None
+        
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                raise Exception("Invalid user ID.")
+        
         report = Report(
             description=description,
             email=email,
@@ -259,6 +267,40 @@ class ReportQuery(graphene.ObjectType):
         return Report.objects.all()
     
 
+# class ConfirmReport(graphene.Mutation):
+#     message = graphene.String()
+#     success = graphene.Boolean()
+    
+#     class Arguments:
+#         report_id = graphene.String(required=True)
+        
+#     def mutate(self, info, report_id):
+#         try:
+#             report = Report.objects.get(report_id=report_id)
+            
+#             ReportHistory.objects.create(
+#                 description = report.description,
+#                 email = report.email,
+#                 file = report.file if report.file else None,
+#                 user=report.user if report.user else None
+#             )
+            
+#             #futa report kwanza
+#             report.delete()
+#             #tume email kama user ameweka
+#             if report.email:
+#                 send_mail(
+#                     subject="Report Confirmation",
+#                     message="Your report has been reviewed and confirmed.",
+#                     from_email="limbureubenn@gmail.com",
+#                     recipient_list=[report.email],
+#                     fail_silently=True
+#                 )
+                
+#             return ConfirmReport(success=True, message="Report confirmed and moved to history.")
+#         except Report.DoesNotExist:
+#             return ConfirmReport(success=False, message="Report not found.")
+
 class ConfirmReport(graphene.Mutation):
     message = graphene.String()
     success = graphene.Boolean()
@@ -271,15 +313,16 @@ class ConfirmReport(graphene.Mutation):
             report = Report.objects.get(report_id=report_id)
             
             ReportHistory.objects.create(
-                description = report.description,
-                email = report.email,
-                session_id = report.session_id,
-                file = report.file if report.file else None
+                description=report.description,
+                email=report.email,
+                file=report.file if report.file else None,
+                user=report.user  # Link the report to the original user
             )
             
-            #futa report kwanza
+            # Delete the original report
             report.delete()
-            #tume email kama user ameweka
+            
+            # Send email if user provided one
             if report.email:
                 send_mail(
                     subject="Report Confirmation",
@@ -292,6 +335,7 @@ class ConfirmReport(graphene.Mutation):
             return ConfirmReport(success=True, message="Report confirmed and moved to history.")
         except Report.DoesNotExist:
             return ConfirmReport(success=False, message="Report not found.")
+
         
 class DeleteReport(graphene.Mutation):
     message = graphene.String()
@@ -331,15 +375,32 @@ class ReportAnonymousQuery(graphene.ObjectType):
     def resolve_anonymous(self, info, session_id):
         return ReportHistory.objects.filter(session_id=session_id)
     
+# class AuthenticatedUserReport(graphene.ObjectType):
+#     my_reports = graphene.List(HistoryObject)
+    
+#     def resolve_my_reports(self, info):
+#         user = info.context.user
+#         if not user.is_authenticated:
+#             raise Exception("Authentication required!")
+        
+#         return ReportHistory.objects.filter(user=user)
+    
+    
 class AuthenticatedUserReport(graphene.ObjectType):
     my_reports = graphene.List(HistoryObject)
-    
+
     def resolve_my_reports(self, info):
+        print("🔍 Received Headers:", info.context.headers)  # Debugging
+
         user = info.context.user
+        print("✅ Authenticated User:", user)  # Debugging
+
         if not user.is_authenticated:
             raise Exception("Authentication required!")
-        
+
         return ReportHistory.objects.filter(user=user)
+
+
 
     
 
