@@ -15,7 +15,7 @@ class OpenSpaceAdmin(admin.ModelAdmin):
 admin.site.register(OpenSpace, OpenSpaceAdmin)
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('report_id','description', 'space_name', 'email', 'file', 'created_at', 'latitude', 'longitude')
+    list_display = ('report_id','description', 'space_name', 'email', 'file', 'created_at', 'latitude', 'longitude','user')
 admin.site.register(Report, ReportAdmin)
 
 class ReportHistoryAdmin(admin.ModelAdmin):
