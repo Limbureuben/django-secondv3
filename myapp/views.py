@@ -252,7 +252,7 @@ class CreateReport(graphene.Mutation):
             space_name=space_name,
             latitude=latitude,
             longitude=longitude,
-            user=user
+            user=user,
         )
         report.save()
         file_url = f"{settings.MEDIA_URL}{report.file}" if report.file else None
@@ -340,20 +340,20 @@ class ReportAnonymousQuery(graphene.ObjectType):
     def resolve_anonymous(self, info, session_id):
         return ReportHistory.objects.filter(session_id=session_id)
     
-class AuthenticatedUserReport(graphene.ObjectType):
-    my_reports = graphene.List(HistoryObject)
+# class AuthenticatedUserReport(graphene.ObjectType):
+#     my_reports = graphene.List(HistoryObject)
     
-    def resolve_my_reports(self, info, **kwargs):
-        user = info.context.user
-        print("Authenticated user:", user)
+#     def resolve_my_reports(self, info, **kwargs):
+#         user = info.context.user
+#         print("Authenticated user:", user)
 
-        if user.is_authenticated:
-            reports = ReportHistory.objects.filter(user=user)
-            print("Reports found:", reports) 
-            return reports  # Make sure reports are returned!
+#         if user.is_authenticated:
+#             reports = ReportHistory.objects.filter(user=user)
+#             print("Reports found:", reports)
+#             return reports  # Make sure reports are returned!
 
-        print("User is anonymous or not authenticated.")  
-        return ReportHistory.objects.none()
+#         print("User is anonymous or not authenticated.")  
+#         return ReportHistory.objects.none()
 
     
     # def resolve_my_reports(self, info, **kwargs):
@@ -366,4 +366,19 @@ class AuthenticatedUserReport(graphene.ObjectType):
         
     #     return ReportHistory.objects.none()
     
+
+class AuthenticatedUserReport(graphene.ObjectType):
+    my_reports = graphene.List(HistoryObject)
+    
+    def resolve_my_reports(self, info, **kwargs):
+        user = info.context.user
+        print("Authenticated user:", user)  # Debugging
+
+        if user.is_authenticated:
+            reports = UserBuilder.get_report_history(user=user)
+            print(reports)  # Debugging
+            return reports
+
+        print("User is anonymous or not authenticated.")  # Debugging
+        return ReportHistory.objects.none()
 

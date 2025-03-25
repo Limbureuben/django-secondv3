@@ -99,6 +99,20 @@ class UserBuilder:
             )
 
         return report
+    
+    def get_report_history(user):
+        reports=ReportHistory.objects.filter(user=user)
+        print(reports)
+        all_reports=[]
+        for report in reports:
+            report_data=HistoryObject(
+                reportId=report.report_id,
+                description=report.description,
+                created_at=report.created_at      
+            )
+            all_reports.append(report_data)
+        return all_reports
+    
 
 
     # @staticmethod
@@ -190,3 +204,4 @@ def report_issue(input):
         )
     except ValidationError as e:
         return ReportResponse(message=str(e), success=False, report=None)
+
