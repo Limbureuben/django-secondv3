@@ -168,8 +168,6 @@ class DeleteOpenspace(graphene.Mutation):
         except OpenSpace.DoesNotExist:
             return DeleteOpenspace(success=False, message="Fail to delete openspace")
         
-        
-
 
 class ToggleOpenspaceMutation(graphene.Mutation):
     class Arguments:
@@ -266,40 +264,6 @@ class ReportQuery(graphene.ObjectType):
     def resolve_all_reports(self, info):
         return Report.objects.all()
     
-
-# class ConfirmReport(graphene.Mutation):
-#     message = graphene.String()
-#     success = graphene.Boolean()
-    
-#     class Arguments:
-#         report_id = graphene.String(required=True)
-        
-#     def mutate(self, info, report_id):
-#         try:
-#             report = Report.objects.get(report_id=report_id)
-            
-#             ReportHistory.objects.create(
-#                 description = report.description,
-#                 email = report.email,
-#                 file = report.file if report.file else None,
-#                 user=report.user if report.user else None
-#             )
-            
-#             #futa report kwanza
-#             report.delete()
-#             #tume email kama user ameweka
-#             if report.email:
-#                 send_mail(
-#                     subject="Report Confirmation",
-#                     message="Your report has been reviewed and confirmed.",
-#                     from_email="limbureubenn@gmail.com",
-#                     recipient_list=[report.email],
-#                     fail_silently=True
-#                 )
-                
-#             return ConfirmReport(success=True, message="Report confirmed and moved to history.")
-#         except Report.DoesNotExist:
-#             return ConfirmReport(success=False, message="Report not found.")
 
 class ConfirmReport(graphene.Mutation):
     message = graphene.String()
