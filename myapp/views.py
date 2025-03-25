@@ -345,10 +345,25 @@ class AuthenticatedUserReport(graphene.ObjectType):
     
     def resolve_my_reports(self, info, **kwargs):
         user = info.context.user
-        
+        print("Authenticated user:", user)
+
         if user.is_authenticated:
-        
-            return ReportHistory.objects.filter(user=user)
-        
+            reports = ReportHistory.objects.filter(user=user)
+            print("Reports found:", reports) 
+            return reports  # Make sure reports are returned!
+
+        print("User is anonymous or not authenticated.")  
         return ReportHistory.objects.none()
+
     
+    # def resolve_my_reports(self, info, **kwargs):
+    #     user = info.context.user
+    #     print("Authenticated user:", user)
+        
+    #     if user.is_authenticated:
+        
+    #         return ReportHistory.objects.filter(user=user)
+        
+    #     return ReportHistory.objects.none()
+    
+
