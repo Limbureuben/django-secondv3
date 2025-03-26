@@ -219,3 +219,93 @@ def report_issue(input):
     except ValidationError as e:
         return ReportResponse(message=str(e), success=False, report=None)
 
+
+
+
+
+
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+
+class AuthenticationDebugger:
+    @staticmethod
+    def verify_token_user(token):
+        """
+        Verify the user associated with a given token
+        """
+        try:
+            # Decode the access token
+            decoded_token = AccessToken(token)
+            
+            # Extract user ID from token
+            user_id = decoded_token['user_id']
+            
+            # Retrieve the user
+            User = get_user_model()
+            user = User.objects.get(id=user_id)
+            
+            return {
+                'user_id': user.id,
+                'username': user.username,
+                'is_staff': user.is_staff,
+                'token_valid': True
+            }
+        except Exception as e:
+            return {
+                'error': str(e),
+                'token_valid': False
+            }
+
+    @staticmethod
+    def debug_login_process(username, password):
+        """
+        Comprehensive login process debugging
+        """
+        try:
+            # Authenticate user
+            user = authenticate(username=username, password=password)
+            
+            if user is None:
+                return {
+                    'success': False,
+                    'error': 'Authentication failed'
+                }
+            
+            # Generate tokens
+            refresh = RefreshToken.for_user(user)
+            
+            return {
+                'success': True,
+                'user_details': {
+                    'id': user.id,
+                    'username': user.username,
+                    'is_staff': user.is_staff
+                },
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token)
+                }
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
+# Usage example
+def login_and_verify(username, password):
+    # Debug login process
+    login_result = AuthenticationDebugger.debug_login_process(username, password)
+    
+    if login_result['success']:
+        # Verify the generated token
+        token_verification = AuthenticationDebugger.verify_token_user(
+            login_result['tokens']['access']
+        )
+        
+        return {
+            'login_details': login_result,
+            'token_verification': token_verification
+        }
+    
+    return login_result
