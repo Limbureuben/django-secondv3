@@ -35,15 +35,16 @@ class OpenSpace(models.Model):
         return self.name
     
 class ReportHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     report_id = models.CharField(max_length=8, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
 
 class Report(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     report_id = models.CharField(max_length=8, unique=True, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)  # Optional email field
@@ -52,7 +53,7 @@ class Report(models.Model):
     space_name = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
 
     def save(self, *args, **kwargs):
         # Generate unique ID if not already set
