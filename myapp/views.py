@@ -392,4 +392,4 @@ class UserProfileQuery(graphene.ObjectType):
     @login_required
     def resolve_profile(self, info):
         user = info.context.user
-        return user
+        return ProfileObject(username=user.username, id=user.id)

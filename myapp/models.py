@@ -44,7 +44,6 @@ class ReportHistory(models.Model):
     
 
 class Report(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     report_id = models.CharField(max_length=8, unique=True, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)  # Optional email field
@@ -53,6 +52,7 @@ class Report(models.Model):
     space_name = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 
     def save(self, *args, **kwargs):
