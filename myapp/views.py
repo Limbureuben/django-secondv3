@@ -55,7 +55,9 @@ class LoginUser(graphene.Mutation):
         try:
             # Authenticate user using UserBuilder
             result = UserBuilder.login_user(username, password)
+            print(result)
             user = result["user"]
+            print(user)
 
             # Ensure the response includes the user data and staff status
             return LoginUser(
@@ -405,31 +407,56 @@ User = get_user_model()
 #             is_staff=user.is_staff
 #         )
 
+from rest_framework_simplejwt.tokens import AccessToken
+# class UserProfileQuery(graphene.ObjectType):
+#     profile = graphene.Field(ProfileObject)
+
+#     @login_required
+#     def resolve_profile(self, info):
+#         # Extract token from context
+#         request = info.context
+#         auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        
+#         try:
+#             # Extract token from Authorization header
+#             token = auth_header.split('Bearer ')[1] if 'Bearer ' in auth_header else None
+            
+#             if not token:
+#                 raise GraphQLError("No token provided")
+            
+#             # Decode token and extract user ID
+#             decoded_token = AccessToken(token)
+#             token_user_id = decoded_token.get('user_id')
+            
+#             # Get authenticated user
+#             user = info.context.user
+            
+#             # Strict validation
+#             if not user.is_authenticated:
+#                 raise GraphQLError("User not authenticated")
+            
+#             # Ensure token user ID matches authenticated user
+#             if user.id != token_user_id:
+#                 print(f"Token User ID: {token_user_id}")
+#                 print(f"Authenticated User ID: {user.id}")
+#                 raise GraphQLError("Token user mismatch")
+            
+#             return ProfileObject(
+#                 id=user.id,
+#                 username=user.username,
+#                 is_staff=user.is_staff
+#             )
+        
+#         except Exception as e:
+#             print(f"Profile Resolution Error: {str(e)}")
+#             raise GraphQLError("Invalid authentication")
+
+
 class UserProfileQuery(graphene.ObjectType):
-    profile = graphene.Field(ProfileObject)
-
-    @login_required
-    def resolve_profile(self, info):
-        # Get the authenticated user from the request context
-        user = info.context.user
-        
-        # Additional security checks
-        if not user or not user.is_authenticated:
-            raise GraphQLError("User not authenticated")
-        
-        # Log the user attempting to access the profile
-        print(f"Profile accessed by: {user.username} (ID: {user.id})")
-        
-        # Ensure the user can only access their own profile
-        try:
-            return ProfileObject(
-                id=user.id,
-                username=user.username,
-                is_staff=user.is_staff
-            )
-        except Exception as e:
-            # Log any unexpected errors
-            print(f"Profile resolution error: {str(e)}")
-            raise GraphQLError("Unable to retrieve profile")
-
-
+    profile=graphene.Field(ProfileObject)
+    
+    def resolve_profile(self,info):
+        user=info.context.user
+        if user.is_authenticated:
+            return UserBuilder.get_user_profile_data(user=user)
+            

@@ -88,8 +88,15 @@ class HistoryObject(graphene.ObjectType):
     report_id = graphene.String()
     description = graphene.String()
     created_at = graphene.String()
+    
+class UserObject(graphene.ObjectType):
+    pk=graphene.ID()
+    username=graphene.String()
+    is_staff=graphene.Boolean()
 
 class ProfileObject(graphene.ObjectType):
-    id = graphene.ID(description="Unique user identifier")
-    username = graphene.String(description="User's unique username")
-    is_staff = graphene.Boolean(description="Whether user has staff access")
+    id = graphene.ID(required=True)
+    user=graphene.Field(UserObject)
+    # username = graphene.String(description="User's unique username")
+    # is_staff = graphene.Boolean(description="Whether user has staff access")
+    

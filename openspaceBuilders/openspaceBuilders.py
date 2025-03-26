@@ -2,6 +2,8 @@
 import random
 import string
 from tokenize import TokenError
+
+from graphql import GraphQLError
 from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
 from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
@@ -50,15 +52,20 @@ class UserBuilder:
             
             if user:
                 # Print detailed user information
-                print(f"Authenticated User Details:")
-                print(f"Username: {user.username}")
-                print(f"User ID: {user.id}")
-                print(f"Is Staff: {user.is_staff}")
+                # print(f"Authenticated User Details:")
+                # print(f"Username: {user.username}")
+                # print(f"User ID: {user.id}")
+                # print(f"Is Staff: {user.is_staff}")
                 
                 # Generate and print tokens
                 refresh = RefreshToken.for_user(user)
-                print(f"Access Token: {str(refresh.access_token)}")
-                print(f"Refresh Token: {str(refresh)}")
+                # print(f"Access Token: {str(refresh.access_token)}")
+                # print(f"Refresh Token: {str(refresh)}")
+                return {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                    "user": user,
+                    }
             
             # Rest of your login logic
         except Exception as e:
@@ -87,6 +94,25 @@ class UserBuilder:
     #         report_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     #         if not Report.objects.filter(report_id=report_id).exists():  # Ensure uniqueness
     #             return report_id
+    @staticmethod
+    def get_user_profile_data(user):
+        try:
+            # Retrieve UserProfile for the authenticated user
+            user_profile = UserProfile.objects.get(user=user)
+            print(user_profile)
+        except UserProfile.DoesNotExist:
+            raise GraphQLError("Profile not found")
+        data=ProfileObject(
+            id=user_profile.id,
+            user=UserObject(
+                pk=user.pk,
+                username=user_profile.user.username,
+                is_staff=user_profile.user.is_staff
+            )
+        )
+        print(data)
+        return data
+        
         
     @staticmethod    
     def report_issue(description, email=None, file_url=None):
@@ -340,15 +366,15 @@ class TokenSecurityInvestigator:
             # Extract user ID from token
             token_user_id = decoded_token.get('user_id')
             
-            print("Token Investigation Results:")
-            print(f"Token User ID: {token_user_id}")
+            # print("Token Investigation Results:")
+            # print(f"Token User ID: {token_user_id}")
             
             # Retrieve the user associated with the token
             try:
                 token_user = User.objects.get(id=token_user_id)
-                print(f"Token User Details:")
-                print(f"Username: {token_user.username}")
-                print(f"Is Active: {token_user.is_active}")
+                # print(f"Token User Details:")
+                # print(f"Username: {token_user.username}")
+                # print(f"Is Active: {token_user.is_active}")
             except User.DoesNotExist:
                 print(f"No user found with ID {token_user_id}")
             
