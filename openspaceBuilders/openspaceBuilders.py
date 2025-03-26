@@ -1,6 +1,7 @@
 
 import random
 import string
+from tokenize import TokenError
 from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
 from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
@@ -11,7 +12,7 @@ from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
-
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 class UserBuilder:
     VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
@@ -320,3 +321,78 @@ def login_and_verify(username, password):
         }
     
     return login_result
+
+
+
+
+class TokenSecurityInvestigator:
+    @staticmethod
+    def investigate_token_discrepancy(token):
+        """
+        Comprehensive investigation of token authentication issues
+        """
+        User = get_user_model()
+        
+        try:
+            # Decode the token
+            decoded_token = AccessToken(token)
+            
+            # Extract user ID from token
+            token_user_id = decoded_token.get('user_id')
+            
+            print("Token Investigation Results:")
+            print(f"Token User ID: {token_user_id}")
+            
+            # Retrieve the user associated with the token
+            try:
+                token_user = User.objects.get(id=token_user_id)
+                print(f"Token User Details:")
+                print(f"Username: {token_user.username}")
+                print(f"Is Active: {token_user.is_active}")
+            except User.DoesNotExist:
+                print(f"No user found with ID {token_user_id}")
+            
+            # Check for potential user context manipulation
+            all_active_users = User.objects.filter(is_active=True)
+            print("\nActive Users:")
+            for user in all_active_users:
+                print(f"ID: {user.id}, Username: {user.username}")
+            
+        except (TokenError, InvalidToken) as e:
+            print(f"Token Validation Error: {str(e)}")
+        except Exception as e:
+            print(f"Unexpected Error during token investigation: {str(e)}")
+
+# Middleware or Authentication Backend Investigation
+class AuthenticationContextInvestigator:
+    @staticmethod
+    def debug_authentication_context(request):
+        """
+        Investigate authentication context and middleware
+        """
+        print("\nAuthentication Context Debug:")
+        
+        # Check user authentication
+        user = request.user
+        if user.is_authenticated:
+            print(f"Authenticated User: {user.username}")
+            print(f"User ID: {user.id}")
+        else:
+            print("No authenticated user found")
+        
+        # Inspect authentication headers
+        print("\nAuthentication Headers:")
+        for key, value in request.META.items():
+            if 'AUTH' in key.upper():
+                print(f"{key}: {value}")
+        
+        # Check session details
+        if hasattr(request, 'session'):
+            print("\nSession Details:")
+            for key, value in request.session.items():
+                print(f"{key}: {value}")
+
+# Usage Example
+def investigate_authentication_issue(access_token):
+    print("Starting Token Security Investigation")
+    TokenSecurityInvestigator.investigate_token_discrepancy(access_token)
