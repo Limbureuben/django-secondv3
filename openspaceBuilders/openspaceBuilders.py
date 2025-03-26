@@ -41,19 +41,27 @@ class UserBuilder:
         return user
     
     @staticmethod
+    # In your login mutation or view
     def login_user(username, password):
-        # Authenticate the specific user
-        user = authenticate(username=username, password=password)
-        if user is None:
-            raise ValidationError("Invalid username or password")
-        
-        # Generate tokens for the authenticated user
-        refresh = RefreshToken.for_user(user)
-        return {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-            "user": user,
-        }
+        try:
+            # Authenticate and generate tokens
+            user = authenticate(username=username, password=password)
+            
+            if user:
+                # Print detailed user information
+                print(f"Authenticated User Details:")
+                print(f"Username: {user.username}")
+                print(f"User ID: {user.id}")
+                print(f"Is Staff: {user.is_staff}")
+                
+                # Generate and print tokens
+                refresh = RefreshToken.for_user(user)
+                print(f"Access Token: {str(refresh.access_token)}")
+                print(f"Refresh Token: {str(refresh)}")
+            
+            # Rest of your login logic
+        except Exception as e:
+            print(f"Login Error: {str(e)}")
     
         
     # @staticmethod
