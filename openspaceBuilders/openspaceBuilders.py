@@ -40,22 +40,36 @@ class UserBuilder:
         
         return user
     
-    
-        
     @staticmethod
     def login_user(username, password):
+        # Authenticate the specific user
         user = authenticate(username=username, password=password)
         if user is None:
             raise ValidationError("Invalid username or password")
         
+        # Generate tokens for the authenticated user
         refresh = RefreshToken.for_user(user)
-        
-        # Return a dictionary with the access token, refresh token, and the user object
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": user,
         }
+    
+        
+    # @staticmethod
+    # def login_user(username, password):
+    #     user = authenticate(username=username, password=password)
+    #     if user is None:
+    #         raise ValidationError("Invalid username or password")
+        
+    #     refresh = RefreshToken.for_user(user)
+        
+    #     # Return a dictionary with the access token, refresh token, and the user object
+    #     return {
+    #         "refresh": str(refresh),
+    #         "access": str(refresh.access_token),
+    #         "user": user,
+    #     }
         
     # @staticmethod    
     # def generate_report_id(length=8):

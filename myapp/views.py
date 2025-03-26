@@ -4,7 +4,8 @@ from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 import graphene
-from graphene_django import DjangoObjectType # type: ignore
+from graphene_django import DjangoObjectType
+from graphql import GraphQLError # type: ignore
 # from .tasks import send_verification_email # type: ignore
 from .models import *
 from openspaceBuilders.openspaceBuilders import UserBuilder, open_space, register_user, report_issue
@@ -386,10 +387,49 @@ class AuthenticatedUserReport(graphene.ObjectType):
 from graphql_jwt.decorators import login_required
 
 User = get_user_model()
+
+# class ProfileType(graphene.ObjectType):
+#     id = graphene.ID()
+#     username = graphene.String()
+#     is_staff = graphene.Boolean()
+
+# class UserProfileQuery(graphene.ObjectType):
+#     profile = graphene.Field(ProfileType)
+
+#     @login_required
+#     def resolve_profile(self, info):
+#         user = info.context.user
+#         return ProfileType(
+#             id=user.id,
+#             username=user.username,
+#             is_staff=user.is_staff
+#         )
+
 class UserProfileQuery(graphene.ObjectType):
-    profile = graphene.List(ProfileObject)
-    
+    profile = graphene.Field(ProfileObject)
+
     @login_required
     def resolve_profile(self, info):
+        # Get the authenticated user from the request context
         user = info.context.user
-        return ProfileObject(username=user.username, id=user.id)
+        
+        # Additional security checks
+        if not user or not user.is_authenticated:
+            raise GraphQLError("User not authenticated")
+        
+        # Log the user attempting to access the profile
+        print(f"Profile accessed by: {user.username} (ID: {user.id})")
+        
+        # Ensure the user can only access their own profile
+        try:
+            return ProfileObject(
+                id=user.id,
+                username=user.username,
+                is_staff=user.is_staff
+            )
+        except Exception as e:
+            # Log any unexpected errors
+            print(f"Profile resolution error: {str(e)}")
+            raise GraphQLError("Unable to retrieve profile")
+
+
