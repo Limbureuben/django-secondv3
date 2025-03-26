@@ -379,6 +379,17 @@ class AuthenticatedUserReport(graphene.ObjectType):
             print(reports)  # Debugging
             return reports
 
-        print("User is anonymous or not authenticated.")  # Debugging
+        print("User is anonymous or not authenticated.")
         return ReportHistory.objects.none()
 
+
+from graphql_jwt.decorators import login_required
+
+User = get_user_model()
+class UserProfileQuery(graphene.ObjectType):
+    profile = graphene.List(ProfileObject)
+    
+    @login_required
+    def resolve_profile(self, info):
+        user = info.context.user
+        return user

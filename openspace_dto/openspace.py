@@ -89,3 +89,6 @@ class HistoryObject(graphene.ObjectType):
     description = graphene.String()
     createdAt = graphene.String()
 
+class ProfileObject(graphene.ObjectType):
+    id = graphene.ID()
+    username = graphene.String()
