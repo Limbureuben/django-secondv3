@@ -222,4 +222,8 @@ BACKEND_URL = 'http://127.0.0.1:8000'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
+
+
+# my API key for sending an sms
+# atsk_ea83bd5ab23b2e68e1721ec3fd1ec4b491b52ea800a3a94ed0364e367b8d6e77aabd0916
