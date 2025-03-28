@@ -70,3 +70,5 @@ class FileUploadView(APIView):
         
         file_path = default_storage.save(f'reports/{file_obj.name}', file_obj)
         return Response({'file_path': file_path}, status=status.HTTP_201_CREATED)
+    
+    

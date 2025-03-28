@@ -23,3 +23,7 @@ class ReportHistoryAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_max_show_all = 10
 admin.site.register(ReportHistory, ReportHistoryAdmin)
+
+class UssdReportAdmin(admin.ModelAdmin):
+    list_display = ('report_id', 'description', 'submitted_at')
+admin.site.register(UssdReport, UssdReportAdmin)
