@@ -191,18 +191,19 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:4200',
-]
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:4200',
+# ]
 
 
 # for speficic  origin
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:4200",  # Angular frontend (default port)
-#     "http://127.0.0.1:8000",  # API itself
-#     "http://10.0.2.2:8000",  # Flutter emulator (Android)
-#     "http://localhost:5000",  # Flutter web
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # Angular frontend (default port)
+    "http://127.0.0.1:8000",  # API itself
+    "http://10.0.2.2:8000",  # Flutter emulator (Android)
+    "http://localhost:5000",  # Flutter web
+    "http://127.0.0.1:42217"
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
