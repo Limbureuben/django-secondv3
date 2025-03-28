@@ -6,3 +6,9 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = '__all__'
+        
+        
+class ProblemReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UssdReport
+        fields = ['id', 'phone_number', 'open_space', 'description', 'reference_number', 'status']
