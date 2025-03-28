@@ -1,5 +1,5 @@
 from django.contrib import admin
-from openspace.myapprest.models import UssdReport
+from .models import *
 
 # Register your models here.
 class UssdReportAdmin(admin.ModelAdmin):
