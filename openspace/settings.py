@@ -202,7 +202,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",  # API itself
     "http://10.0.2.2:8000",  # Flutter emulator (Android)
     "http://localhost:5000",  # Flutter web
-    "http://127.0.0.1:42217"
+    "http://127.0.0.1:42217",
+    "https://2893-196-192-78-26.ngrok-free.app"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -224,7 +225,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
-FERNET_KEY = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
+FERNET_KEY="1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 
 # my API key for sending an sms
 # atsk_ea83bd5ab23b2e68e1721ec3fd1ec4b491b52ea800a3a94ed0364e367b8d6e77aabd0916
