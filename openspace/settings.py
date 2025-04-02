@@ -214,7 +214,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'limbureubenn@gmail.com'
-EMAIL_HOST_PASSWORD = 'bqxg asvo ziey eknt'
+EMAIL_HOST_PASSWORD = 'stlamceqmzjmbvxs'
 DEFAULT_FROM_EMAIL = 'limbureubenn@gmail.com'
 FRONTEND_URL = 'http://localhost:4200'
 BACKEND_URL = 'http://127.0.0.1:8000'
@@ -223,7 +223,7 @@ BACKEND_URL = 'http://127.0.0.1:8000'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
 FERNET_KEY="1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 

@@ -40,7 +40,7 @@ class ReportHistory(models.Model):
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
     file = models.CharField(max_length=500, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     
 
 
