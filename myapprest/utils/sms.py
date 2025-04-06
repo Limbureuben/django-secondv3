@@ -3,7 +3,7 @@ import os
 from cryptography.fernet import Fernet # type: ignore
 
 # Initialize Africa's Talking
-africastalking.initialize(os.getenv("sandbox"), os.getenv("atsk_ce5403b17335ff50b7e5d3b5a10469710fc73853a932daf7523692084de1911d196e23f3"))
+africastalking.initialize(os.getenv("AT_USERNAME"), os.getenv("AT_API_KEY"))
 sms = africastalking.SMS
 
 # Decrypt phone number

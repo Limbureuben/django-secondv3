@@ -230,3 +230,9 @@ FERNET_KEY="1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 
 # my API key for sending an sms
 # atsk_ea83bd5ab23b2e68e1721ec3fd1ec4b491b52ea800a3a94ed0364e367b8d6e77aabd0916
+
+
+# Set environment variables directly in settings.py
+os.environ["AT_USERNAME"] = "sandbox"
+os.environ["AT_API_KEY"] = "atsk_ce5403b17335ff50b7e5d3b5a10469710fc73853a932daf7523692084de1911d196e23f3"
+os.environ["FERNET_KEY"] = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
