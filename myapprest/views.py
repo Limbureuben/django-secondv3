@@ -73,7 +73,7 @@ def submit_problem_report(request):
 
 
 @api_view(['POST'])
-def confirm_report(request):
+def confirm_report(request, pk):
     try:
         reference_number = request.data.get('reference_number')
         if not reference_number:
