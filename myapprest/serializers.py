@@ -1,6 +1,6 @@
 from myapp.models import Report
 from .models import *
-from rest_framework import serializers
+from rest_framework import serializers # type: ignore
 
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:

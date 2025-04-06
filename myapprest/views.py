@@ -103,12 +103,9 @@ class UssdReportType(DjangoObjectType):
     class Meta:
         model = UssdReport
 
-class ReportUssdQuey(graphene.ObjectType):
-    report = graphene.Field(UssdReportType, reference_number=graphene.String())
+class ReportUssdQuery(graphene.ObjectType):
+    all_reports_ussds = graphene.List(UssdReportType)  # Field to return all reports
 
-    def resolve_report(self, info, reference_number):
-        # Fetch the report by reference number
-        try:
-            return UssdReport.objects.get(reference_number=reference_number)
-        except UssdReport.DoesNotExist:
-            return None
+    def resolve_all_reports_ussds(self, info):
+        # Fetch all reports
+        return UssdReport.objects.all()
