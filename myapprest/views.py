@@ -103,7 +103,7 @@ class UssdReportType(DjangoObjectType):
     class Meta:
         model = UssdReport
 
-class Query(graphene.ObjectType):
+class ReportUssdQuey(graphene.ObjectType):
     report = graphene.Field(UssdReportType, reference_number=graphene.String())
 
     def resolve_report(self, info, reference_number):
