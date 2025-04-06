@@ -63,5 +63,8 @@ def submit_problem_report(request):
         serializer = ProblemReportSerializer(report)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    except KeyError as e:
+        return Response({'error': f'Missing key: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
