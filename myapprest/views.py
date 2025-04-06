@@ -16,10 +16,10 @@ from cryptography.fernet import Fernet
 
 
 # views.py
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser # type: ignore
+from rest_framework.response import Response # type: ignore
+from rest_framework.views import APIView # type: ignore
+from rest_framework import status # type: ignore
 from django.core.files.storage import default_storage
 
 class FileUploadView(APIView):
