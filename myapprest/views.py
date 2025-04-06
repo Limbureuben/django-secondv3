@@ -75,19 +75,15 @@ def submit_problem_report(request):
 @api_view(['POST'])
 def confirm_report(request, pk):
     try:
-        reference_number = request.data.get('reference_number')
-        if not reference_number:
-            return Response({"error": "Reference number is required"}, status=status.HTTP_400_BAD_REQUEST)
+        # Get report by primary key (id)
+        report = UssdReport.objects.get(pk=pk)
 
-        # Fetch the report
-        report = UssdReport.objects.get(reference_number=reference_number)
-        
-        # Update the report status
+        # Update status
         report.status = 'Processed'
         report.save()
 
-        # Send SMS
-        success = send_confirmation_sms(report.phone_number, reference_number)
+        # Send SMS using encrypted phone number
+        success = send_confirmation_sms(report.phone_number, report.reference_number)
         if not success:
             return Response({"warning": "Report confirmed, but SMS failed to send"}, status=status.HTTP_200_OK)
 
