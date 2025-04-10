@@ -43,7 +43,6 @@ class ReportHistory(models.Model):
     created_at = models.DateField(auto_now_add=True)
     
 
-
 class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)
     description = models.TextField()
@@ -75,26 +74,31 @@ class Report(models.Model):
         return unique_id
     
     def _send_notification_email(self):
-        subject = f'🌍 Report Received - ID: {self.report_id}'
+        subject = f'Report Received - ID: {self.report_id}'
         
         message = f'''
-        Dear Reporter,
+    ------------------------------------------------------------
+    Kinondoni Environmental Report Acknowledgement
+    ------------------------------------------------------------
 
-        ✅ **Your environmental report has been successfully submitted!**  
-        Please use the **Report ID: {self.report_id}** to track its progress.
+    Your report has been successfully received.
 
-        📅 **Submission Date:** {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}  
-        📍 **Location:** {self.space_name if self.space_name else "Not specified"}  
+    Report ID: {self.report_id}  
+    Submission Date: {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}  
+    Location: {self.space_name if self.space_name else "Not specified"}
 
-        We appreciate your effort in helping us protect the environment.  
-        Our team will review your report and take appropriate action soon.
+    Thank you for taking the time to report an environmental issue.  
+    Our team will review your report and take the appropriate action as soon as possible.
 
-        ---
-        ⚠️ **Important:** This is an automated message, please do not reply.  
-        If you need further assistance, visit our help center.
+    Please use the Report ID above to track the progress of your report.
 
-        🌱 Thank you for making a difference!  
-        **- [Kinondoni] Environmental Team**
+    ------------------------------------------------------------
+    This is an automated message. Please do not reply.  
+    If you need assistance, please visit our help center.
+
+    Thank you for supporting a cleaner and safer environment.  
+    Kinondoni Environmental Team
+    ------------------------------------------------------------
         '''
 
         send_mail(
