@@ -1,5 +1,6 @@
 import uuid
 from django.conf import settings
+from myapprest.models import CustomUser
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -26,20 +27,6 @@ class RegistrationMutation(graphene.Mutation):
         response = register_user(input)
         return RegistrationMutation(user=response.user, output=response)
 
-        
-# def verify_email(request, token):
-#     try:
-#         user_profile = UserProfile.objects.get(verification_token=token)
-#         user_profile.is_email_verified = True
-#         user_profile.user.is_active = True
-#         user_profile.user.save()
-#         print("Data pass here")
-#         user_profile.save()
-#         return HttpResponseRedirect(f"{settings.FRONTEND_URL}/login")
-#     except UserProfile.DoesNotExist:
-#         return HttpResponse("Invalid verification token.", status=400)
-
-
 class LoginUser(graphene.Mutation):
     user = graphene.Field(UserLoginObject)
     message = graphene.String()
@@ -53,20 +40,30 @@ class LoginUser(graphene.Mutation):
         password = input.password
 
         try:
-            # Authenticate user using UserBuilder
-            result = UserBuilder.login_user(username, password)
+            # Authenticate user using the custom user model
+            user = authenticate(username=username, password=password)
+
+            if user is None:
+                raise ValidationError("Invalid username or password.")
+
+            # Ensure the user is an instance of CustomUser
+            if not isinstance(user, CustomUser):
+                raise ValidationError("User is not a valid CustomUser instance.")
+
+            # Create and return tokens (assuming you use JWT or similar)
+            result = UserBuilder.login_user(username, password)  # This should handle JWT generation and user data retrieval
+            
             print(result)
-            user = result["user"]
             print(user)
 
-            # Ensure the response includes the user data and staff status
+            # Return user data and authentication tokens
             return LoginUser(
                 user=UserLoginObject(
                     id=user.id,
                     username=user.username,
                     refresh_token=result["refresh"],
                     access_token=result["access"],
-                    isStaff=user.is_staff,  # Returning if the user is staff
+                    isStaff=user.is_staff,  # You can now access is_staff and other fields
                 ),
                 success=True,
                 message="Login successful",
@@ -74,60 +71,47 @@ class LoginUser(graphene.Mutation):
 
         except ValidationError as e:
             return LoginUser(success=False, message=str(e))
-        except Exception:
-            return LoginUser(success=False, message="An error occurred. Please try again.")
+        except Exception as e:
+            return LoginUser(success=False, message=f"An error occurred: {str(e)}")
 
-# class RequestPasswordReset(graphene.Mutation):
-#     success = graphene.Boolean()
+    
+
+# class LoginUser(graphene.Mutation):
+#     user = graphene.Field(UserLoginObject)
 #     message = graphene.String()
+#     success = graphene.Boolean()
 
 #     class Arguments:
-#         email = graphene.String(required=True)
+#         input = UserLoginInputObject(required=True)
 
-#     def mutate(self, info, email):
+#     def mutate(self, info, input):
+#         username = input.username
+#         password = input.password
+
 #         try:
-#             UserBuilder.request_password_reset(email)
-#             return RequestPasswordReset(success=True, message="Password reset email sent")
-#         except Exception as e:
-#             return RequestPasswordReset(success=False, message=str(e))
-        
-        
-# class ResetPassword(graphene.Mutation):
-#     success = graphene.Boolean()
-#     message = graphene.String()
+#             # Authenticate user using UserBuilder
+#             result = UserBuilder.login_user(username, password)
+#             print(result)
+#             user = result["user"]
+#             print(user)
 
-#     class Arguments:
-#         token = graphene.String(required=True)
-#         new_password = graphene.String(required=True)
-#         password_confirm = graphene.String(required=True)
-
-#     def mutate(self, info, token, new_password, password_confirm):
-#         try:
-#             UserBuilder.reset_password(token, new_password, password_confirm)
-#             return ResetPassword(success=True, message="Password rest successful")
-#         except ValidationError as e:
-#             return ResetPassword(success=False, message=str(e))
-
-# class ProfileQuery(graphene.ObjectType):
-#     user_profile = graphene.Field(UserProfileObject, id=graphene.ID(required=True))
-
-#     def resolve_user_profile(self, info, id):
-#         try:
-#             user = User.objects.get(id=id)
-#             user_profile = user.userprofile
-#             return UserProfileObject(
-#                 id = user_profile.id,
-#                 username = user.username,
-#                 email = user.email
+#             # Ensure the response includes the user data and staff status
+#             return LoginUser(
+#                 user=UserLoginObject(
+#                     id=user.id,
+#                     username=user.username,
+#                     refresh_token=result["refresh"],
+#                     access_token=result["access"],
+#                     isStaff=user.is_staff,  # Returning if the user is staff
+#                 ),
+#                 success=True,
+#                 message="Login successful",
 #             )
-#         except User.DoesNotExist:
-#             return None
 
-# class AllUsersQuery(graphene.ObjectType):
-#     all_users  = graphene.List(RegistrationObject)
-
-#     def resolve_all_users(self, info):
-#         return User.objects.all()
+#         except ValidationError as e:
+#             return LoginUser(success=False, message=str(e))
+#         except Exception:
+#             return LoginUser(success=False, message="An error occurred. Please try again.")
 
 
 class RegisterUserMutation(graphene.Mutation):

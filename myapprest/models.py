@@ -11,15 +11,15 @@ class UssdReport(models.Model):
 
     def __str__(self):
         return self.reference_number
-
+    
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
-        ('admin', 'Admin'),
+        ('staff', 'Staff'),
         ('ward_executive', 'Ward Executive'),
         ('user', 'User'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
-
+    
     def __str__(self):
         return f"{self.username} ({self.role})"

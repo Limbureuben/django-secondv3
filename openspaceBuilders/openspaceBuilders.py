@@ -15,6 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from myapprest.models import CustomUser
 
 class UserBuilder:
     VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
@@ -26,10 +27,10 @@ class UserBuilder:
         if len(password) < 8:
             raise ValidationError("Password must be at least 8 characters long")
         
-        if User.objects.filter(username=username).exists():
+        if CustomUser.objects.filter(username=username).exists():
             raise ValidationError("Username already taken")
         
-        user = User(username=username)
+        user = CustomUser(username=username)
         user.set_password(password)
         user.is_superuser = False
         user.is_staff = False
@@ -47,27 +48,16 @@ class UserBuilder:
     # In your login mutation or view
     def login_user(username, password):
         try:
-            # Authenticate and generate tokens
             user = authenticate(username=username, password=password)
             
             if user:
-                # Print detailed user information
-                # print(f"Authenticated User Details:")
-                # print(f"Username: {user.username}")
-                # print(f"User ID: {user.id}")
-                # print(f"Is Staff: {user.is_staff}")
                 
-                # Generate and print tokens
                 refresh = RefreshToken.for_user(user)
-                # print(f"Access Token: {str(refresh.access_token)}")
-                # print(f"Refresh Token: {str(refresh)}")
                 return {
                     "refresh": str(refresh),
                     "access": str(refresh.access_token),
                     "user": user,
                     }
-            
-            # Rest of your login logic
         except Exception as e:
             print(f"Login Error: {str(e)}")
     
