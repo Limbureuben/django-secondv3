@@ -9,7 +9,8 @@ from django.contrib.auth import get_user_model
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
     is_email_verified = models.BooleanField(default=False)  # Track if email is verified
 
@@ -35,7 +36,8 @@ class OpenSpace(models.Model):
         return self.name
     
 class ReportHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     report_id = models.CharField(max_length=8, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
@@ -52,7 +54,8 @@ class Report(models.Model):
     space_name = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 
     def save(self, *args, **kwargs):

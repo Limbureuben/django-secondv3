@@ -240,3 +240,4 @@ os.environ["FERNET_KEY"] = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 # ZTc3NGYxOTY3ODhjMmRlMWExNWZiMmIyOWY0OTIzNDVhODdhMGVmNThlYWY0ZDdlMDcwMzQxNzExMDI4MTY5Ng==
 
 
+AUTH_USER_MODEL = 'myapprest.CustomUser'
