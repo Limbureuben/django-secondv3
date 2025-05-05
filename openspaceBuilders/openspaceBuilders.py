@@ -58,29 +58,6 @@ class UserBuilder:
         except Exception as e:
             print(f"Login Error: {str(e)}")
     
-        
-    # @staticmethod
-    # def login_user(username, password):
-    #     user = authenticate(username=username, password=password)
-    #     if user is None:
-    #         raise ValidationError("Invalid username or password")
-        
-    #     refresh = RefreshToken.for_user(user)
-        
-    #     # Return a dictionary with the access token, refresh token, and the user object
-    #     return {
-    #         "refresh": str(refresh),
-    #         "access": str(refresh.access_token),
-    #         "user": user,
-    #     }
-        
-    # @staticmethod    
-    # def generate_report_id(length=8):
-    #     """Generate a unique alphanumeric report ID."""
-    #     while True:
-    #         report_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-    #         if not Report.objects.filter(report_id=report_id).exists():  # Ensure uniqueness
-    #             return report_id
     @staticmethod
     def get_user_profile_data(user):
         try:
@@ -149,46 +126,6 @@ class UserBuilder:
             all_reports.append(report_data)
         return all_reports
     
-
-
-    # @staticmethod
-    # def request_password_reset(email):
-    #     try:
-    #         user = User.objects.get(email=email)
-    #         reset_token = uuid.uuid4()
-    #         user_profile = user.userprofile
-    #         user_profile.reset_token = reset_token
-    #         user_profile.save()
-
-    #         reset_url = f"{settings.FRONTEND_URL}/reset-password/{reset_token}/"
-    #         send_mail(
-    #             'Password Reset Request',
-    #             f'Please click the following link to reset your password: { reset_url}',
-    #             'no-reply@example.com',
-    #             [email],
-    #             fail_silently=False
-    #         )
-    #         return True
-    #     except User.DoesNotExist:
-    #         raise ValidationError("User with this email does not exist")
-        
-    # @staticmethod
-    # def reset_password(token, new_password, new_password_confirm):
-    #     try:
-    #         user_profile = UserProfile.objects.get(reset_token=token)
-    #         if new_password != new_password_confirm:
-    #             raise ValidationError("Passoword do not match")
-    #         if len(new_password) < 8:
-    #             raise ValidationError("Password must be atleast 8 characters long")
-    #         user = user_profile.user
-    #         user.set_password(new_password)
-    #         user.save()
-    #         user_profile.reset_token = None
-    #         user_profile.save()
-    #         return True
-    #     except UserProfile.DoesNotExist:
-    #         raise ValidationError("Invalid reset token")
-    
    
     @staticmethod
     def open_space(name, latitude, longitude, district):
@@ -233,19 +170,14 @@ def report_issue(input):
             message="Report submitted successfully",
             success=True,
             report=ReportObject(
-                description=report.description, 
-                email=report.email, 
+                description=report.description,
+                email=report.email,
                 id=report.report_id,  # FIXED: Include report ID in response
                 file_url=report.file.url if report.file else None  # FIXED: Provide correct file URL if exists
             )
         )
     except ValidationError as e:
         return ReportResponse(message=str(e), success=False, report=None)
-
-
-
-
-
 
 
 
