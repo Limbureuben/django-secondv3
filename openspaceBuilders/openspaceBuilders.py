@@ -20,7 +20,7 @@ from myapprest.models import CustomUser
 class UserBuilder:
     VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
     @staticmethod
-    def register_user(username, password, passwordConfirm):
+    def register_user(username, password, passwordConfirm, role='user'):
         if password != passwordConfirm:
             raise ValidationError("Passwords do not match")
         
@@ -29,20 +29,17 @@ class UserBuilder:
         
         if CustomUser.objects.filter(username=username).exists():
             raise ValidationError("Username already taken")
-        
-        user = CustomUser(username=username)
+
+        if role not in ['user', 'staff', 'ward_executive']:
+            raise ValidationError("Invalid role")
+
+        user = CustomUser(username=username, role=role)
         user.set_password(password)
         user.is_superuser = False
-        user.is_staff = False
+        user.is_staff = role == 'staff'
         user.save()
-
-        # user_profile = UserProfile(user=user, verification_token=uuid.uuid4())
-        # user_profile.save()
-
-        # verification_url = f"{settings.BACKEND_URL}/verify-email/{user_profile.verification_token}/"
-        # send_verification_email.delay(email, verification_url)
-        
         return user
+
     
     @staticmethod
     # In your login mutation or view
@@ -204,7 +201,8 @@ class UserBuilder:
 
 def register_user(input):
     try:
-        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm)
+        role = getattr(input, 'role', 'user') or 'user'
+        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role)
         
         if hasattr(input, 'sessionId') and input.sessionId:
             Report.objects.filter(submitted_by=input.sessionId).update(submitted_by=user.id)

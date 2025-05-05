@@ -63,7 +63,8 @@ class LoginUser(graphene.Mutation):
                     username=user.username,
                     refresh_token=result["refresh"],
                     access_token=result["access"],
-                    isStaff=user.is_staff,  # You can now access is_staff and other fields
+                    isStaff=user.is_staff,
+                    isWardExecutive=user.role == "ward_executive",
                 ),
                 success=True,
                 message="Login successful",

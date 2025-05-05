@@ -5,6 +5,7 @@ class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
     password = graphene.String()
     passwordConfirm = graphene.String()
+    role = graphene.String(required=False)
     sessionId = graphene.String(required=False)
 
 class RegistrationObject(graphene.ObjectType):
@@ -37,6 +38,7 @@ class UserLoginObject(graphene.ObjectType):
     refresh_token = graphene.String()
     access_token = graphene.String()
     isStaff = graphene.Boolean()
+    isWardExecutive = graphene.Boolean()
 
 # class UserProfileObject(graphene.ObjectType):
 #     id = graphene.ID()
