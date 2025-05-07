@@ -102,3 +102,9 @@ class ProfileObject(graphene.ObjectType):
     # username = graphene.String(description="User's unique username")
     # is_staff = graphene.Boolean(description="Whether user has staff access")
     
+class UserAllObject(graphene.ObjectType):
+    pk = graphene.ID()
+    username = graphene.String()
+    email = graphene.String()
+    is_staff = graphene.Boolean()
+    role = graphene.String()

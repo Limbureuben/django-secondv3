@@ -74,46 +74,7 @@ class LoginUser(graphene.Mutation):
             return LoginUser(success=False, message=str(e))
         except Exception as e:
             return LoginUser(success=False, message=f"An error occurred: {str(e)}")
-
-    
-
-# class LoginUser(graphene.Mutation):
-#     user = graphene.Field(UserLoginObject)
-#     message = graphene.String()
-#     success = graphene.Boolean()
-
-#     class Arguments:
-#         input = UserLoginInputObject(required=True)
-
-#     def mutate(self, info, input):
-#         username = input.username
-#         password = input.password
-
-#         try:
-#             # Authenticate user using UserBuilder
-#             result = UserBuilder.login_user(username, password)
-#             print(result)
-#             user = result["user"]
-#             print(user)
-
-#             # Ensure the response includes the user data and staff status
-#             return LoginUser(
-#                 user=UserLoginObject(
-#                     id=user.id,
-#                     username=user.username,
-#                     refresh_token=result["refresh"],
-#                     access_token=result["access"],
-#                     isStaff=user.is_staff,  # Returning if the user is staff
-#                 ),
-#                 success=True,
-#                 message="Login successful",
-#             )
-
-#         except ValidationError as e:
-#             return LoginUser(success=False, message=str(e))
-#         except Exception:
-#             return LoginUser(success=False, message="An error occurred. Please try again.")
-
+        
 
 class RegisterUserMutation(graphene.Mutation):
     class Arguments:
@@ -328,32 +289,7 @@ class ReportAnonymousQuery(graphene.ObjectType):
     def resolve_anonymous(self, info, session_id):
         return ReportHistory.objects.filter(session_id=session_id)
     
-# class AuthenticatedUserReport(graphene.ObjectType):
-#     my_reports = graphene.List(HistoryObject)
-    
-#     def resolve_my_reports(self, info, **kwargs):
-#         user = info.context.user
-#         print("Authenticated user:", user)
 
-#         if user.is_authenticated:
-#             reports = ReportHistory.objects.filter(user=user)
-#             print("Reports found:", reports)
-#             return reports  # Make sure reports are returned!
-
-#         print("User is anonymous or not authenticated.")  
-#         return ReportHistory.objects.none()
-
-    
-    # def resolve_my_reports(self, info, **kwargs):
-    #     user = info.context.user
-    #     print("Authenticated user:", user)
-        
-    #     if user.is_authenticated:
-        
-    #         return ReportHistory.objects.filter(user=user)
-        
-    #     return ReportHistory.objects.none()
-    
 
 class AuthenticatedUserReport(graphene.ObjectType):
     my_reports = graphene.List(HistoryObject)
@@ -375,66 +311,7 @@ from graphql_jwt.decorators import login_required
 
 User = get_user_model()
 
-# class ProfileType(graphene.ObjectType):
-#     id = graphene.ID()
-#     username = graphene.String()
-#     is_staff = graphene.Boolean()
-
-# class UserProfileQuery(graphene.ObjectType):
-#     profile = graphene.Field(ProfileType)
-
-#     @login_required
-#     def resolve_profile(self, info):
-#         user = info.context.user
-#         return ProfileType(
-#             id=user.id,
-#             username=user.username,
-#             is_staff=user.is_staff
-#         )
-
 from rest_framework_simplejwt.tokens import AccessToken
-# class UserProfileQuery(graphene.ObjectType):
-#     profile = graphene.Field(ProfileObject)
-
-#     @login_required
-#     def resolve_profile(self, info):
-#         # Extract token from context
-#         request = info.context
-#         auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-        
-#         try:
-#             # Extract token from Authorization header
-#             token = auth_header.split('Bearer ')[1] if 'Bearer ' in auth_header else None
-            
-#             if not token:
-#                 raise GraphQLError("No token provided")
-            
-#             # Decode token and extract user ID
-#             decoded_token = AccessToken(token)
-#             token_user_id = decoded_token.get('user_id')
-            
-#             # Get authenticated user
-#             user = info.context.user
-            
-#             # Strict validation
-#             if not user.is_authenticated:
-#                 raise GraphQLError("User not authenticated")
-            
-#             # Ensure token user ID matches authenticated user
-#             if user.id != token_user_id:
-#                 print(f"Token User ID: {token_user_id}")
-#                 print(f"Authenticated User ID: {user.id}")
-#                 raise GraphQLError("Token user mismatch")
-            
-#             return ProfileObject(
-#                 id=user.id,
-#                 username=user.username,
-#                 is_staff=user.is_staff
-#             )
-        
-#         except Exception as e:
-#             print(f"Profile Resolution Error: {str(e)}")
-#             raise GraphQLError("Invalid authentication")
 
 
 class UserProfileQuery(graphene.ObjectType):
@@ -445,3 +322,19 @@ class UserProfileQuery(graphene.ObjectType):
         if user.is_authenticated:
             return UserBuilder.get_user_profile_data(user=user)
             
+
+class QueryUsers(graphene.ObjectType):
+    ward_exectives = graphene.List(UserAllObject)
+
+    def resolve_ward_exectives(root, info):
+        users = CustomUser.objects.filter(role='ward_executive')
+        return [
+            UserAllObject(
+                pk=user.pk,
+                username=user.username,
+                email=user.email,
+                is_staff = user.is_staff,
+                role = user.role
+            )
+        for user in users
+        ]
