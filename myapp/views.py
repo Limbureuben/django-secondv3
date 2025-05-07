@@ -334,7 +334,7 @@ class QueryUsers(graphene.ObjectType):
                 username=user.username,
                 email=user.email,
                 is_staff = user.is_staff,
-                role = user.role
+                role = user.role,
             )
         for user in users
         ]

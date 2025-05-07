@@ -6,8 +6,8 @@ from .utils.sms import send_confirmation_sms
 from rest_framework.views import APIView # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework import status # type: ignore
-
-from .serializers import ReportSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import *
 
 from rest_framework.decorators import api_view # type: ignore
 from rest_framework.response import Response # type: ignore
@@ -119,3 +119,12 @@ class ReportUssdQuery(graphene.ObjectType):
     def resolve_all_reports_ussds(self, info):
         # Fetch all reports
         return UssdReport.objects.all()
+    
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

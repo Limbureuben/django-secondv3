@@ -12,3 +12,9 @@ class ProblemReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = UssdReport
         fields = ['id', 'phone_number', 'open_space', 'description', 'reference_number', 'status']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'is_staff']
