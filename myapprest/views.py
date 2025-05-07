@@ -95,12 +95,26 @@ def confirm_report(request, pk):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['GET'])
+def get_report_status(request, reference_number):
+    try:
+        # Find the report by reference number
+        report = UssdReport.objects.get(reference_number=reference_number)
+        serializer = ProblemReportSerializer(report)
+        return Response({
+            "reference_number": report.reference_number,
+            "status": report.status
+        }, status=status.HTTP_200_OK)
+    except UssdReport.DoesNotExist:
+        return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class UssdReportType(DjangoObjectType):
     class Meta:
         model = UssdReport
 
 class ReportUssdQuery(graphene.ObjectType):
-    all_reports_ussds = graphene.List(UssdReportType)  # Field to return all reports
+    all_reports_ussds = graphene.List(UssdReportType)
 
     def resolve_all_reports_ussds(self, info):
         # Fetch all reports
