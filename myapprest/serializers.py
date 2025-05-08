@@ -24,3 +24,9 @@ class ProfileImageUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['profile_image']
+
+# serializers.py
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'role', 'profile_image']

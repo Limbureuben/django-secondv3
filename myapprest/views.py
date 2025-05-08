@@ -139,3 +139,10 @@ class ProfileImageUploadView(APIView):
             image_url = request.build_absolute_uri(serializer.data['profile_image'])
             return Response({'imageUrl': image_url}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data)
