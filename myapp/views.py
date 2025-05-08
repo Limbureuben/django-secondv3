@@ -27,52 +27,101 @@ class RegistrationMutation(graphene.Mutation):
         response = register_user(input)
         return RegistrationMutation(user=response.user, output=response)
 
-class LoginUser(graphene.Mutation):
-    user = graphene.Field(UserLoginObject)
-    message = graphene.String()
-    success = graphene.Boolean()
+# class LoginUser(graphene.Mutation):
+#     user = graphene.Field(UserLoginObject)
+#     message = graphene.String()
+#     success = graphene.Boolean()
 
+#     class Arguments:
+#         input = UserLoginInputObject(required=True)
+
+#     def mutate(self, info, input):
+#         username = input.username
+#         password = input.password
+
+#         try:
+#             # Authenticate user using the custom user model
+#             user = authenticate(username=username, password=password)
+
+#             if user is None:
+#                 raise ValidationError("Invalid username or password.")
+
+#             # Ensure the user is an instance of CustomUser
+#             if not isinstance(user, CustomUser):
+#                 raise ValidationError("User is not a valid CustomUser instance.")
+
+#             # Create and return tokens (assuming you use JWT or similar)
+#             result = UserBuilder.login_user(username, password)  # This should handle JWT generation and user data retrieval
+            
+#             print(result)
+#             print(user)
+
+#             # Return user data and authentication tokens
+#             return LoginUser(
+#                 user=UserLoginObject(
+#                     id=user.id,
+#                     username=user.username,
+#                     refresh_token=result["refresh"],
+#                     access_token=result["access"],
+#                     isStaff=user.is_staff,
+#                     isWardExecutive=user.role == "ward_executive",
+#                 ),
+#                 success=True,
+#                 message="Login successful",
+#             )
+
+#         except ValidationError as e:
+#             return LoginUser(success=False, message=str(e))
+#         except Exception as e:
+#             return LoginUser(success=False, message=f"An error occurred: {str(e)}")
+
+class UserType(DjangoObjectType):
+    class Meta:
+        model = CustomUser
+        fields = ("id", "username", "is_staff", "is_superuser", "ward_executive")
+
+
+class LoginUser(graphene.Mutation):
     class Arguments:
-        input = UserLoginInputObject(required=True)
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    user = graphene.Field(UserLoginObject)
+    success = graphene.Boolean()
+    message = graphene.String()
 
     def mutate(self, info, input):
-        username = input.username
+        username = input.username,
         password = input.password
 
         try:
-            # Authenticate user using the custom user model
+
             user = authenticate(username=username, password=password)
 
             if user is None:
-                raise ValidationError("Invalid username or password.")
-
-            # Ensure the user is an instance of CustomUser
+                return LoginUser(success=False, message="Invalid credentials")
+            
             if not isinstance(user, CustomUser):
                 raise ValidationError("User is not a valid CustomUser instance.")
 
-            # Create and return tokens (assuming you use JWT or similar)
-            result = UserBuilder.login_user(username, password)  # This should handle JWT generation and user data retrieval
-            
-            print(result)
-            print(user)
+        # Create JWT token
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
 
-            # Return user data and authentication tokens
+        # Use the actual role field from your CustomUser model
             return LoginUser(
-                user=UserLoginObject(
-                    id=user.id,
-                    username=user.username,
-                    isStaff=user.is_staff,
-                    isWardExecutive=user.role == "ward_executive",
-                ),
+                user=user,
                 success=True,
-                message="Login successful",
+                message=f"{user.role} login successful",
+                token=access_token,
+                isStaff=user.is_staff,
+                isWardExecutive=user.role == "ward_executive",
             )
-
-        except ValidationError as e:
-            return LoginUser(success=False, message=str(e))
         except Exception as e:
             return LoginUser(success=False, message=f"An error occurred: {str(e)}")
         
+
+
 
 class RegisterUserMutation(graphene.Mutation):
     class Arguments:
@@ -348,10 +397,10 @@ class QueryUsers(graphene.ObjectType):
 
 
 
-class UserType(DjangoObjectType):
-    class Meta:
-        model = CustomUser
-        fields = ("id", "username", "is_staff", "is_superuser", "role")
+# class UserType(DjangoObjectType):
+#     class Meta:
+#         model = CustomUser
+#         fields = ("id", "username", "is_staff", "is_superuser", "role")
 
 
 class RegisterUser(graphene.Mutation):
