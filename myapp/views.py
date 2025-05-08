@@ -61,8 +61,6 @@ class LoginUser(graphene.Mutation):
                 user=UserLoginObject(
                     id=user.id,
                     username=user.username,
-                    refresh_token=result["refresh"],
-                    access_token=result["access"],
                     isStaff=user.is_staff,
                     isWardExecutive=user.role == "ward_executive",
                 ),

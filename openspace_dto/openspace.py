@@ -35,8 +35,7 @@ class UserLoginInputObject(graphene.InputObjectType):
 class UserLoginObject(graphene.ObjectType):
     id = graphene.ID()
     username = graphene.String()
-    refresh_token = graphene.String()
-    access_token = graphene.String()
+    token = graphene.String()
     isStaff = graphene.Boolean()
     isWardExecutive = graphene.Boolean()
 
