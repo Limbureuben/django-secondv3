@@ -39,6 +39,7 @@ class UserLoginObject(graphene.ObjectType):
     isStaff = graphene.Boolean()
     isWardExecutive = graphene.Boolean()
 
+
 class ReportInputObject(graphene.InputObjectType):
     description = graphene.String()
     email = graphene.String()

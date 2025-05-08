@@ -90,12 +90,8 @@ class LoginUser(graphene.Mutation):
     success = graphene.Boolean()
     message = graphene.String()
 
-    def mutate(self, info, input):
-        username = input.username,
-        password = input.password
-
+    def mutate(self, info, username, password):
         try:
-
             user = authenticate(username=username, password=password)
 
             if user is None:
@@ -104,22 +100,27 @@ class LoginUser(graphene.Mutation):
             if not isinstance(user, CustomUser):
                 raise ValidationError("User is not a valid CustomUser instance.")
 
-        # Create JWT token
+            # Create JWT token
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
 
-        # Use the actual role field from your CustomUser model
-            return LoginUser(
-                user=user,
-                success=True,
-                message=f"{user.role} login successful",
+            user_data = UserLoginObject(
+                id=user.id,
+                username=user.username,
                 token=access_token,
                 isStaff=user.is_staff,
-                isWardExecutive=user.role == "ward_executive",
+                isWardExecutive=(user.role == "ward_executive")
             )
+
+            return LoginUser(
+                user=user_data,
+                success=True,
+                message=f"{user.role} login successful"
+            )
+
         except Exception as e:
             return LoginUser(success=False, message=f"An error occurred: {str(e)}")
-        
+
 
 
 
