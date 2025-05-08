@@ -40,11 +40,6 @@ class UserLoginObject(graphene.ObjectType):
     isStaff = graphene.Boolean()
     isWardExecutive = graphene.Boolean()
 
-# class UserProfileObject(graphene.ObjectType):
-#     id = graphene.ID()
-#     username = graphene.String()
-#     email = graphene.String()
-
 class ReportInputObject(graphene.InputObjectType):
     description = graphene.String()
     email = graphene.String()
@@ -99,8 +94,6 @@ class UserObject(graphene.ObjectType):
 class ProfileObject(graphene.ObjectType):
     id = graphene.ID(required=True)
     user=graphene.Field(UserObject)
-    # username = graphene.String(description="User's unique username")
-    # is_staff = graphene.Boolean(description="Whether user has staff access")
     
 class UserAllObject(graphene.ObjectType):
     pk = graphene.ID()
