@@ -27,6 +27,14 @@ class ProfileImageUploadSerializer(serializers.ModelSerializer):
 
 # serializers.py
 class UserProfileSerializer(serializers.ModelSerializer):
+    profile_image = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'role', 'profile_image']
+
+    def get_profile_image(self, obj):
+        request = self.context.get('request')
+        if obj.profile_image and hasattr(obj.profile_image, 'url'):
+            return request.build_absolute_uri(obj.profile_image.url)
+        return None
