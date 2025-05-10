@@ -9,4 +9,6 @@ urlpatterns = [
     path('reference-ussd/<str:reference_number>/', get_report_status, name='get_report_status'),
     path('profile/', UserProfileView.as_view(), name='user-profile'),
     path('upload-profile-image/', ProfileImageUploadView.as_view(), name='upload-profile-image'),
+    path('api/password-reset/', SendResetPasswordEmailView.as_view(), name='password-reset'),
+    path('api/password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 ]

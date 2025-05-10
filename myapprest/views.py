@@ -16,6 +16,14 @@ from .models import *
 from .serializers import ProblemReportSerializer
 from cryptography.fernet import Fernet # type: ignore
 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.http import urlsafe_base64_decode
+
 
 # views.py
 from rest_framework.parsers import MultiPartParser, FormParser # type: ignore
@@ -146,3 +154,48 @@ class UserProfileView(APIView):
     def get(self, request):
         serializer = UserProfileSerializer(request.user, context={'request': request})
         return Response(serializer.data)
+
+
+
+User = get_user_model()
+
+class SendResetPasswordEmailView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"error": "Email is required"}, status=400)
+        try:
+            user = User.objects.get(email=email)
+            token = PasswordResetTokenGenerator().make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
+
+            send_mail(
+                subject="Password Reset",
+                message=f"Click the link to reset your password: {reset_link}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+            )
+            return Response({"message": "Reset link sent"})
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+
+class PasswordResetConfirmView(APIView):
+    def post(self, request):
+        uidb64 = request.data.get("uid")
+        token = request.data.get("token")
+        new_password = request.data.get("password")
+
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+
+            if PasswordResetTokenGenerator().check_token(user, token):
+                user.set_password(new_password)
+                user.save()
+                return Response({"message": "Password reset successful"})
+            else:
+                return Response({"error": "Invalid token"}, status=400)
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
