@@ -2,12 +2,15 @@ import os
 from django.shortcuts import render
 import graphene
 from graphene_django import DjangoObjectType
+
+from myapprest.task import send_reset_email_task
 from .utils.sms import send_confirmation_sms
 from rest_framework.views import APIView # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework import status # type: ignore
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
+from django.contrib.auth.tokens import default_token_generator
 
 from rest_framework.decorators import api_view # type: ignore
 from rest_framework.response import Response # type: ignore
@@ -157,28 +160,29 @@ class UserProfileView(APIView):
 
 
 
-User = get_user_model()
+CustomUser = get_user_model()
 
 class SendResetPasswordEmailView(APIView):
     def post(self, request):
-        email = request.data.get("email")
-        if not email:
-            return Response({"error": "Email is required"}, status=400)
-        try:
-            user = User.objects.get(email=email)
-            token = PasswordResetTokenGenerator().make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
+        print("PasswordResetRequestView POST called")  # Console debug
 
-            send_mail(
-                subject="Password Reset",
-                message=f"Click the link to reset your password: {reset_link}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-            )
-            return Response({"message": "Reset link sent"})
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=404)
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Email is required'}, status=400)
+
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+
+        # Use Celery to send the email asynchronously
+        send_reset_email_task.delay(email, reset_link)
+
+        return Response({'message': 'Password reset link sent to email.'}, status=200)
 
 
 class PasswordResetConfirmView(APIView):
@@ -189,7 +193,7 @@ class PasswordResetConfirmView(APIView):
 
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = User.objects.get(pk=uid)
+            user = CustomUser.objects.get(pk=uid)
 
             if PasswordResetTokenGenerator().check_token(user, token):
                 user.set_password(new_password)
