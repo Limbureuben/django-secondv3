@@ -63,7 +63,6 @@ def submit_problem_report(request):
         # Encrypt the phone number before saving
         encrypted_phone = fernet.encrypt(phone_number.encode()).decode()
 
-        # Create a new problem report entry
         report = UssdReport.objects.create(
             phone_number=encrypted_phone,
             open_space=open_space,
@@ -72,7 +71,6 @@ def submit_problem_report(request):
             status="Pending"
         )
 
-        # Serialize the response
         serializer = ProblemReportSerializer(report)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
