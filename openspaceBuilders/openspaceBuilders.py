@@ -2,7 +2,9 @@
 import random
 import string
 from tokenize import TokenError
-
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 from graphql import GraphQLError
 from myapp.tasks import send_verification_email
 from openspace_dto.openspace import *
@@ -20,7 +22,7 @@ from myapprest.models import CustomUser
 class UserBuilder:
     VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
     @staticmethod
-    def register_user(username, password, passwordConfirm, role='user'):
+    def register_user(username, password, passwordConfirm, role='user', email=''):
         if password != passwordConfirm:
             raise ValidationError("Passwords do not match")
         
@@ -32,8 +34,17 @@ class UserBuilder:
 
         if role not in ['user', 'staff', 'ward_executive']:
             raise ValidationError("Invalid role")
+        
+        if email:
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                raise ValidationError("Invalid email format")
+            
+            if CustomUser.objects.filter(email=email).exists():
+                raise ValidationError("Email already taken")
 
-        user = CustomUser(username=username, role=role)
+        user = CustomUser(username=username, role=role, email=email)
         user.set_password(password)
         user.is_superuser = False
         user.is_staff = role == 'staff'
@@ -139,7 +150,7 @@ class UserBuilder:
 def register_user(input):
     try:
         role = getattr(input, 'role', 'user') or 'user'
-        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role)
+        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role, email=getattr(input, 'email', ''))
         
         if hasattr(input, 'sessionId') and input.sessionId:
             Report.objects.filter(submitted_by=input.sessionId).update(submitted_by=user.id)

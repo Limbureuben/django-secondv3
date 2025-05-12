@@ -19,8 +19,8 @@ class Mutation(graphene.ObjectType):
     toggle_openspace_status = ToggleOpenspaceMutation.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
-    register_new_user = RegisterUser.Field()
-    login_new_user = LoginUserMutation.Field()
+    # register_new_user = RegisterUser.Field()
+    # login_new_user = LoginUserMutation.Field()
 
 class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, HistoryCountQuery, ReportCountQuery,ReportAnonymousQuery,AuthenticatedUserReport, UserProfileQuery, ReportUssdQuery, QueryUsers, graphene.ObjectType):
     pass

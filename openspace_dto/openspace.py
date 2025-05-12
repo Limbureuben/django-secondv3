@@ -3,6 +3,7 @@ from myapp.models import *
 
 class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
+    email = graphene.String(required=False)
     password = graphene.String()
     passwordConfirm = graphene.String()
     role = graphene.String(required=False)
