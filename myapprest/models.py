@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from myapp.models import *
 from django.utils import timezone
 from datetime import timedelta
 import re
+from myapp.models import OpenSpace
 from django.core.exceptions import ValidationError
 
 # Create your models here.
@@ -33,7 +33,8 @@ class CustomUser(AbstractUser):
 
 
 class OpenSpaceBooking(models.Model):
-    open_space = models.ForeignKey('OpenSpace', on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='open_space_bookings')
+    open_space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
     username = models.CharField(max_length=100)
     contact = models.CharField(max_length=20)
     datetime = models.DateTimeField()

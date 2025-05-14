@@ -205,8 +205,10 @@ class PasswordResetConfirmView(APIView):
 
 
 class OpenSpaceBookingView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        serializer = OpenSpaceBookingSerializer(data=request.data)
+        serializer = OpenSpaceBookingSerializer(data=request.data, context={'request': request})
 
         if serializer.is_valid():
             serializer.save()
