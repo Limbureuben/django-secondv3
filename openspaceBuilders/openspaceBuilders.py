@@ -22,7 +22,7 @@ from myapprest.models import CustomUser
 class UserBuilder:
     VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
     @staticmethod
-    def register_user(username, password, passwordConfirm, role='user', email=''):
+    def register_user(username, password, passwordConfirm, role='user', email='', ward=None):
         if password != passwordConfirm:
             raise ValidationError("Passwords do not match")
         
@@ -44,7 +44,7 @@ class UserBuilder:
             if CustomUser.objects.filter(email=email).exists():
                 raise ValidationError("Email already taken")
 
-        user = CustomUser(username=username, role=role, email=email)
+        user = CustomUser(username=username, role=role, email=email, ward=ward)
         user.set_password(password)
         user.is_superuser = False
         user.is_staff = role == 'staff'
@@ -149,8 +149,9 @@ class UserBuilder:
 
 def register_user(input):
     try:
-        role = getattr(input, 'role', 'user') or 'user'
-        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role, email=getattr(input, 'email', ''))
+        role = getattr(input, 'role', 'user') or 'user',
+        ward = getattr(input, 'ward', None)
+        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role, email=getattr(input, 'email', ''), ward=ward)
         
         if hasattr(input, 'sessionId') and input.sessionId:
             Report.objects.filter(submitted_by=input.sessionId).update(submitted_by=user.id)
