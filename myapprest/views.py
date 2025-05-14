@@ -201,3 +201,12 @@ class PasswordResetConfirmView(APIView):
                 return Response({"error": "Invalid token"}, status=400)
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+
+
+class OpenSpaceBookingView(APIView):
+    def post(self, request):
+        serializer = OpenSpaceBookingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Booking submitted successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
