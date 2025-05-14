@@ -175,7 +175,7 @@ class ToggleOpenspaceMutation(graphene.Mutation):
     def mutate(self, info, input):
         try:
             openspace = OpenSpace.objects.get(pk=input.id)
-            openspace.is_active = input.is_active  # Toggle the status
+            openspace.is_active = input.is_active
             openspace.save()
             return ToggleOpenspaceMutation(openspace=openspace)
         except OpenSpace.DoesNotExist:

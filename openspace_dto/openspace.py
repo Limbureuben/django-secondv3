@@ -8,6 +8,7 @@ class RegistrationInputObject(graphene.InputObjectType):
     passwordConfirm = graphene.String()
     role = graphene.String(required=False)
     sessionId = graphene.String(required=False)
+    ward = graphene.String()
 
 class RegistrationObject(graphene.ObjectType):
     id = graphene.ID()
