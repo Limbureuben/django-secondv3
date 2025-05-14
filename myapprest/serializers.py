@@ -44,3 +44,17 @@ class OpenSpaceBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = OpenSpaceBooking
         fields = '__all__'
+
+    def create(self, validated_data):
+        booking = OpenSpaceBooking(**validated_data)
+        booking.end_time = booking.calculate_end_time()
+
+        open_space = booking.open_space
+        if open_space.status == 'unavailable':
+            raise serializers.ValidationError("This open space is already booked.")
+
+        # Save booking and update open space status
+        booking.save()
+        open_space.status = 'unavailable'
+        open_space.save()
+        return booking

@@ -206,22 +206,10 @@ class PasswordResetConfirmView(APIView):
 
 class OpenSpaceBookingView(APIView):
     def post(self, request):
-        # Deserialize the request data
         serializer = OpenSpaceBookingSerializer(data=request.data)
-        
+
         if serializer.is_valid():
-            open_space = serializer.validated_data['open_space']
-            
-            # Check if the open space is available
-            if open_space.status == 'unavailable':
-                return Response({"error": "This open space is already booked."}, status=status.HTTP_400_BAD_REQUEST)
-            
             serializer.save()
-
-            # Change the status of the open space to unavailable
-            open_space.status = 'unavailable'
-            open_space.save()
-
             return Response({"message": "Booking successful. The open space is now unavailable."}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
