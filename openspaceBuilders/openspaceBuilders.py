@@ -146,10 +146,9 @@ class UserBuilder:
         openspace.save()
         return openspace
 
-
 def register_user(input):
     try:
-        role = getattr(input, 'role', 'user') or 'user',
+        role = getattr(input, 'role', 'user') or 'user'
         ward = getattr(input, 'ward', None)
         user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role, email=getattr(input, 'email', ''), ward=ward)
         
