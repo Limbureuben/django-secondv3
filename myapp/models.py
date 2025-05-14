@@ -25,10 +25,16 @@ class OpenSpace(models.Model):
         ('Temeke', 'Temeke'),
         ('Kigamboni', 'Kigamboni'),
     ]
+    STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('unavailable', 'Unavailable'),
+    ]
+    
     name = models.CharField(max_length=255)
     latitude = models.FloatField()
     longitude = models.FloatField()
     district = models.CharField(max_length=50, choices=DISTRICT_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     

@@ -11,4 +11,5 @@ urlpatterns = [
     path('upload-profile-image/', ProfileImageUploadView.as_view(), name='upload-profile-image'),
     path('password-reset/', SendResetPasswordEmailView.as_view(), name='password-reset'),
     path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    path('book-open-space/', OpenSpaceBookingView.as_view(), name='book-open-space'),
 ]
