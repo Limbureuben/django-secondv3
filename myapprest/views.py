@@ -216,7 +216,6 @@ class OpenSpaceBookingView(APIView):
             if open_space.status == 'unavailable':
                 return Response({"error": "This open space is already booked."}, status=status.HTTP_400_BAD_REQUEST)
             
-            # Save the booking
             serializer.save()
 
             # Change the status of the open space to unavailable
