@@ -37,6 +37,7 @@ class OpenSpaceBooking(models.Model):
     purpose = models.TextField()
     file = models.FileField(upload_to='ward_executive_files/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField()
 
     def __str__(self):
-        return f"{self.username} - {self.datetime}"
+        return f"{self.username} - {self.open_space.name} - {self.datetime}"
