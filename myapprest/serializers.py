@@ -38,3 +38,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if obj.profile_image and hasattr(obj.profile_image, 'url'):
             return request.build_absolute_uri(obj.profile_image.url)
         return None
+    
+
+class OpenSpaceBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OpenSpaceBooking
+        fields = '__all__'
