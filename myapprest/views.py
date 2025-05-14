@@ -16,6 +16,7 @@ from rest_framework.decorators import api_view # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework import status # type: ignore
 from .models import *
+from myapp.models import *
 from .serializers import ProblemReportSerializer
 from cryptography.fernet import Fernet # type: ignore
 
@@ -205,8 +206,23 @@ class PasswordResetConfirmView(APIView):
 
 class OpenSpaceBookingView(APIView):
     def post(self, request):
+        # Deserialize the request data
         serializer = OpenSpaceBookingSerializer(data=request.data)
+        
         if serializer.is_valid():
+            open_space = serializer.validated_data['open_space']
+            
+            # Check if the open space is available
+            if open_space.status == 'unavailable':
+                return Response({"error": "This open space is already booked."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Save the booking
             serializer.save()
-            return Response({"message": "Booking submitted successfully"}, status=status.HTTP_201_CREATED)
+
+            # Change the status of the open space to unavailable
+            open_space.status = 'unavailable'
+            open_space.save()
+
+            return Response({"message": "Booking successful. The open space is now unavailable."}, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

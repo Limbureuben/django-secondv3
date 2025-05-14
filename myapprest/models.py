@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from myapp.models import *
 
 # Create your models here.
 class UssdReport(models.Model):
@@ -28,6 +29,7 @@ class CustomUser(AbstractUser):
 
 
 class OpenSpaceBooking(models.Model):
+    open_space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
     username = models.CharField(max_length=100)
     contact = models.CharField(max_length=20)
     datetime = models.DateTimeField()
