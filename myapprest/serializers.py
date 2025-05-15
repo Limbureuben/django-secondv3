@@ -65,11 +65,10 @@ class OpenSpaceBookingSerializer(serializers.ModelSerializer):
         model = OpenSpaceBooking
         fields = '__all__'
         extra_kwargs = {
-            'space': {'required': False}  # Mark space as not required in input
+            'space': {'required': False}  # not required from input
         }
 
     def create(self, validated_data):
-        # Pop 'space_id' manually if passed
         request = self.context.get('request')
         space_id = request.data.get('space_id') if request else None
 
@@ -81,5 +80,10 @@ class OpenSpaceBookingSerializer(serializers.ModelSerializer):
         except OpenSpace.DoesNotExist:
             raise serializers.ValidationError({"space": "Open space not found."})
 
+        # Avoid duplication error
+        validated_data.pop('space', None)
+
         booking = OpenSpaceBooking.objects.create(space=space, **validated_data)
         return booking
+
+
