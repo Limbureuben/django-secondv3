@@ -235,4 +235,7 @@ class OpenSpaceBookingView(APIView):
             space.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
+        # ADD THIS FOR DEBUGGING
+        print("Booking validation errors:", serializer.errors)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
