@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 import re
 from myapp.models import OpenSpace
 from django.core.exceptions import ValidationError
@@ -37,7 +37,7 @@ class OpenSpaceBooking(models.Model):
     open_space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
     username = models.CharField(max_length=100)
     contact = models.CharField(max_length=20)
-    datetime = models.DateTimeField()
+    date = models.DateField(blank=True, default=timezone.now)  # changed from DateTimeField to DateField
     duration = models.CharField(max_length=50)  # e.g., '2 hours', '30 minutes'
     purpose = models.TextField()
     file = models.FileField(upload_to='ward_executive_files/', null=True, blank=True)
@@ -45,10 +45,10 @@ class OpenSpaceBooking(models.Model):
     end_time = models.DateTimeField(blank=True)
 
     def __str__(self):
-        return f"{self.username} - {self.open_space.name} - {self.datetime}"
+        return f"{self.username} - {self.open_space.name} - {self.date}"
 
     def calculate_end_time(self):
-        """Parses the duration field to compute end_time from datetime."""
+        """Computes end_time using the date + default start time + duration."""
         duration_lower = self.duration.lower()
         hours = minutes = 0
 
@@ -60,4 +60,7 @@ class OpenSpaceBooking(models.Model):
         if minute_match:
             minutes = int(minute_match.group(1))
 
-        return self.datetime + timedelta(hours=hours, minutes=minutes)
+        # Use 8:00 AM as default start time; adjust as necessary
+        start_time = datetime.combine(self.date, datetime.min.time().replace(hour=8))
+        return start_time + timedelta(hours=hours, minutes=minutes)
+

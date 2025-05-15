@@ -12,3 +12,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_filter = ('role', 'is_active')  # Add 'is_active' filter to the sidebar
     list_editable = ('is_active',)  # Allows admins to toggle 'is_active' from the list view
 admin.site.register(CustomUser, CustomUserAdmin)
+
+class OpenSpaceBookingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'open_space', 'username', 'contact', 'duration')
+admin.site.register(OpenSpaceBooking, OpenSpaceBookingAdmin)
