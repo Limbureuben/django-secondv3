@@ -42,25 +42,6 @@ class OpenSpaceBooking(models.Model):
     purpose = models.TextField()
     file = models.FileField(upload_to='ward_executive_files/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(blank=True)
 
     def __str__(self):
         return f"{self.username} - {self.open_space.name} - {self.date}"
-
-    def calculate_end_time(self):
-        """Computes end_time using the date + default start time + duration."""
-        duration_lower = self.duration.lower()
-        hours = minutes = 0
-
-        hour_match = re.search(r'(\d+)\s*hour', duration_lower)
-        minute_match = re.search(r'(\d+)\s*minute', duration_lower)
-
-        if hour_match:
-            hours = int(hour_match.group(1))
-        if minute_match:
-            minutes = int(minute_match.group(1))
-
-        # Use 8:00 AM as default start time; adjust as necessary
-        start_time = datetime.combine(self.date, datetime.min.time().replace(hour=8))
-        return start_time + timedelta(hours=hours, minutes=minutes)
-
