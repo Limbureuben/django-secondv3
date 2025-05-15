@@ -204,14 +204,26 @@ class PasswordResetConfirmView(APIView):
             return Response({"error": str(e)}, status=400)
 
 
+# class OpenSpaceBookingView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         serializer = OpenSpaceBookingSerializer(data=request.data, context={'request': request})
+
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({"message": "Booking successful. The open space is now unavailable."}, status=status.HTTP_201_CREATED)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class OpenSpaceBookingView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        serializer = OpenSpaceBookingSerializer(data=request.data, context={'request': request})
-
+    def post(self, request, format=None):
+        serializer = OpenSpaceBookingSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Booking successful. The open space is now unavailable."}, status=status.HTTP_201_CREATED)
-
+            return Response({'message': 'Booking successful'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

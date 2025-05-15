@@ -32,16 +32,29 @@ class CustomUser(AbstractUser):
         return f"{self.username} ({self.role})"
 
 
+# class OpenSpaceBooking(models.Model):
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='open_space_bookings')
+#     open_space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
+#     username = models.CharField(max_length=100)
+#     contact = models.CharField(max_length=20)
+#     date = models.DateField(blank=True, default=timezone.now)  # changed from DateTimeField to DateField
+#     duration = models.CharField(max_length=50)  # e.g., '2 hours', '30 minutes'
+#     purpose = models.TextField()
+#     file = models.FileField(upload_to='ward_executive_files/', null=True, blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"{self.username} - {self.open_space.name} - {self.date}"
+
+
 class OpenSpaceBooking(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='open_space_bookings')
-    open_space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
-    username = models.CharField(max_length=100)
+    username = models.CharField(max_length=150)
     contact = models.CharField(max_length=20)
-    date = models.DateField(blank=True, default=timezone.now)  # changed from DateTimeField to DateField
-    duration = models.CharField(max_length=50)  # e.g., '2 hours', '30 minutes'
+    date = models.DateField()
+    duration = models.CharField(max_length=50)
     purpose = models.TextField()
-    file = models.FileField(upload_to='ward_executive_files/', null=True, blank=True)
+    file = models.FileField(upload_to='bookings/files/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.username} - {self.open_space.name} - {self.date}"
+        return f"{self.username} - {self.date}"
