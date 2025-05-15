@@ -48,6 +48,7 @@ class CustomUser(AbstractUser):
 
 
 class OpenSpaceBooking(models.Model):
+    space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
     username = models.CharField(max_length=150)
     contact = models.CharField(max_length=20)
     date = models.DateField()

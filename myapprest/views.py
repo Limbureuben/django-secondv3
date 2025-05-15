@@ -218,12 +218,21 @@ class PasswordResetConfirmView(APIView):
 
 
 class OpenSpaceBookingView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        space_id = request.data.get('space_id')
+        try:
+            space = OpenSpace.objects.get(id=space_id)
+        except OpenSpace.DoesNotExist:
+            return Response({'error': 'Open space not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def post(self, request, format=None):
+        if space.status == 'unavailable':
+            return Response({'error': 'This open space has already been booked and is unavailable.'}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = OpenSpaceBookingSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Booking successful'}, status=status.HTTP_201_CREATED)
+            serializer.save(space=space)
+            space.status = 'unavailable'
+            space.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
