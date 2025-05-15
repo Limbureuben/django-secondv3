@@ -67,7 +67,7 @@ class OpenSpaceBookingSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'space': {'required': False}  # not required from input
         }
-
+    
     def create(self, validated_data):
         request = self.context.get('request')
         space_id = request.data.get('space_id') if request else None
@@ -80,10 +80,12 @@ class OpenSpaceBookingSerializer(serializers.ModelSerializer):
         except OpenSpace.DoesNotExist:
             raise serializers.ValidationError({"space": "Open space not found."})
 
-        # Avoid duplication error
-        validated_data.pop('space', None)
+        if space.status == 'unavailable':
+            raise serializers.ValidationError({"space": "This open space has already been booked and is unavailable."})
 
+        validated_data.pop('space', None)  # Remove if present
         booking = OpenSpaceBooking.objects.create(space=space, **validated_data)
         return booking
+
 
 
