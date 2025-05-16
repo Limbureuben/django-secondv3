@@ -54,6 +54,7 @@ class OpenSpaceBooking(models.Model):
     date = models.DateField()
     duration = models.CharField(max_length=50)
     purpose = models.TextField()
+    district = models.CharField(max_length=250, default='Kinondoni')
     file = models.FileField(upload_to='bookings/files/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
