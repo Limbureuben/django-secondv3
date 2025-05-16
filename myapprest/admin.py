@@ -14,5 +14,5 @@ class CustomUserAdmin(admin.ModelAdmin):
 admin.site.register(CustomUser, CustomUserAdmin)
 
 class OpenSpaceBookingAdmin(admin.ModelAdmin):
-    list_display = ('username', 'contact', 'duration', 'space', 'district')
+    list_display = ('username', 'contact', 'duration', 'space', 'district', 'purpose')
 admin.site.register(OpenSpaceBooking, OpenSpaceBookingAdmin)
