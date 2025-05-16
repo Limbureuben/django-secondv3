@@ -88,6 +88,12 @@ class HistoryObject(graphene.ObjectType):
     report_id = graphene.String()
     description = graphene.String()
     created_at = graphene.String()
+
+class BookedOpenspaceObject(graphene.ObjectType):
+    username = graphene.String()
+    date = graphene.String()
+    duration = graphene.String()
+    district =graphene.String()
     
 class UserObject(graphene.ObjectType):
     pk=graphene.ID()

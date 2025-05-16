@@ -21,7 +21,7 @@ class Mutation(graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
     
 
-class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, HistoryCountQuery, ReportCountQuery,ReportAnonymousQuery,AuthenticatedUserReport, UserProfileQuery, ReportUssdQuery, QueryUsers, graphene.ObjectType):
+class Query(OpenspaceQuery, TotalOpenSpaceQuery, ReportQuery, HistoryReportQuery, HistoryCountQuery, ReportCountQuery,ReportAnonymousQuery,AuthenticatedUserReport, UserProfileQuery, ReportUssdQuery, QueryUsers, BookedOpenSpaceQuery, graphene.ObjectType):
     pass
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

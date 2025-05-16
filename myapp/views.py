@@ -1,6 +1,6 @@
 import uuid
 from django.conf import settings
-from myapprest.models import CustomUser
+from myapprest.models import *
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -389,83 +389,8 @@ class QueryUsers(graphene.ObjectType):
     
 
 
+class BookedOpenSpaceQuery(graphene.ObjectType):
+    booked_openspace = graphene.Field(BookedOpenspaceObject)
 
-
-
-
-
-
-
-
-
-# class UserType(DjangoObjectType):
-#     class Meta:
-#         model = CustomUser
-#         fields = ("id", "username", "is_staff", "is_superuser", "role")
-
-
-# class RegisterUser(graphene.Mutation):
-#     class Arguments:
-#         username = graphene.String(required=True)
-#         password = graphene.String(required=True)
-#         confirm_password = graphene.String(required=True)
-#         role = graphene.String()  # Optional
-
-#     user = graphene.Field(UserType)
-#     success = graphene.Boolean()
-#     message = graphene.String()
-
-#     def mutate(self, info, username, password, confirm_password, role=None):
-#         if password != confirm_password:
-#             return RegisterUser(success=False, message="Passwords do not match")
-
-#         if CustomUser.objects.filter(username=username).exists():
-#             return RegisterUser(success=False, message="Username already exists")
-
-#         role = role or "user"  # Default role if none provided or empty
-
-#         # Validate role value
-#         if role not in ['staff', 'ward_executive', 'user']:
-#             return RegisterUser(success=False, message="Invalid role provided")
-
-#         user = CustomUser(
-#             username=username,
-#             role=role,
-#             is_staff=(role == 'staff'),
-#             is_superuser=False
-#         )
-#         user.set_password(password)
-#         user.save()
-
-#         return RegisterUser(user=user, success=True, message="User registered successfully")
-
-
-
-# class LoginUserMutation(graphene.Mutation):
-#     class Arguments:
-#         username = graphene.String(required=True)
-#         password = graphene.String(required=True)
-
-#     user = graphene.Field(UserType)
-#     success = graphene.Boolean()
-#     message = graphene.String()
-#     role = graphene.String()
-#     token = graphene.String()
-
-#     def mutate(self, info, username, password):
-#         user = authenticate(username=username, password=password)
-#         if user is None:
-#             return LoginUserMutation(success=False, message="Invalid credentials")
-
-#         # Create JWT token
-#         refresh = RefreshToken.for_user(user)
-#         access_token = str(refresh.access_token)
-
-#         # Use the actual role field from your CustomUser model
-#         return LoginUserMutation(
-#             user=user,
-#             success=True,
-#             message=f"{user.role} login successful",
-#             token=access_token,
-#             role=user.role
-#         )
+    def resolve_booked_openspace(self, info):
+        return OpenSpaceBooking.objects.all()
