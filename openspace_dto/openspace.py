@@ -94,6 +94,7 @@ class BookedOpenspaceObject(graphene.ObjectType):
     date = graphene.String()
     duration = graphene.String()
     district =graphene.String()
+    purpose = graphene.String()
     
 class UserObject(graphene.ObjectType):
     pk=graphene.ID()
