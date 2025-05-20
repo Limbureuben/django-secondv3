@@ -42,7 +42,7 @@ class OpenSpace(models.Model):
         return self.name
     
 class ReportHistory(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     report_id = models.CharField(max_length=8, editable=False)
     description = models.TextField()
@@ -54,8 +54,8 @@ class ReportHistory(models.Model):
 class Report(models.Model):
     report_id = models.CharField(max_length=8, unique=True, editable=False)
     description = models.TextField()
-    email = models.EmailField(blank=True, null=True)  # Optional email field
-    file = models.FileField(upload_to='reports/', blank=True, null=True)  # Optional file field
+    email = models.EmailField(blank=True, null=True)
+    file = models.FileField(upload_to='reports/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     space_name = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
