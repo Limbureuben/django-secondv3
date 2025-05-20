@@ -43,7 +43,6 @@ class OpenSpace(models.Model):
     
 class ReportHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     report_id = models.CharField(max_length=8, editable=False)
     description = models.TextField()
     email = models.EmailField(blank=True, null=True)
@@ -61,7 +60,6 @@ class Report(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 
     def save(self, *args, **kwargs):

@@ -232,3 +232,18 @@ class OpenSpaceBookingView(APIView):
 
         print("Booking validation errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DistrictBookingsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.role != "ward_executive":
+            return Response({"error": "Unauthorized"}, status=403)
+
+        # Filter bookings by the district (which is equal to user's ward)
+        bookings = OpenSpaceBooking.objects.filter(district=user.ward)
+        serializer = OpenSpaceBookingSerializer(bookings, many=True)
+        return Response(serializer.data)
