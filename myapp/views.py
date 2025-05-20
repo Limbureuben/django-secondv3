@@ -238,8 +238,8 @@ class CreateReport(graphene.Mutation):
         
         if user_id:
             try:
-                user = User.objects.get(id=user_id)
-            except User.DoesNotExist:
+                user = CustomUser.objects.get(id=user_id)
+            except CustomUser.DoesNotExist:
                 raise Exception("Invalid user ID.")
         
         report = Report(

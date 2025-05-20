@@ -212,7 +212,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://10.0.2.2:8000",  # Flutter emulator (Android)
     "http://localhost:5000",  # Flutter web
     "http://127.0.0.1:42217",
-    "https://3eea-197-186-8-236.ngrok-free.app",
+    "https://00fe-197-186-29-49.ngrok-free.app",
     "http://127.0.0.1:8001"
 ]
 
