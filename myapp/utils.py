@@ -29,3 +29,15 @@ def is_explicit_image(file_path):
     print(f"[Explicit Check] File: {file_path} | Raw Nudity Score: {raw_score}")
 
     return raw_score > 0.5
+
+def is_inappropriate_text(text):
+    result = client.check('profanity,personal,insult').set_text(text)
+    
+    profanity_matches = result.get('profanity', {}).get('matches', [])
+    insult_matches = result.get('insult', {}).get('matches', [])
+    personal_matches = result.get('personal', {}).get('matches', [])
+
+    print(f"[Text Check] Inappropriate matches - Profanity: {profanity_matches}, Insults: {insult_matches}, Personal: {personal_matches}")
+
+    return bool(profanity_matches or insult_matches or personal_matches)
+
