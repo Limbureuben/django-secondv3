@@ -245,17 +245,20 @@ class CreateReport(graphene.Mutation):
     def mutate(self, info, description, email=None, file_path=None, space_name=None,
                latitude=None, longitude=None, user_id=None):
 
+        # 💬 Check for bad words
         if profanity.contains_profanity(description):
             raise GraphQLError("Description contains inappropriate language.")
 
+        # 🖼️ Check file
         if file_path:
             ext = os.path.splitext(file_path)[1].lower()
             if ext not in ALLOWED_FILE_EXTENSIONS:
                 raise GraphQLError("Invalid file type. Only PDF, JPG, and PNG are allowed.")
-            
+
             if is_explicit_image(file_path):
                 raise GraphQLError("Inappropriate image content detected.")
 
+        # 👤 Validate user
         user = None
         if user_id:
             try:
