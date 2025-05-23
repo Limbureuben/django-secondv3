@@ -253,7 +253,6 @@ class CreateReport(graphene.Mutation):
             if ext not in ALLOWED_FILE_EXTENSIONS:
                 raise GraphQLError("Invalid file type. Only PDF, JPG, and PNG are allowed.")
             
-            # 🔥 Explicit content check
             if is_explicit_image(file_path):
                 raise GraphQLError("Inappropriate image content detected.")
 

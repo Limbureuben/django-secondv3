@@ -4,7 +4,7 @@ from django.conf import settings
 import os
 
 # Use your real keys here or store in settings
-client = SightengineClient('your_api_user', 'your_api_secret')
+client = SightengineClient('159894964', 'hN3ySs6WQRKxENgNXgGmZF82RmPxpoLe')
 
 def is_explicit_image(file_path):
     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
