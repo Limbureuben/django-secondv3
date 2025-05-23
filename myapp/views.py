@@ -215,7 +215,7 @@ class ReportMutation(graphene.Mutation):
         response = report_issue(input)
         return ReportMutation(report=response.report, output=response)
     
-
+    
 class ReportType(DjangoObjectType):
     class Meta:
         model = Report
@@ -225,6 +225,8 @@ class ReportType(DjangoObjectType):
         if self.file:
             return f"{settings.MEDIA_URL}{self.file}"
         return None
+
+profanity.load_censor_words()
 
 ALLOWED_FILE_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png']
     
@@ -243,9 +245,9 @@ class CreateReport(graphene.Mutation):
     def mutate(self, info, description, email=None, file_path=None, space_name=None,
                latitude=None, longitude=None, user_id=None):
 
-        # 🔍 Detect inappropriate text
-        if is_inappropriate_text(description):
-            raise GraphQLError("Description contains offensive or inappropriate content.")
+        # 💬 Check for bad words
+        if profanity.contains_profanity(description):
+            raise GraphQLError("Description contains inappropriate language.")
 
         # 🖼️ Check file
         if file_path:
@@ -264,7 +266,6 @@ class CreateReport(graphene.Mutation):
             except CustomUser.DoesNotExist:
                 raise GraphQLError("Invalid user ID.")
 
-        # 📝 Save report
         report = Report(
             description=description,
             email=email,
@@ -277,7 +278,6 @@ class CreateReport(graphene.Mutation):
         report.save()
 
         return CreateReport(report=report)
-
 
 # class CreateReport(graphene.Mutation):
 #     class Arguments:
