@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from better_profanity import profanity # type: ignore
 import os
+from .utils import is_explicit_image
 
 
 class RegistrationMutation(graphene.Mutation):
@@ -251,8 +252,11 @@ class CreateReport(graphene.Mutation):
             ext = os.path.splitext(file_path)[1].lower()
             if ext not in ALLOWED_FILE_EXTENSIONS:
                 raise GraphQLError("Invalid file type. Only PDF, JPG, and PNG are allowed.")
+            
+            # 🔥 Explicit content check
+            if is_explicit_image(file_path):
+                raise GraphQLError("Inappropriate image content detected.")
 
-        # 👤 3. Validate user
         user = None
         if user_id:
             try:
