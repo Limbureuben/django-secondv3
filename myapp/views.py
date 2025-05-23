@@ -15,6 +15,9 @@ from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, Repo
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from better_profanity import profanity # type: ignore
+import os
+
 
 class RegistrationMutation(graphene.Mutation):
     user = graphene.Field(RegistrationObject)
@@ -221,6 +224,11 @@ class ReportType(DjangoObjectType):
         if self.file:
             return f"{settings.MEDIA_URL}{self.file}"
         return None
+
+profanity.load_censor_words()
+
+ALLOWED_FILE_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png']
+    
 class CreateReport(graphene.Mutation):
     class Arguments:
         description = graphene.String(required=True)
@@ -233,15 +241,25 @@ class CreateReport(graphene.Mutation):
 
     report = graphene.Field(ReportType)
 
-    def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None, user_id=None):
-        user=None
-        
+    def mutate(self, info, description, email=None, file_path=None, space_name=None,
+               latitude=None, longitude=None, user_id=None):
+
+        if profanity.contains_profanity(description):
+            raise GraphQLError("Description contains inappropriate language.")
+
+        if file_path:
+            ext = os.path.splitext(file_path)[1].lower()
+            if ext not in ALLOWED_FILE_EXTENSIONS:
+                raise GraphQLError("Invalid file type. Only PDF, JPG, and PNG are allowed.")
+
+        # 👤 3. Validate user
+        user = None
         if user_id:
             try:
                 user = CustomUser.objects.get(id=user_id)
             except CustomUser.DoesNotExist:
-                raise Exception("Invalid user ID.")
-        
+                raise GraphQLError("Invalid user ID.")
+
         report = Report(
             description=description,
             email=email,
@@ -252,8 +270,42 @@ class CreateReport(graphene.Mutation):
             user=user,
         )
         report.save()
-        file_url = f"{settings.MEDIA_URL}{report.file}" if report.file else None
+
         return CreateReport(report=report)
+
+# class CreateReport(graphene.Mutation):
+#     class Arguments:
+#         description = graphene.String(required=True)
+#         email = graphene.String(required=False)
+#         file_path = graphene.String(required=False)
+#         space_name = graphene.String(required=False)
+#         latitude = graphene.Float(required=False) 
+#         longitude = graphene.Float(required=False)
+#         user_id = graphene.ID(required=False)
+
+#     report = graphene.Field(ReportType)
+
+#     def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None, user_id=None):
+#         user=None
+        
+#         if user_id:
+#             try:
+#                 user = CustomUser.objects.get(id=user_id)
+#             except CustomUser.DoesNotExist:
+#                 raise Exception("Invalid user ID.")
+        
+#         report = Report(
+#             description=description,
+#             email=email,
+#             file=file_path,
+#             space_name=space_name,
+#             latitude=latitude,
+#             longitude=longitude,
+#             user=user,
+#         )
+#         report.save()
+#         file_url = f"{settings.MEDIA_URL}{report.file}" if report.file else None
+#         return CreateReport(report=report)
     
 class ReportQuery(graphene.ObjectType):
     all_reports = graphene.List(ReportType)

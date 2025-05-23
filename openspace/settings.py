@@ -210,9 +210,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",  # Angular frontend (default port)
     "http://127.0.0.1:8000",  # API itself
     "http://10.0.2.2:8000",  # Flutter emulator (Android)
-    "http://localhost:5000",  # Flutter web
+    "http://localhost:5000",
     "http://127.0.0.1:42217",
-    "https://00fe-197-186-29-49.ngrok-free.app",
+    "https://34cc-196-249-92-58.ngrok-free.app",
     "http://127.0.0.1:8001"
 ]
 
