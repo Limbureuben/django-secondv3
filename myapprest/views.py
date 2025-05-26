@@ -27,6 +27,7 @@ from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
+from rest_framework.decorators import api_view, permission_classes
 
 
 # views.py
@@ -247,3 +248,28 @@ class DistrictBookingsAPIView(APIView):
         bookings = OpenSpaceBooking.objects.filter(district=user.ward)
         serializer = OpenSpaceBookingSerializer(bookings, many=True)
         return Response(serializer.data)
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def accept_and_forward_booking(request, booking_id):
+    user = request.user
+    if user.role != "ward_executive":
+        return Response({"error": "Unauthorized"}, status=403)
+
+    try:
+        booking = OpenSpaceBooking.objects.get(id=booking_id, district=user.ward)
+    except OpenSpaceBooking.DoesNotExist:
+        return Response({"error": "Booking not found or unauthorized"}, status=404)
+
+    ward_executive_description = request.data.get('description', '').strip()
+    if not ward_executive_description:
+        return Response({"error": "Description is required"}, status=400)
+
+    forwarded_booking = ForwardedBooking.objects.create(
+        booking=booking,
+        ward_executive_description=ward_executive_description,
+        forwarded_by=user
+    )
+
+    return Response({"message": "Booking accepted and forwarded to admin"}, status=200)
