@@ -63,12 +63,11 @@ class OpenSpaceBooking(models.Model):
     
 
 class ForwardedBooking(models.Model):
-    # Original booking details
     booking = models.ForeignKey(OpenSpaceBooking, on_delete=models.CASCADE, related_name='forwarded_bookings')
     
     ward_executive_description = models.TextField()
     
-    forwarded_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Assuming you have a User model
+    forwarded_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     forwarded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
