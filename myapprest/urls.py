@@ -13,5 +13,5 @@ urlpatterns = [
     path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
     path('book-open-space/', OpenSpaceBookingView.as_view(), name='book-open-space'),
     path('district-bookings/', DistrictBookingsAPIView.as_view(), name='district-bookings'),
-    path('ward-executive/bookings/<int:booking_id>/accept/', accept_and_forward_booking, name='accept-and-forward-booking'),
+    path('accept-and-forward-booking/<int:booking_id>/', views.accept_and_forward_booking, name='accept-and-forward-booking'),
 ]
