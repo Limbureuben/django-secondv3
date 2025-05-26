@@ -60,3 +60,16 @@ class OpenSpaceBooking(models.Model):
 
     def __str__(self):
         return f"{self.username} - {self.date}"
+    
+
+class ForwardedBooking(models.Model):
+    # Original booking details
+    booking = models.ForeignKey(OpenSpaceBooking, on_delete=models.CASCADE, related_name='forwarded_bookings')
+    
+    ward_executive_description = models.TextField()
+    
+    forwarded_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Assuming you have a User model
+    forwarded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Forwarded by {self.forwarded_by.username} - {self.booking.username} - {self.booking.date}"

@@ -163,7 +163,7 @@ CustomUser = get_user_model()
 
 class SendResetPasswordEmailView(APIView):
     def post(self, request):
-        print("PasswordResetRequestView POST called")  # Console debug
+        print("PasswordResetRequestView POST called")
 
         email = request.data.get('email')
         if not email:
