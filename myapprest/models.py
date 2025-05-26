@@ -63,8 +63,7 @@ class OpenSpaceBooking(models.Model):
     
 
 class ForwardedBooking(models.Model):
-    booking = models.ForeignKey(OpenSpaceBooking, on_delete=models.CASCADE, related_name='forwarded_bookings')
-    
+    booking = models.OneToOneField(OpenSpaceBooking, on_delete=models.CASCADE, related_name='forwarded_booking')
     ward_executive_description = models.TextField()
     
     forwarded_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
