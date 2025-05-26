@@ -248,6 +248,7 @@ class OpenSpaceBookingView(APIView):
 #         bookings = OpenSpaceBooking.objects.filter(district=user.ward)
 #         serializer = OpenSpaceBookingSerializer(bookings, many=True)
 #         return Response(serializer.data)
+    
 
 from django.db.models import Q
 
