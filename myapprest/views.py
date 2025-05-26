@@ -235,6 +235,22 @@ class OpenSpaceBookingView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class DistrictBookingsAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         user = request.user
+
+#         if user.role != "ward_executive":
+#             return Response({"error": "Unauthorized"}, status=403)
+
+#         # Filter bookings by the district (which is equal to user's ward)
+#         bookings = OpenSpaceBooking.objects.filter(district=user.ward)
+#         serializer = OpenSpaceBookingSerializer(bookings, many=True)
+#         return Response(serializer.data)
+
+from django.db.models import Q
+
 class DistrictBookingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -244,10 +260,14 @@ class DistrictBookingsAPIView(APIView):
         if user.role != "ward_executive":
             return Response({"error": "Unauthorized"}, status=403)
 
-        # Filter bookings by the district (which is equal to user's ward)
-        bookings = OpenSpaceBooking.objects.filter(district=user.ward)
+        forwarded_booking_ids = ForwardedBooking.objects.values_list('booking_id', flat=True)
+        bookings = OpenSpaceBooking.objects.filter(
+            district=user.ward
+        ).exclude(id__in=forwarded_booking_ids)
+
         serializer = OpenSpaceBookingSerializer(bookings, many=True)
         return Response(serializer.data)
+
     
 
 @api_view(['POST'])
