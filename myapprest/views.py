@@ -205,18 +205,6 @@ class PasswordResetConfirmView(APIView):
             return Response({"error": str(e)}, status=400)
 
 
-# class OpenSpaceBookingView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         serializer = OpenSpaceBookingSerializer(data=request.data, context={'request': request})
-
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response({"message": "Booking successful. The open space is now unavailable."}, status=status.HTTP_201_CREATED)
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class OpenSpaceBookingView(APIView):
     def post(self, request):
@@ -294,3 +282,14 @@ def accept_and_forward_booking(request, booking_id):
     )
 
     return Response({"message": "Booking accepted and forwarded to admin"}, status=200)
+
+
+class ForwadedBookingAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        forwarded_bookings = ForwardedBooking.objects.filter(forwarded_by=user)
+        serializer = ForwardedBookingSerializer(forwarded_bookings, many=True)
+        return Response(serializer.data)

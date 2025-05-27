@@ -71,3 +71,5 @@ class ForwardedBooking(models.Model):
 
     def __str__(self):
         return f"Forwarded by {self.forwarded_by.username} - {self.booking.username} - {self.booking.date}"
+
+

@@ -25,6 +25,11 @@ class ProfileImageUploadSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['profile_image']
 
+class ForwardedBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForwardedBooking
+        fields = ['booking', 'ward_executive_description', 'forwarded_by']
+
 # serializers.py
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_image = serializers.SerializerMethodField()
@@ -39,25 +44,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.profile_image.url)
         return None
     
-
-# class OpenSpaceBookingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OpenSpaceBooking
-#         exclude = ['user']  # Prevent users from setting this directly
-
-#     def create(self, validated_data):
-#         user = self.context['request'].user  # Get user from request context
-#         booking = OpenSpaceBooking(user=user, **validated_data)
-#         booking.end_time = booking.calculate_end_time()
-
-#         open_space = booking.open_space
-#         if open_space.status == 'unavailable':
-#             raise serializers.ValidationError("This open space is already booked.")
-
-#         booking.save()
-#         open_space.status = 'unavailable'
-#         open_space.save()
-#         return booking
 
 
 class OpenSpaceBookingSerializer(serializers.ModelSerializer):
