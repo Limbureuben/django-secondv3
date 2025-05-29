@@ -324,7 +324,7 @@ def reject_booking(request, booking_id):
             user_email = booking.user.email
             subject = 'Your Booking Has Been Rejected'
             message = f"""
-Hello {booking.username},
+Hello {booking.user.username},
 
 Your booking for {booking.space.name} on {booking.date} has been rejected.
 The space is now available for others.
@@ -339,7 +339,7 @@ Thank you for understanding.
                 fail_silently=True
             )
         else:
-            print("No user or email to send rejection email to.")
+            print(f"Booking ID {booking.id}: No user or email to send rejection email to.")
 
         return Response({'message': 'Booking rejected successfully.'}, status=status.HTTP_200_OK)
 
