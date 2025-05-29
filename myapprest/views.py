@@ -319,12 +319,17 @@ def reject_booking(request, booking_id):
         booking.space.status = 'available'
         booking.space.save()
 
-        # 3. Send rejection email if user and email exist
+        # 3. Send rejection email if user or booking email exists
+        user_email = None
         if booking.user and booking.user.email:
             user_email = booking.user.email
+        elif hasattr(booking, 'email') and booking.email:
+            user_email = booking.email
+
+        if user_email:
             subject = 'Your Booking Has Been Rejected'
             message = f"""
-Hello {booking.user.username},
+Hello {booking.username},
 
 Your booking for {booking.space.name} on {booking.date} has been rejected.
 The space is now available for others.
@@ -339,7 +344,7 @@ Thank you for understanding.
                 fail_silently=True
             )
         else:
-            print(f"Booking ID {booking.id}: No user or email to send rejection email to.")
+            print("No user or email to send rejection email to.")
 
         return Response({'message': 'Booking rejected successfully.'}, status=status.HTTP_200_OK)
 
