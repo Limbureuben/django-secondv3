@@ -47,7 +47,28 @@ class CustomUser(AbstractUser):
 #         return f"{self.username} - {self.open_space.name} - {self.date}"
 
 
+# class OpenSpaceBooking(models.Model):
+#     space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
+#     username = models.CharField(max_length=150)
+#     contact = models.CharField(max_length=20)
+#     date = models.DateField()
+#     duration = models.CharField(max_length=50)
+#     purpose = models.TextField()
+#     district = models.CharField(max_length=250, default='Kinondoni')
+#     file = models.FileField(upload_to='bookings/files/', null=True, blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"{self.username} - {self.date}"
+
+
 class OpenSpaceBooking(models.Model):
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ]
     space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
     username = models.CharField(max_length=150)
     contact = models.CharField(max_length=20)
@@ -57,6 +78,7 @@ class OpenSpaceBooking(models.Model):
     district = models.CharField(max_length=250, default='Kinondoni')
     file = models.FileField(upload_to='bookings/files/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return f"{self.username} - {self.date}"
