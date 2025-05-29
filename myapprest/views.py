@@ -305,3 +305,14 @@ class AllBookingsAdminAPIView(APIView):
         bookings = OpenSpaceBooking.objects.all().order_by('-created_at')
         serializer = OpenSpaceBookingSerializer(bookings, many=True)
         return Response(serializer.data)
+    
+    
+@api_view(['POST'])
+def reject_booking(request, booking_id):
+    try:
+        booking = OpenSpaceBooking.objects.get(id=booking_id)
+        booking.status = 'rejected'
+        booking.save()
+        return Response({'message': 'Booking rejected successfully.'}, status=status.HTTP_200_OK)
+    except OpenSpaceBooking.DoesNotExist:
+        return Response({'error': 'Booking not found.'}, status=status.HTTP_404_NOT_FOUND)
