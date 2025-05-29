@@ -70,7 +70,7 @@ class OpenSpaceBooking(models.Model):
         ('rejected', 'Rejected'),
     ]
     space = models.ForeignKey(OpenSpace, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     username = models.CharField(max_length=150)
     contact = models.CharField(max_length=20)
     date = models.DateField()
