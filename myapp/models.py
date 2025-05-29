@@ -115,22 +115,3 @@ class Report(models.Model):
             [self.email],
             fail_silently=False,
         )
-
-
-    # def _send_notification_email(self):
-    #     subject = f'Your Report #{self.report_id} has been received'
-    #     message = f'''
-    #     Thank you for submitting your report.
-    #     Report ID: {self.report_id}
-    #     Submission Date: {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}
-    #     Location: {self.space_name if self.space_name else "Not specified"}
-    #     We have received your report and will process it shortly.
-    #     This is an automated message, please do not reply.
-    #     '''
-    #     send_mail(
-    #         subject,
-    #         message,
-    #         settings.DEFAULT_FROM_EMAIL,
-    #         [self.email],
-    #         fail_silently=False,
-    #     )

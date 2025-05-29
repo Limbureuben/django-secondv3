@@ -306,24 +306,24 @@ class AllBookingsAdminAPIView(APIView):
         serializer = OpenSpaceBookingSerializer(bookings, many=True)
         return Response(serializer.data)
     
-    
 @api_view(['POST'])
 def reject_booking(request, booking_id):
     try:
         booking = OpenSpaceBooking.objects.get(id=booking_id)
-        
+
         # 1. Update booking status
         booking.status = 'rejected'
         booking.save()
-        
+
         # 2. Update OpenSpace status to available
         booking.space.status = 'available'
         booking.space.save()
 
-        # 3. Send rejection email to the user
-        user_email = booking.user.email
-        subject = 'Your Booking Has Been Rejected'
-        message = f"""
+        # 3. Send rejection email if user and email exist
+        if booking.user and booking.user.email:
+            user_email = booking.user.email
+            subject = 'Your Booking Has Been Rejected'
+            message = f"""
 Hello {booking.username},
 
 Your booking for {booking.space.name} on {booking.date} has been rejected.
@@ -331,9 +331,49 @@ The space is now available for others.
 
 Thank you for understanding.
 """
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_email], fail_silently=True)
-        
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [user_email],
+                fail_silently=True
+            )
+        else:
+            print("No user or email to send rejection email to.")
+
         return Response({'message': 'Booking rejected successfully.'}, status=status.HTTP_200_OK)
 
     except OpenSpaceBooking.DoesNotExist:
         return Response({'error': 'Booking not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    
+# @api_view(['POST'])
+# def reject_booking(request, booking_id):
+#     try:
+#         booking = OpenSpaceBooking.objects.get(id=booking_id)
+        
+#         # 1. Update booking status
+#         booking.status = 'rejected'
+#         booking.save()
+        
+#         # 2. Update OpenSpace status to available
+#         booking.space.status = 'available'
+#         booking.space.save()
+
+#         # 3. Send rejection email to the user
+#         user_email = booking.user.email
+#         subject = 'Your Booking Has Been Rejected'
+#         message = f"""
+# Hello {booking.username},
+
+# Your booking for {booking.space.name} on {booking.date} has been rejected.
+# The space is now available for others.
+
+# Thank you for understanding.
+# """
+#         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_email], fail_silently=True)
+        
+#         return Response({'message': 'Booking rejected successfully.'}, status=status.HTTP_200_OK)
+
+#     except OpenSpaceBooking.DoesNotExist:
+#         return Response({'error': 'Booking not found.'}, status=status.HTTP_404_NOT_FOUND)
