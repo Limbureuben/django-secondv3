@@ -302,7 +302,6 @@ class AllBookingsAdminAPIView(APIView):
 
         if user.role != "staff":
             return Response({"error": "Unauthorized"}, status=403)
-
         bookings = OpenSpaceBooking.objects.all().order_by('-created_at')
         serializer = OpenSpaceBookingSerializer(bookings, many=True)
         return Response(serializer.data)
