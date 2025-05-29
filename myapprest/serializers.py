@@ -74,5 +74,13 @@ class OpenSpaceBookingSerializer(serializers.ModelSerializer):
         return booking
 
 
+class OpenSpaceBookingListSerializer(serializers.ModelSerializer):
+    space = serializers.StringRelatedField()
+
+    class Meta:
+        model = OpenSpaceBooking
+        fields = ['space', 'username', 'contact', 'duration', 'purpose', 'district']
+        read_only_fields = ['id', 'created_at']
+
 
 

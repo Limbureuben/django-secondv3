@@ -293,3 +293,16 @@ class ForwadedBookingAPIView(APIView):
         forwarded_bookings = ForwardedBooking.objects.filter(forwarded_by=user)
         serializer = ForwardedBookingSerializer(forwarded_bookings, many=True)
         return Response(serializer.data)
+
+
+class AllBookingsAdminAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+
+        if user.role != "staff":
+            return Response({"error": "Unauthorized"}, status=403)
+
+        bookings = OpenSpaceBooking.objects.all().order_by('-created_at')
+        serializer = OpenSpaceBookingSerializer(bookings, many=True)
+        return Response(serializer.data)
