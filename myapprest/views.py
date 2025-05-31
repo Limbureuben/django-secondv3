@@ -392,3 +392,13 @@ class UserBooking(APIView):
         bookings = OpenSpaceBooking.objects.filter(user=user).order_by('-created_at')
         serializer = OpenSpaceBookingSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+from rest_framework import generics, permissions
+
+class MyBookingsView(generics.ListAPIView):
+    serializer_class = OpenSpaceBookingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Get bookings for the logged-in user
+        return OpenSpaceBooking.objects.filter(user=self.request.user).order_by('-created_at')
