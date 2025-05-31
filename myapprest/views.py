@@ -126,7 +126,6 @@ class UssdReportType(DjangoObjectType):
 
 class ReportUssdQuery(graphene.ObjectType):
     all_reports_ussds = graphene.List(UssdReportType)
-
     def resolve_all_reports_ussds(self, info):
         # Fetch all reports
         return UssdReport.objects.all()
