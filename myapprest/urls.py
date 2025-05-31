@@ -16,5 +16,5 @@ urlpatterns = [
     path('accept-and-forward-booking/<int:booking_id>/', views.accept_and_forward_booking, name='accept-and-forward-booking'),
     path('allbooking/', AllBookingsAdminAPIView.as_view(), name="all_booking"),
     path('bookings/<int:booking_id>/reject/', reject_booking, name='reject-booking'),
-    path('my-bookings/', views.user_bookings, name='user_bookings')
+    path('my-bookings/', views.user_bookings_api, name='user_bookings')
 ]
