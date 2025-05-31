@@ -205,12 +205,33 @@ class PasswordResetConfirmView(APIView):
 
 
 
+# class OpenSpaceBookingView(APIView):
+#     def post(self, request):
+#         serializer = OpenSpaceBookingSerializer(data=request.data, context={'request': request})
+
+#         if serializer.is_valid():
+#             booking = serializer.save()
+
+#             # Mark the space as unavailable
+#             booking.space.status = 'unavailable'
+#             booking.space.save()
+
+#             return Response(OpenSpaceBookingSerializer(booking).data, status=status.HTTP_201_CREATED)
+
+#         print("Booking validation errors:", serializer.errors)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class OpenSpaceBookingView(APIView):
     def post(self, request):
-        serializer = OpenSpaceBookingSerializer(data=request.data, context={'request': request})
+        serializer = OpenSpaceBookingSerializer(
+            data=request.data,
+            context={'request': request}  # Pass the request to the serializer context
+        )
 
         if serializer.is_valid():
-            booking = serializer.save()
+            # Save booking and associate with the logged-in user
+            booking = serializer.save(user=request.user)  # pass user here!
 
             # Mark the space as unavailable
             booking.space.status = 'unavailable'
@@ -220,6 +241,7 @@ class OpenSpaceBookingView(APIView):
 
         print("Booking validation errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # class DistrictBookingsAPIView(APIView):
