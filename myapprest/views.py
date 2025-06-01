@@ -231,7 +231,7 @@ class OpenSpaceBookingView(APIView):
 
         if serializer.is_valid():
             # Save booking and associate with the logged-in user
-            booking = serializer.save(user=request.user)  # pass user here!
+            booking = serializer.save(user=request.user)
 
             # Mark the space as unavailable
             booking.space.status = 'unavailable'
