@@ -3,5 +3,5 @@ from .views import *
 
 
 urlpatterns = [
-    
+     path('api/confirm-report/', confirm_report),
 ]
