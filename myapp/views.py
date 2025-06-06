@@ -245,11 +245,10 @@ class CreateReport(graphene.Mutation):
     def mutate(self, info, description, email=None, file_path=None, space_name=None,
                latitude=None, longitude=None, user_id=None):
 
-        # 💬 Check for bad words
+
         if profanity.contains_profanity(description):
             raise GraphQLError("Description contains inappropriate language.")
 
-        # 🖼️ Check file
         if file_path:
             ext = os.path.splitext(file_path)[1].lower()
             if ext not in ALLOWED_FILE_EXTENSIONS:
@@ -258,7 +257,6 @@ class CreateReport(graphene.Mutation):
             if is_explicit_image(file_path):
                 raise GraphQLError("Inappropriate image content detected.")
 
-        # 👤 Validate user
         user = None
         if user_id:
             try:
@@ -279,39 +277,6 @@ class CreateReport(graphene.Mutation):
 
         return CreateReport(report=report)
 
-# class CreateReport(graphene.Mutation):
-#     class Arguments:
-#         description = graphene.String(required=True)
-#         email = graphene.String(required=False)
-#         file_path = graphene.String(required=False)
-#         space_name = graphene.String(required=False)
-#         latitude = graphene.Float(required=False) 
-#         longitude = graphene.Float(required=False)
-#         user_id = graphene.ID(required=False)
-
-#     report = graphene.Field(ReportType)
-
-#     def mutate(self, info, description, email=None, file_path=None, space_name=None, latitude=None, longitude=None, user_id=None):
-#         user=None
-        
-#         if user_id:
-#             try:
-#                 user = CustomUser.objects.get(id=user_id)
-#             except CustomUser.DoesNotExist:
-#                 raise Exception("Invalid user ID.")
-        
-#         report = Report(
-#             description=description,
-#             email=email,
-#             file=file_path,
-#             space_name=space_name,
-#             latitude=latitude,
-#             longitude=longitude,
-#             user=user,
-#         )
-#         report.save()
-#         file_url = f"{settings.MEDIA_URL}{report.file}" if report.file else None
-#         return CreateReport(report=report)
     
 class ReportQuery(graphene.ObjectType):
     all_reports = graphene.List(ReportType)
@@ -452,3 +417,20 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
 
     def resolve_booked_openspace(self, info):
         return OpenSpaceBooking.objects.all()
+
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from myapp.sms import send_sms
+
+@api_view(['POST'])
+def confirm_report(request):
+    phone = request.data.get("phone")
+    message = request.data.get("message")
+
+    try:
+        response = send_sms(phone, message)
+        return Response({"status": "success", "data": response})
+    except Exception as e:
+        return Response({"status": "error", "message": str(e)}, status=500)
