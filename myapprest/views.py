@@ -411,6 +411,10 @@ from .sms import send_sms
 
 @api_view(['POST'])
 def confirm_report(request, report_id):
+    print("BEEM_API_KEY:", settings.BEEM_API_KEY)
+    print("BEEM_SECRET_KEY:", settings.BEEM_SECRET_KEY)
+    print("BEEM_SENDER_ID:", settings.BEEM_SENDER_ID)
+    
     try:
         print(f"Fetching report with id: {report_id}")
         report = UssdReport.objects.get(id=report_id)

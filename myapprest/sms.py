@@ -1,27 +1,24 @@
 import requests
 import os
+import requests
+from requests.auth import HTTPBasicAuth
 
-def send_sms(to, message):
-    url = 'https://apisms.beem.africa/v1/send'
-    api_key = os.getenv("BEEM_API_KEY")
-    secret_key = os.getenv("BEEM_SECRET_KEY")
-    sender_id = os.getenv("BEEM_SENDER_ID")
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Basic {api_key}:{secret_key}',
-    }
-
-    payload = {
-        "source_addr": sender_id,
-        "encoding": "0",
-        "schedule_time": "",
+def send_sms(phone, message):
+    url = "https://apisms.beem.africa/v1/send"
+    data = {
+        "source_addr": "ARDHI UN",
+        "encoding": 0,
         "message": message,
         "recipients": [
-            {"recipient_id": 1, "dest_addr": to}
+            {
+                "recipient_id": 1,
+                "dest_addr": phone
+            }
         ]
     }
+    username = os.environ.get("BEEM_API_KEY")
+    password = os.environ.get("BEEM_SECRET_KEY")
 
-    response = requests.post(url, headers=headers, json=payload)
-    response.raise_for_status()  # Raise exception for HTTP error codes
+    response = requests.post(url, json=data, auth=HTTPBasicAuth(username, password))
+    response.raise_for_status()
     return response.json()
