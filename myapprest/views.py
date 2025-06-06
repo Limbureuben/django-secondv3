@@ -4,7 +4,6 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from myapprest.task import send_reset_email_task
-from .utils.sms import send_confirmation_sms
 from rest_framework.views import APIView # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework import status # type: ignore
@@ -407,38 +406,28 @@ class MyBookingsView(generics.ListAPIView):
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .sms import send_sms
-
+from .utils import decrypt_phone_number
 
 @api_view(['POST'])
 def confirm_report(request, report_id):
-    print("BEEM_API_KEY:", settings.BEEM_API_KEY)
-    print("BEEM_SECRET_KEY:", settings.BEEM_SECRET_KEY)
-    print("BEEM_SENDER_ID:", settings.BEEM_SENDER_ID)
-    
     try:
-        print(f"Fetching report with id: {report_id}")
         report = UssdReport.objects.get(id=report_id)
-        print(f"Report found: {report.reference_number}")
+        decrypted_phone = decrypt_phone_number(report.phone_number)
 
-        phone = report.phone_number
-        print(f"Phone number: {phone}")
+        message = (
+            f"Hello! Your report with reference number {report.reference_number} "
+            f"regarding '{report.open_space}' has been successfully confirmed. "
+            f"Thank you for helping us improve our community."
+        )
 
-        message = f"Dear user, your report with reference number {report.reference_number} has been confirmed."
-        print(f"Message: {message}")
-
-        response = send_sms(phone, message)
-        print("SMS sent successfully")
-
+        response = send_sms(decrypted_phone, message)
         report.status = 'processed'
         report.save()
-        print("Report status updated")
 
         return Response({"status": "success", "data": response})
 
     except UssdReport.DoesNotExist:
-        print("Report not found")
         return Response({"status": "error", "message": "Report not found"}, status=404)
 
     except Exception as e:
-        print(f"Unexpected error: {str(e)}")
         return Response({"status": "error", "message": str(e)}, status=500)

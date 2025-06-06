@@ -261,4 +261,5 @@ load_dotenv()
 BEEM_API_KEY = os.getenv("BEEM_API_KEY")
 BEEM_SECRET_KEY = os.getenv("BEEM_SECRET_KEY")
 BEEM_SENDER_ID = os.getenv("BEEM_SENDER_ID")
+FERNET_KEY = os.getenv("FERNET_KEY")
 
