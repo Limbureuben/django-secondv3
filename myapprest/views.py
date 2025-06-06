@@ -83,27 +83,51 @@ def submit_problem_report(request):
         return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['POST'])
-def confirm_report(request, pk):
-    try:
-        # Get report by primary key (id)
-        report = UssdReport.objects.get(pk=pk)
+class ConfirmReportAPIView(APIView):
+    def post(self, request, pk):
+        try:
+            report = UssdReport.objects.get(pk=pk)
+            if report.status != 'processed':
+                report.status = 'processed'
+                report.save()
 
-        # Update status
-        report.status = 'Processed'
-        report.save()
+                # Send SMS to user
+                message = f"Hello {report.username}, your report #{report.reference} has been confirmed."
+                send_sms(report.phone_number, message)
 
-        # Send SMS using encrypted phone number
-        success = send_confirmation_sms(report.phone_number, report.reference_number)
-        if not success:
-            return Response({"warning": "Report confirmed, but SMS failed to send"}, status=status.HTTP_200_OK)
+                return Response({'message': 'Report confirmed and SMS sent.'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Report already processed.'}, status=status.HTTP_200_OK)
+        except UssdReport.DoesNotExist:
+            return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({"message": "Report confirmed and SMS sent successfully."}, status=status.HTTP_200_OK)
 
-    except UssdReport.DoesNotExist:
-        return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+# @api_view(['POST'])
+# def confirm_report(request, pk):
+#     try:
+#         # Get report by primary key (id)
+#         report = UssdReport.objects.get(pk=pk)
+
+#         # Update status
+#         report.status = 'Processed'
+#         report.save()
+
+#         # Send SMS using encrypted phone number
+#         success = send_confirmation_sms(report.phone_number, report.reference_number)
+#         if not success:
+#             return Response({"warning": "Report confirmed, but SMS failed to send"}, status=status.HTTP_200_OK)
+
+#         return Response({"message": "Report confirmed and SMS sent successfully."}, status=status.HTTP_200_OK)
+
+#     except UssdReport.DoesNotExist:
+#         return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 
 @api_view(['GET'])
