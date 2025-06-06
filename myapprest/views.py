@@ -409,12 +409,26 @@ from rest_framework.response import Response
 from .sms import send_sms
 
 @api_view(['POST'])
-def confirm_report(request):
-    phone = request.data.get("phone")
-    message = request.data.get("message")
-
+def confirm_report(request, report_id):
     try:
+        # Fetch the report using the provided ID
+        report = UssdReport.objects.get(id=report_id)
+
+        # Prepare message and phone number
+        phone = report.phone
+        message = f"Dear {report.name}, your report has been confirmed. Thank you."
+
+        # Send SMS
         response = send_sms(phone, message)
+
+        # Update report status if needed
+        report.status = 'processed'
+        report.save()
+
         return Response({"status": "success", "data": response})
+    
+    except UssdReport.DoesNotExist:
+        return Response({"status": "error", "message": "Report not found"}, status=404)
+    
     except Exception as e:
         return Response({"status": "error", "message": str(e)}, status=500)
