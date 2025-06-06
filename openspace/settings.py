@@ -259,8 +259,7 @@ BEEM_SECRET_KEY = 'OTVhOGY5NWRmNWUzZDJmOGMyNTg4YzBiNjUxNDk5ODI0ZjljYmE1NjFjYTIxO
 BEEM_SENDER_ID = 'OPENSPACE'
 
 
-from dotenv import load_dotenv
-
+from dotenv import load_dotenv # type: ignore
 load_dotenv()
 
 BEEM_API_KEY = os.getenv("BEEM_API_KEY")
