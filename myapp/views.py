@@ -31,53 +31,6 @@ class RegistrationMutation(graphene.Mutation):
         response = register_user(input)
         return RegistrationMutation(user=response.user, output=response)
 
-# class LoginUser(graphene.Mutation):
-#     user = graphene.Field(UserLoginObject)
-#     message = graphene.String()
-#     success = graphene.Boolean()
-
-#     class Arguments:
-#         input = UserLoginInputObject(required=True)
-
-#     def mutate(self, info, input):
-#         username = input.username
-#         password = input.password
-
-#         try:
-#             # Authenticate user using the custom user model
-#             user = authenticate(username=username, password=password)
-
-#             if user is None:
-#                 raise ValidationError("Invalid username or password.")
-
-#             # Ensure the user is an instance of CustomUser
-#             if not isinstance(user, CustomUser):
-#                 raise ValidationError("User is not a valid CustomUser instance.")
-
-#             # Create and return tokens (assuming you use JWT or similar)
-#             result = UserBuilder.login_user(username, password)  # This should handle JWT generation and user data retrieval
-            
-#             print(result)
-#             print(user)
-
-#             # Return user data and authentication tokens
-#             return LoginUser(
-#                 user=UserLoginObject(
-#                     id=user.id,
-#                     username=user.username,
-#                     refresh_token=result["refresh"],
-#                     access_token=result["access"],
-#                     isStaff=user.is_staff,
-#                     isWardExecutive=user.role == "ward_executive",
-#                 ),
-#                 success=True,
-#                 message="Login successful",
-#             )
-
-#         except ValidationError as e:
-#             return LoginUser(success=False, message=str(e))
-#         except Exception as e:
-#             return LoginUser(success=False, message=f"An error occurred: {str(e)}")
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -422,7 +375,7 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from myapp.sms import send_sms
+from .sms import send_sms
 
 @api_view(['POST'])
 def confirm_report(request):
