@@ -408,29 +408,24 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .sms import send_sms
 
+
 @api_view(['POST'])
 def confirm_report(request, report_id):
-    print(f"Received report_id: {report_id}")
     try:
         report = UssdReport.objects.get(id=report_id)
-        print(f"Report found: {report}")
 
-        phone = report.phone
-        message = f"Dear {report.name}, your report has been confirmed. Thank you."
+        phone = report.phone_number
+        message = f"Dear user, your report with reference number {report.reference_number} has been confirmed."
 
-        print(f"Sending SMS to {phone}: {message}")
         response = send_sms(phone, message)
 
         report.status = 'processed'
         report.save()
 
-        print(f"Report {report_id} confirmed and updated.")
         return Response({"status": "success", "data": response})
 
     except UssdReport.DoesNotExist:
-        print("Report not found.")
         return Response({"status": "error", "message": "Report not found"}, status=404)
 
     except Exception as e:
-        print("Unexpected error:", str(e))
         return Response({"status": "error", "message": str(e)}, status=500)
