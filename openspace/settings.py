@@ -252,8 +252,13 @@ os.environ["FERNET_KEY"] = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 AUTH_USER_MODEL = 'myapprest.CustomUser'
 
 
-# settings.py
 
-BEEM_API_KEY = '6bf8792e31f514f3'
-BEEM_SECRET_KEY = 'YzkyYzNlYjIyYmU4NjQxY2E5NjA1MTM4YWU2NDM0YTUyY2YxMWZlZmRhMDVlZGQ3NGNlNDE1ZWRjMjMzNTMzOA=='
-BEEM_SENDER_ID = 'ARDHI UN'
+from dotenv import load_dotenv # type: ignore
+
+load_dotenv()
+
+# Now fetch the keys from the environment
+BEEM_API_KEY = os.getenv("BEEM_API_KEY")
+BEEM_SECRET_KEY = os.getenv("BEEM_SECRET_KEY")
+BEEM_SENDER_ID = os.getenv("BEEM_SENDER_ID")
+
