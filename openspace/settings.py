@@ -257,3 +257,10 @@ AUTH_USER_MODEL = 'myapprest.CustomUser'
 BEEM_API_KEY = '3d810adc99e3afa0'
 BEEM_SECRET_KEY = 'OTVhOGY5NWRmNWUzZDJmOGMyNTg4YzBiNjUxNDk5ODI0ZjljYmE1NjFjYTIxODM1ODgzOTIxOTFlNDNiNDY2YQ=='
 BEEM_SENDER_ID = 'OPENSPACE'
+
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BEEM_API_KEY = os.getenv("BEEM_API_KEY")
