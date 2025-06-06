@@ -372,18 +372,3 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
         return OpenSpaceBooking.objects.all()
 
 
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .sms import send_sms
-
-@api_view(['POST'])
-def confirm_report(request):
-    phone = request.data.get("phone")
-    message = request.data.get("message")
-
-    try:
-        response = send_sms(phone, message)
-        return Response({"status": "success", "data": response})
-    except Exception as e:
-        return Response({"status": "error", "message": str(e)}, status=500)
