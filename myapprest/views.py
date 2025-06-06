@@ -412,20 +412,29 @@ from .sms import send_sms
 @api_view(['POST'])
 def confirm_report(request, report_id):
     try:
+        print(f"Fetching report with id: {report_id}")
         report = UssdReport.objects.get(id=report_id)
+        print(f"Report found: {report.reference_number}")
 
         phone = report.phone_number
+        print(f"Phone number: {phone}")
+
         message = f"Dear user, your report with reference number {report.reference_number} has been confirmed."
+        print(f"Message: {message}")
 
         response = send_sms(phone, message)
+        print("SMS sent successfully")
 
         report.status = 'processed'
         report.save()
+        print("Report status updated")
 
         return Response({"status": "success", "data": response})
 
     except UssdReport.DoesNotExist:
+        print("Report not found")
         return Response({"status": "error", "message": "Report not found"}, status=404)
 
     except Exception as e:
+        print(f"Unexpected error: {str(e)}")
         return Response({"status": "error", "message": str(e)}, status=500)
