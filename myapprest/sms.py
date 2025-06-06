@@ -1,31 +1,25 @@
 import requests
-import base64
-from django.conf import settings
+import os
 
-def send_sms(to_phone, message):
-    url = "https://apisms.beem.africa/v1/send"
-    
-    api_key = settings.BEEM_API_KEY
-    secret_key = settings.BEEM_SECRET_KEY
-    sender_id = settings.BEEM_SENDER_ID
-
-    credentials = f"{api_key}:{secret_key}"
-    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+def send_sms(to_number, message):
+    api_url = 'https://apisms.beem.africa/v1/send'
+    api_key = os.getenv('BEEM_API_KEY')
+    secret_key = os.getenv('BEEM_SECRET_KEY')
+    sender_id = os.getenv('BEEM_SENDER_ID')
 
     headers = {
-        "Authorization": f"Basic {encoded_credentials}",
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
+        'Authorization': f'Basic {api_key}:{secret_key}'
     }
 
-    data = {
-        "source_addr": sender_id,
-        "schedule_time": "",
-        "encoding": "0",
-        "message": message,
-        "recipients": [
-            {"recipient_id": "1", "dest_addr": to_phone}
-        ]
+    payload = {
+        'source_addr': sender_id,
+        'encoding': 0,
+        'schedule_time': '',
+        'message': message,
+        'recipients': [{'recipient_id': 1, 'dest_addr': to_number}]
     }
 
-    response = requests.post(url, json=data, headers=headers)
+    response = requests.post(api_url, json=payload, headers=headers)
+    response.raise_for_status()
     return response.json()
