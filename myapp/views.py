@@ -21,6 +21,8 @@ from .utils import is_explicit_image, is_inappropriate_text
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from .serializer import *
 
 
 class RegistrationMutation(graphene.Mutation):
@@ -375,34 +377,42 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
 
 
 
-class ReplyToReportAPIView(APIView):
+class ReplyToReportView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        report_id = request.data.get('report')
-        message = request.data.get('message')
+        report_id = request.data.get("report")
+        message = request.data.get("message")
 
         try:
-            report = Report.objects.get(report_id=report_id)
+            report = Report.objects.get(id=report_id)
+        except Report.DoesNotExist:
+            return Response({"error": "Report not found."}, status=404)
 
-            if not report.email:
-                return Response({'error': 'No email address available for this report.'}, status=status.HTTP_400_BAD_REQUEST)
+        reply = ReportReply.objects.create(
+            report=report,
+            sender=request.user,
+            message=message
+        )
 
-            subject = "Response to Your Open Space Report"
-            body = (
-                f"Dear {report.user.username if report.user else 'user'},\n\n"
-                f"Thank you for reporting the issue.\n\n"
-                f"Admin's Reply:\n{message}\n\n"
-                "Regards,\nOpen Space Team"
-            )
+        subject = "Response to Your Open Space Report"
+        body = (
+            f"Hi {report.reporter.username},\n\n"
+            f"We’ve received your report:\n\n\"{report.message}\"\n\n"
+            f"Our reply:\n\"{message}\"\n\n"
+            f"Thank you for helping us keep the community clean.\n\n"
+            f"– Open Space Monitoring Team"
+        )
 
+        try:
             send_mail(
                 subject,
                 body,
-                'limbureubenn@gmail.com',  # from
-                [report.email],            # to
+                settings.DEFAULT_FROM_EMAIL,
+                [report.reporter.email],
                 fail_silently=False,
             )
+        except Exception as e:
+            return Response({"error": "Reply saved, but email sending failed.", "details": str(e)}, status=500)
 
-            return Response({'success': 'Reply email sent to user.'}, status=status.HTTP_200_OK)
-
-        except Report.DoesNotExist:
-            return Response({'error': 'Report not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(ReportReplySerializer(reply).data, status=201)

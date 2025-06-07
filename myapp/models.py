@@ -115,3 +115,10 @@ class Report(models.Model):
             [self.email],
             fail_silently=False,
         )
+
+
+class ReportReply(models.Model):
+    report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="replies")
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
