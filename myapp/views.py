@@ -377,7 +377,8 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
         return OpenSpaceBooking.objects.all()
 
 
-User = get_user_model()
+
+CustomerUser = get_user_model()
 class ReplyToReportAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
@@ -391,29 +392,28 @@ class ReplyToReportAPIView(APIView):
         try:
             report = Report.objects.get(report_id=report_id)
 
-            # Save the reply to the database
+            # Save reply
             ReportReply.objects.create(
                 report=report,
-                sender=request.user,  # Admin user
+                sender=request.user,
                 message=message
             )
 
-            # Send email only if an email exists
+            # Send email if available
             if report.email:
-                subject = "Response to Your Open Space Report"
+                subject = "Reply to Your Report on Open Space Use"
                 body = (
                     f"Dear {report.user.username if report.user else 'user'},\n\n"
-                    f"Thank you for your report.\n\n"
-                    f"Admin's Reply:\n{message}\n\n"
-                    "Best regards,\nOpen Space Team"
+                    f"Your report has been reviewed.\n\n"
+                    f"Admin Reply:\n{message}\n\n"
+                    "Thank you,\nOpen Space Management"
                 )
-
                 send_mail(
                     subject,
                     body,
-                    'limbureubenn@gmail.com',  # from
-                    [report.email],            # to
-                    fail_silently=False,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [report.email],
+                    fail_silently=False
                 )
 
             return Response({'success': 'Reply saved and email sent (if email exists).'}, status=status.HTTP_200_OK)
