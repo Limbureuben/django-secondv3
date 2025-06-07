@@ -431,3 +431,36 @@ def confirm_report(request, report_id):
 
     except Exception as e:
         return Response({"status": "error", "message": str(e)}, status=500)
+
+
+
+@api_view(['POST'])
+def reply_to_report(request, report_id):
+    try:
+        report = UssdReport.objects.get(id=report_id)
+        decrypted_phone = decrypt_phone_number(report.phone_number)
+
+        custom_message = request.data.get("message", "")
+        if not custom_message:
+            return Response({"status": "error", "message": "Message content is required"}, status=400)
+
+        response = send_sms(decrypted_phone, custom_message)
+
+        return Response({"status": "success", "message": "Reply sent successfully", "data": response})
+
+    except UssdReport.DoesNotExist:
+        return Response({"status": "error", "message": "Report not found"}, status=404)
+
+
+@api_view(['DELETE'])
+def delete_report(request, report_id):
+    try:
+        report = UssdReport.objects.get(id=report_id)
+        report.delete()
+        return Response({"status": "success", "message": "Report deleted successfully"})
+    
+    except UssdReport.DoesNotExist:
+        return Response({"status": "error", "message": "Report not found"}, status=404)
+    
+    except Exception as e:
+        return Response({"status": "error", "message": str(e)}, status=500)

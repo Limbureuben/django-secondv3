@@ -367,7 +367,6 @@ class QueryUsers(graphene.ObjectType):
 
 class BookedOpenSpaceQuery(graphene.ObjectType):
     booked_openspace = graphene.List(BookedOpenspaceObject)
-
     def resolve_booked_openspace(self, info):
         return OpenSpaceBooking.objects.all()
 
