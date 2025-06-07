@@ -18,6 +18,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from better_profanity import profanity # type: ignore
 import os
 from .utils import is_explicit_image, is_inappropriate_text
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class RegistrationMutation(graphene.Mutation):
@@ -371,3 +374,35 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
         return OpenSpaceBooking.objects.all()
 
 
+
+class ReplyToReportAPIView(APIView):
+    def post(self, request):
+        report_id = request.data.get('report')
+        message = request.data.get('message')
+
+        try:
+            report = Report.objects.get(report_id=report_id)
+
+            if not report.email:
+                return Response({'error': 'No email address available for this report.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            subject = "Response to Your Open Space Report"
+            body = (
+                f"Dear {report.user.username if report.user else 'user'},\n\n"
+                f"Thank you for reporting the issue.\n\n"
+                f"Admin's Reply:\n{message}\n\n"
+                "Regards,\nOpen Space Team"
+            )
+
+            send_mail(
+                subject,
+                body,
+                'limbureubenn@gmail.com',  # from
+                [report.email],            # to
+                fail_silently=False,
+            )
+
+            return Response({'success': 'Reply email sent to user.'}, status=status.HTTP_200_OK)
+
+        except Report.DoesNotExist:
+            return Response({'error': 'Report not found.'}, status=status.HTTP_404_NOT_FOUND)
