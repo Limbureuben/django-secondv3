@@ -383,40 +383,34 @@ class ReplyToReportAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def post(self, request):
-        report_id = request.data.get('report')
+        report_id = request.data.get('report_id')
         message = request.data.get('message')
 
         if not report_id or not message:
-            return Response({'error': 'Missing report ID or message.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Missing report_id or message'}, status=400)
 
         try:
             report = Report.objects.get(report_id=report_id)
+        except Report.DoesNotExist:
+            return Response({'error': 'Report not found'}, status=404)
 
-            # Save reply
-            ReportReply.objects.create(
+        try:
+            reply = ReportReply.objects.create(
                 report=report,
-                sender=request.user,
+                sender=request.user if request.user.is_authenticated else None,
                 message=message
             )
+            reply.save()
 
-            # Send email if available
+            # Send email if email exists
             if report.email:
-                subject = "Reply to Your Report on Open Space Use"
-                body = (
-                    f"Dear {report.user.username if report.user else 'user'},\n\n"
-                    f"Your report has been reviewed.\n\n"
-                    f"Admin Reply:\n{message}\n\n"
-                    "Thank you,\nOpen Space Management"
-                )
                 send_mail(
-                    subject,
-                    body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [report.email],
-                    fail_silently=False
+                    subject="Reply to Your Report",
+                    message=message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[report.email],
+                    fail_silently=False,
                 )
-
-            return Response({'success': 'Reply saved and email sent (if email exists).'}, status=status.HTTP_200_OK)
-
-        except Report.DoesNotExist:
-            return Response({'error': 'Report not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'success': 'Reply sent successfully'}, status=200)
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)

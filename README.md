@@ -20,7 +20,8 @@ Run the development server:
 ```bash
 python manage.py runserver
 ```
-## Running the Development Server
+Run the tests:
 ```bash
-python manage.py runserver
+python manage.py test
 ```
+
