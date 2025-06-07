@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 from .serializer import *
 
 
@@ -376,43 +377,46 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
         return OpenSpaceBooking.objects.all()
 
 
-
-class ReplyToReportView(APIView):
-    permission_classes = [IsAuthenticated]
+User = get_user_model()
+class ReplyToReportAPIView(APIView):
+    permission_classes = [permissions.IsAdminUser]
 
     def post(self, request):
-        report_id = request.data.get("report")
-        message = request.data.get("message")
+        report_id = request.data.get('report')
+        message = request.data.get('message')
+
+        if not report_id or not message:
+            return Response({'error': 'Missing report ID or message.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            report = Report.objects.get(id=report_id)
-        except Report.DoesNotExist:
-            return Response({"error": "Report not found."}, status=404)
+            report = Report.objects.get(report_id=report_id)
 
-        reply = ReportReply.objects.create(
-            report=report,
-            sender=request.user,
-            message=message
-        )
-
-        subject = "Response to Your Open Space Report"
-        body = (
-            f"Hi {report.reporter.username},\n\n"
-            f"We’ve received your report:\n\n\"{report.message}\"\n\n"
-            f"Our reply:\n\"{message}\"\n\n"
-            f"Thank you for helping us keep the community clean.\n\n"
-            f"– Open Space Monitoring Team"
-        )
-
-        try:
-            send_mail(
-                subject,
-                body,
-                settings.DEFAULT_FROM_EMAIL,
-                [report.reporter.email],
-                fail_silently=False,
+            # Save the reply to the database
+            ReportReply.objects.create(
+                report=report,
+                sender=request.user,  # Admin user
+                message=message
             )
-        except Exception as e:
-            return Response({"error": "Reply saved, but email sending failed.", "details": str(e)}, status=500)
 
-        return Response(ReportReplySerializer(reply).data, status=201)
+            # Send email only if an email exists
+            if report.email:
+                subject = "Response to Your Open Space Report"
+                body = (
+                    f"Dear {report.user.username if report.user else 'user'},\n\n"
+                    f"Thank you for your report.\n\n"
+                    f"Admin's Reply:\n{message}\n\n"
+                    "Best regards,\nOpen Space Team"
+                )
+
+                send_mail(
+                    subject,
+                    body,
+                    'limbureubenn@gmail.com',  # from
+                    [report.email],            # to
+                    fail_silently=False,
+                )
+
+            return Response({'success': 'Reply saved and email sent (if email exists).'}, status=status.HTTP_200_OK)
+
+        except Report.DoesNotExist:
+            return Response({'error': 'Report not found.'}, status=status.HTTP_404_NOT_FOUND)

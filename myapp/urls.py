@@ -3,5 +3,5 @@ from .views import *
 
 
 urlpatterns = [
-    path('api/reports/reply/', ReplyToReportView.as_view(), name='reply-to-report'),
+    path('api/reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
 ]

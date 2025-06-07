@@ -23,3 +23,9 @@ class ReportHistoryAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_max_show_all = 10
 admin.site.register(ReportHistory, ReportHistoryAdmin)
+
+class ReportReplyAdmin(admin.ModelAdmin):
+    list_display = ('report', 'sender', 'message')
+    list_per_page = 10
+    list_max_show_all = 10
+admin.site.register(ReportReply, ReportReplyAdmin)
