@@ -82,7 +82,7 @@ class OpenSpaceBooking(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
-        return f"{self.username} - {self.date}"
+        return f"{self.username} - {self.startdate}"
     
 
 class ForwardedBooking(models.Model):
