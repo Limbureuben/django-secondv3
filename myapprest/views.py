@@ -3,7 +3,7 @@ from django.shortcuts import render
 import graphene
 from graphene_django import DjangoObjectType
 
-from myapprest.task import send_reset_email_task
+from myapprest.tasks import send_reset_email_task
 from rest_framework.views import APIView # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework import status # type: ignore
