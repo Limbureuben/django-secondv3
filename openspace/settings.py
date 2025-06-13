@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "graphene_django",
     "rest_framework_simplejwt",
     "corsheaders",
+    "django_celery_beat"
 ]
 
 SITE_ID = 1
@@ -59,17 +60,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-# MIDDLEWARE = [
-#     'corsheaders.middleware.CorsMiddleware',
-#     'django.middleware.security.SecurityMiddleware',
-#     'django.contrib.sessions.middleware.SessionMiddleware',
-#     'django.middleware.common.CommonMiddleware',
-#     'django.middleware.csrf.CsrfViewMiddleware',
-#     'django.contrib.auth.middleware.AuthenticationMiddleware',  # Keep this for session-based auth
-#     'django.contrib.messages.middleware.MessageMiddleware',
-#     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-# ]
 
 
 ROOT_URLCONF = 'openspace.urls'
@@ -263,3 +253,13 @@ BEEM_SECRET_KEY = os.getenv("BEEM_SECRET_KEY")
 BEEM_SENDER_ID = os.getenv("BEEM_SENDER_ID")
 FERNET_KEY = os.getenv("FERNET_KEY")
 
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    'check-expired-bookings-daily': {
+        'task': 'myapprest.notification_task.check_expired_bookings_task',
+        'schedule': crontab(hour=0, minute=0),  # every midnight
+    },
+}

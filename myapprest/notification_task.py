@@ -1,7 +1,7 @@
 from celery import shared_task
 from django.utils.timezone import now
 from .models import OpenSpaceBooking
-from .sms_utils import send_sms  # we'll create this
+from .sms_utils import send_sms
 
 @shared_task
 def check_expired_bookings_task():
