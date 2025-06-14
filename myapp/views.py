@@ -363,6 +363,7 @@ class QueryUsers(graphene.ObjectType):
                 pk=user.pk,
                 username=user.username,
                 email=user.email,
+                ward = user.ward,
                 is_staff = user.is_staff,
                 role = user.role,
             )

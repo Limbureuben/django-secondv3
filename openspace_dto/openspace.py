@@ -109,5 +109,6 @@ class UserAllObject(graphene.ObjectType):
     pk = graphene.ID()
     username = graphene.String()
     email = graphene.String()
+    ward = graphene.String()
     is_staff = graphene.Boolean()
     role = graphene.String()

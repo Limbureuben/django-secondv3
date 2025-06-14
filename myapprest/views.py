@@ -528,3 +528,34 @@ def user_booking_stats(request):
         'accepted': accepted,
         'pending': pending
     })
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def notify_ward_executives(request):
+    if request.user.role != 'staff':
+        return Response({"error": "Only admins can send notifications."}, status=403)
+
+    message = request.data.get('message')
+    subject = request.data.get('subject', 'Notification from Admin')
+
+    if not message:
+        return Response({"error": "Message is required."}, status=400)
+
+    # Fetch all ward executives with email
+    ward_executives = CustomUser.objects.filter(role='ward_executive').exclude(email=None)
+    recipient_list = [user.email for user in ward_executives]
+
+    if not recipient_list:
+        return Response({"error": "No ward executives with email found."}, status=404)
+
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        recipient_list,
+        fail_silently=False,
+    )
+
+    return Response({"message": f"Notification sent to {len(recipient_list)} ward executives."})
