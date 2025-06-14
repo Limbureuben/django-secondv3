@@ -43,70 +43,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if obj.profile_image and hasattr(obj.profile_image, 'url'):
             return request.build_absolute_uri(obj.profile_image.url)
         return None
-    
-
-
-# class OpenSpaceBookingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OpenSpaceBooking
-#         fields = '__all__'
-#         extra_kwargs = {
-#             'space': {'required': False}  # not required from input
-#         }
-    
-#     def create(self, validated_data):
-#         request = self.context.get('request')
-#         space_id = request.data.get('space_id') if request else None
-
-#         if not space_id:
-#             raise serializers.ValidationError({"space": "This field is required."})
-
-#         try:
-#             space = OpenSpace.objects.get(id=space_id)
-#         except OpenSpace.DoesNotExist:
-#             raise serializers.ValidationError({"space": "Open space not found."})
-
-#         if space.status == 'unavailable':
-#             raise serializers.ValidationError({"space": "This open space has already been booked and is unavailable."})
-
-#         validated_data.pop('space', None)  # Remove if present
-#         booking = OpenSpaceBooking.objects.create(space=space, **validated_data)
-#         return booking
-
-# class OpenSpaceBookingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OpenSpaceBooking
-#         fields = '__all__'
-#         read_only_fields = ['user']  # user will be set by backend
-#         extra_kwargs = {
-#             'space': {'required': False}
-#         }
-
-#     def create(self, validated_data):
-#         request = self.context.get('request')
-#         space_id = request.data.get('space_id') if request else None
-
-#         if not space_id:
-#             raise serializers.ValidationError({"space": "This field is required."})
-
-#         try:
-#             space = OpenSpace.objects.get(id=space_id)
-#         except OpenSpace.DoesNotExist:
-#             raise serializers.ValidationError({"space": "Open space not found."})
-
-#         if space.status == 'unavailable':
-#             raise serializers.ValidationError({"space": "This open space has already been booked and is unavailable."})
-
-#         # Remove space if present in validated_data
-#         validated_data.pop('space', None)
-
-#         # Add the actual user who made the booking
-#         validated_data['user'] = request.user
-
-#         # Create the booking
-#         booking = OpenSpaceBooking.objects.create(space=space, **validated_data)
-#         return booking
-
 
 
 
@@ -154,6 +90,4 @@ class OpenSpaceBookingListSerializer(serializers.ModelSerializer):
         model = OpenSpaceBooking
         fields = ['space', 'username', 'contact', 'duration', 'purpose', 'district']
         read_only_fields = ['id', 'created_at']
-
-
 

@@ -567,3 +567,13 @@ class NotifySingleWardExecutiveView(APIView):
         )
 
         return Response({'success': f'Notification sent to {email}'}, status=status.HTTP_200_OK)
+
+
+
+class UserReportHistoryAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        reports = Report.objects.filter(user=request.user).order_by('-created_at')
+        serializer = ReportSerializer(reports, many=True)
+        return Response(serializer.data)
