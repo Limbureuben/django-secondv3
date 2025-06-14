@@ -22,5 +22,6 @@ urlpatterns = [
     path('bookings/<int:booking_id>/delete/', DeleteBookingAPIView.as_view(), name='delete-booking'),
     path('bookings/<int:booking_id>/accept/', accept_booking, name='accept-booking'),
     path('user-booking-stats/', views.user_booking_stats, name='Booking numbers'),
-    path('email/notify-ward-executives/', notify_ward_executives, name='notify_ward_execs'),
+    path('notify-ward-executives/', NotifyAllWardExecutivesView.as_view(), name='notify_ward_execs'),
+    path('notify-single-ward-executive/', NotifySingleWardExecutiveView.as_view(), name="Notify-single"),
 ]

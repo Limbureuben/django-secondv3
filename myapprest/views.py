@@ -530,32 +530,40 @@ def user_booking_stats(request):
     })
 
 
+class NotifyAllWardExecutivesView(APIView):
+    def post(self, request):
+        message = request.data.get('message')
+        if not message:
+            return Response({'error': 'Message is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def notify_ward_executives(request):
-    if request.user.role != 'staff':
-        return Response({"error": "Only admins can send notifications."}, status=403)
+        ward_executives = CustomUser.objects.filter(role='ward_executive').exclude(email='')
 
-    message = request.data.get('message')
-    subject = request.data.get('subject', 'Notification from Admin')
+        for executive in ward_executives:
+            send_mail(
+                subject='Notification from Kinondoni Municipal',
+                message=message,
+                from_email='admin@example.com',  # Replace with your configured email
+                recipient_list=[executive.email],
+                fail_silently=True
+            )
 
-    if not message:
-        return Response({"error": "Message is required."}, status=400)
+        return Response({'success': 'Notifications sent to all ward executives.'}, status=status.HTTP_200_OK)
 
-    # Fetch all ward executives with email
-    ward_executives = CustomUser.objects.filter(role='ward_executive').exclude(email=None)
-    recipient_list = [user.email for user in ward_executives]
 
-    if not recipient_list:
-        return Response({"error": "No ward executives with email found."}, status=404)
+class NotifySingleWardExecutiveView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        message = request.data.get('message')
 
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        recipient_list,
-        fail_silently=False,
-    )
+        if not email or not message:
+            return Response({'error': 'Email and message are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({"message": f"Notification sent to {len(recipient_list)} ward executives."})
+        send_mail(
+            subject='Notification from Kinondoni Municipal',
+            message=message,
+            from_email='admin@example.com',  # Replace with your configured email
+            recipient_list=[email],
+            fail_silently=True
+        )
+
+        return Response({'success': f'Notification sent to {email}'}, status=status.HTTP_200_OK)
