@@ -375,6 +375,7 @@ Thank you for understanding.
 
 
 
+
 @api_view(['POST'])
 def accept_booking(request, booking_id):
     try:
