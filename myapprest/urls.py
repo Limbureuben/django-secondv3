@@ -20,4 +20,5 @@ urlpatterns = [
     path('bookings/<int:booking_id>/reject/', reject_booking, name='reject-booking'),
     path('my-bookings/', MyBookingsView.as_view(), name='user_bookings'),
     path('bookings/<int:booking_id>/delete/', DeleteBookingAPIView.as_view(), name='delete-booking'),
+    path('bookings/<int:booking_id>/accept/', accept_booking, name='accept-booking'),
 ]

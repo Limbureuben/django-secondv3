@@ -374,6 +374,40 @@ Thank you for understanding.
 
 
 
+
+@api_view(['POST'])
+def accept_booking(request, booking_id):
+    try:
+        booking = OpenSpaceBooking.objects.get(id=booking_id)
+
+        # 1. Update booking status to 'accepted'
+        booking.status = 'accepted'
+        booking.save()
+
+        # 2. Mark open space as 'unavailable'
+        booking.space.status = 'unavailable'
+        booking.space.save()
+
+        # 3. Send SMS notification to user
+        if booking.contact:
+            sms_message = (
+                f"Hello {booking.username}, your booking for {booking.space.name} "
+                f"from {booking.startdate} to {booking.enddate} has been ACCEPTED. "
+                f"Please prepare accordingly."
+            )
+            try:
+                send_sms(phone=booking.contact, message=sms_message)
+            except Exception as e:
+                print("Failed to send acceptance SMS:", e)
+
+        return Response({'message': 'Booking accepted and user notified.'}, status=status.HTTP_200_OK)
+
+    except OpenSpaceBooking.DoesNotExist:
+        return Response({'error': 'Booking not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
 class UserBooking(APIView):
     permission_classes = [IsAuthenticated]
 
