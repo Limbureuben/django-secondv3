@@ -21,4 +21,5 @@ urlpatterns = [
     path('my-bookings/', MyBookingsView.as_view(), name='user_bookings'),
     path('bookings/<int:booking_id>/delete/', DeleteBookingAPIView.as_view(), name='delete-booking'),
     path('bookings/<int:booking_id>/accept/', accept_booking, name='accept-booking'),
+    path('user-booking-stats/', views.user_booking_stats),
 ]

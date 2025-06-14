@@ -511,3 +511,20 @@ class DeleteBookingAPIView(APIView):
         except OpenSpaceBooking.DoesNotExist:
             return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_booking_stats(request):
+    user = request.user
+    bookings = OpenSpaceBooking.objects.filter(user=user)
+
+    total = bookings.count()
+    accepted = bookings.filter(status='accepted').count()
+    pending = bookings.filter(status='pending').count()
+
+    return Response({
+        'total': total,
+        'accepted': accepted,
+        'pending': pending
+    })

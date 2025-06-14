@@ -55,6 +55,8 @@ class OpenSpaceBooking(models.Model):
         return f"{self.username} - {self.startdate}"
     
 
+    
+
 class ForwardedBooking(models.Model):
     booking = models.OneToOneField(OpenSpaceBooking, on_delete=models.CASCADE, related_name='forwarded_booking')
     ward_executive_description = models.TextField()
