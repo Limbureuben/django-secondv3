@@ -252,21 +252,6 @@ class OpenSpaceBookingView(APIView):
 
 
 
-# class DistrictBookingsAPIView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request):
-#         user = request.user
-
-#         if user.role != "ward_executive":
-#             return Response({"error": "Unauthorized"}, status=403)
-
-#         # Filter bookings by the district (which is equal to user's ward)
-#         bookings = OpenSpaceBooking.objects.filter(district=user.ward)
-#         serializer = OpenSpaceBookingSerializer(bookings, many=True)
-#         return Response(serializer.data)
-    
-
 from django.db.models import Q
 
 class DistrictBookingsAPIView(APIView):
@@ -309,7 +294,6 @@ def accept_and_forward_booking(request, booking_id):
         ward_executive_description=ward_executive_description,
         forwarded_by=user
     )
-
     return Response({"message": "Booking accepted and forwarded to admin"}, status=200)
 
 
