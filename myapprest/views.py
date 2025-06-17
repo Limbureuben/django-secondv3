@@ -361,7 +361,7 @@ Thank you for understanding.
 
         # Send SMS notification if contact exists
         if booking.contact:
-            sms_message = f"Hello {booking.username}, your booking for {booking.space.name} from {booking.startdate} to {booking.enddate} has been REJECTED."
+            sms_message = f"Hello {booking.username}, your booking for {booking.space.name} from {booking.startdate} to {booking.enddate} has been Rejected please Visit your ward office for more information."
             try:
                 send_sms(phone=booking.contact, message=sms_message)
             except Exception as e:
@@ -371,6 +371,7 @@ Thank you for understanding.
 
     except OpenSpaceBooking.DoesNotExist:
         return Response({'error': 'Booking not found.'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 
