@@ -102,34 +102,6 @@ class ConfirmReportAPIView(APIView):
 
 
 
-
-
-
-# @api_view(['POST'])
-# def confirm_report(request, pk):
-#     try:
-#         # Get report by primary key (id)
-#         report = UssdReport.objects.get(pk=pk)
-
-#         # Update status
-#         report.status = 'Processed'
-#         report.save()
-
-#         # Send SMS using encrypted phone number
-#         success = send_confirmation_sms(report.phone_number, report.reference_number)
-#         if not success:
-#             return Response({"warning": "Report confirmed, but SMS failed to send"}, status=status.HTTP_200_OK)
-
-#         return Response({"message": "Report confirmed and SMS sent successfully."}, status=status.HTTP_200_OK)
-
-#     except UssdReport.DoesNotExist:
-#         return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
-#     except Exception as e:
-#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
 @api_view(['GET'])
 def get_report_status(request, reference_number):
     try:
@@ -578,3 +550,24 @@ class UserReportHistoryAPIView(APIView):
         reports = Report.objects.filter(user=request.user).order_by('-created_at')
         serializer = ReportSerializer(reports, many=True)
         return Response(serializer.data)
+
+
+
+class DeleteBookingView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = OpenSpaceBooking.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            booking = self.get_queryset().get(pk=kwargs['pk'], user=request.user)
+        except OpenSpaceBooking.DoesNotExist:
+            return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if booking.status == 'pending':
+            return Response(
+                {'error': 'Cannot delete a booking that is still pending.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        booking.delete()
+        return Response({'message': 'Booking deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
