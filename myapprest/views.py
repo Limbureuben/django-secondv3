@@ -571,3 +571,23 @@ class DeleteBookingView(generics.DestroyAPIView):
 
         booking.delete()
         return Response({'message': 'Booking deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+class SendNotificationView(APIView):
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        message = request.data.get('message')
+
+        if not user_id or not message:
+            return Response({'error': 'User ID and message are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        notification = Notification.objects.create(user=user, message=message)
+        serializer = NotificationSerializer(notification)
+
+        return Response({'success': True, 'notification': serializer.data}, status=status.HTTP_201_CREATED)

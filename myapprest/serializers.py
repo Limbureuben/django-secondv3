@@ -91,3 +91,9 @@ class OpenSpaceBookingListSerializer(serializers.ModelSerializer):
         fields = ['space', 'username', 'contact', 'duration', 'purpose', 'district']
         read_only_fields = ['id', 'created_at']
 
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

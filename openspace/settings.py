@@ -93,6 +93,19 @@ DATABASES = {
     }
 }
 
+# import os
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'openspace',
+#         'USER': 'postgres',             # Use existing PostgreSQL user
+#         'PASSWORD': '12345', # Replace with actual password
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -202,8 +215,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://10.0.2.2:8000",  # Flutter emulator (Android)
     "http://localhost:5000",
     "http://127.0.0.1:42217",
-    "https://769c-196-249-92-198.ngrok-free.app",
-    "http://127.0.0.1:8001"
+    "https://9a41-196-249-98-217.ngrok-free.app",
+    "http://127.0.0.1:8001",
+    "http://192.168.1.124:4200"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
