@@ -20,3 +20,8 @@ admin.site.register(OpenSpaceBooking, OpenSpaceBookingAdmin)
 class ForwardedBookingAdmin(admin.ModelAdmin):
     list_display = ('booking', 'ward_executive_description')
 admin.site.register(ForwardedBooking, ForwardedBookingAdmin)
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'message', 'is_read', 'created_at')
+    list_filter = ('is_read', 'created_at')
+admin.site.register(Notification, NotificationAdmin)

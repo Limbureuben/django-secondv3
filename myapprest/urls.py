@@ -26,5 +26,6 @@ urlpatterns = [
     path('notify-single-ward-executive/', NotifySingleWardExecutiveView.as_view(), name="Notify-single"),
     path('user-reports/', UserReportHistoryAPIView.as_view(), name='user-report-history'),
     path('delete-booking/<int:pk>/', DeleteBookingView.as_view(), name='delete-booking'),
-    path('send-notification/', SendNotificationView.as_view(), name='send-notification')
+    path('send-notification/', SendNotificationView.as_view(), name='send-notification'),
+    path('notifications/unread-count/', UnreadNotificationCountAPIView.as_view()),   
 ]

@@ -578,16 +578,26 @@ class SendNotificationView(APIView):
     def post(self, request):
         user_id = request.data.get('user_id')
         message = request.data.get('message')
+        print("DEBUG Request Data:", request.data)
 
         if not user_id or not message:
             return Response({'error': 'User ID and message are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         notification = Notification.objects.create(user=user, message=message)
         serializer = NotificationSerializer(notification)
 
-        return Response({'success': True, 'notification': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UnreadNotificationCountAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        count = Notification.objects.filter(user=user, is_read=False).count()
+        return Response({'unread_count': count})
