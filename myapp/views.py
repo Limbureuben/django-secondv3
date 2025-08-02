@@ -41,7 +41,7 @@ class RegistrationMutation(graphene.Mutation):
 class UserType(DjangoObjectType):
     class Meta:
         model = CustomUser
-        fields = ("id", "username", "is_staff", "is_superuser", "ward_executive")
+        fields = ("id", "username", "is_staff", "is_superuser", "ward_executive", "village_chairman")
 
 
 class LoginUser(graphene.Mutation):
@@ -72,6 +72,7 @@ class LoginUser(graphene.Mutation):
                 username=user.username,
                 token=access_token,
                 isStaff=user.is_staff,
+                isVillageChairman=(user.role == "village_chairman"),
                 isWardExecutive=(user.role == "ward_executive")
             )
 

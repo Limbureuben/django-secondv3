@@ -40,6 +40,7 @@ class UserLoginObject(graphene.ObjectType):
     token = graphene.String()
     isStaff = graphene.Boolean()
     isWardExecutive = graphene.Boolean()
+    isVillageChairman = graphene.Boolean()
 
 
 class ReportInputObject(graphene.InputObjectType):
