@@ -1,14 +1,29 @@
 import graphene # type: ignore
 from myapp.models import *
 
+# class RegistrationInputObject(graphene.InputObjectType):
+#     username = graphene.String()
+#     email = graphene.String(required=False)
+#     password = graphene.String()
+#     passwordConfirm = graphene.String()
+#     role = graphene.String(required=False)
+#     ward = graphene.String()
+#     street = graphene.String()
+#     sessionId = graphene.String(required=False)
+
 class RegistrationInputObject(graphene.InputObjectType):
     username = graphene.String()
     email = graphene.String(required=False)
     password = graphene.String()
     passwordConfirm = graphene.String()
     role = graphene.String(required=False)
+    
+    ward = graphene.ID(required=False)    # changed from String to ID
+    street = graphene.ID(required=False)  # changed from String to ID
+    
     sessionId = graphene.String(required=False)
-    ward = graphene.String()
+
+
 
 class RegistrationObject(graphene.ObjectType):
     id = graphene.ID()
@@ -60,6 +75,7 @@ class OpenspaceInputObject(graphene.InputObjectType):
     latitude = graphene.Float()
     longitude = graphene.Float()
     district = graphene.String()
+    street = graphene.String()
     
 class OpenspaceObject(graphene.ObjectType):
     id = graphene.ID()
@@ -67,6 +83,7 @@ class OpenspaceObject(graphene.ObjectType):
     latitude = graphene.Float()
     longitude = graphene.Float()
     district = graphene.String()
+    street = graphene.String()
     status = graphene.String()
     is_active = graphene.Boolean()
     

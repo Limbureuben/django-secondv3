@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from graphql import GraphQLError
-from myapp.tasks import send_verification_email
+
 from openspace_dto.openspace import *
 from openspace_dto.Response import OpenspaceResponse, RegistrationResponse, ReportResponse
 from django.contrib.auth.models import User
@@ -17,34 +17,119 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from myapprest.models import CustomUser
+from myapp.models import CustomUser
 
 class UserBuilder:
-    VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
+    # VALID_DISTRICTS = {"Kinondoni", "Ilala", "Ubungo", "Temeke", "Kigamboni"}
+    # @staticmethod
+    # def register_user(username, password, passwordConfirm, role='user', email='', ward=None, street=None, registered_by=None):
+    #     if password != passwordConfirm:
+    #         raise ValidationError("Passwords do not match")
+        
+    #     if len(password) < 8:
+    #         raise ValidationError("Password must be at least 8 characters long")
+        
+    #     if CustomUser.objects.filter(username=username).exists():
+    #         raise ValidationError("Username already taken")
+
+    #     if role not in ['user', 'staff', 'ward_executive', 'village_chairman']:
+    #         raise ValidationError("Invalid role")
+        
+    #     if email:
+    #         try:
+    #             validate_email(email)
+    #         except DjangoValidationError:
+    #             raise ValidationError("Invalid email format")
+            
+    #         if CustomUser.objects.filter(email=email).exists():
+    #             raise ValidationError("Email already taken")
+
+    #     user = CustomUser(username=username, role=role, email=email, ward=ward, street=street, registered_by=registered_by)
+    #     user.set_password(password)
+    #     user.is_superuser = False
+    #     user.is_staff = role == 'staff'
+    #     user.save()
+    #     return user
     @staticmethod
-    def register_user(username, password, passwordConfirm, role='user', email='', ward=None):
+    def register_user(username, password, passwordConfirm, role='user', email='', ward=None, street=None, registered_by=None):
         if password != passwordConfirm:
             raise ValidationError("Passwords do not match")
-        
+
         if len(password) < 8:
             raise ValidationError("Password must be at least 8 characters long")
-        
+
         if CustomUser.objects.filter(username=username).exists():
             raise ValidationError("Username already taken")
 
-        if role not in ['user', 'staff', 'ward_executive']:
+        if role not in ['user', 'staff', 'ward_executive', 'village_chairman']:
             raise ValidationError("Invalid role")
-        
+
         if email:
             try:
                 validate_email(email)
             except DjangoValidationError:
                 raise ValidationError("Invalid email format")
-            
             if CustomUser.objects.filter(email=email).exists():
                 raise ValidationError("Email already taken")
 
-        user = CustomUser(username=username, role=role, email=email, ward=ward)
+        # Convert ward and street strings to model instances
+        # ward_instance = None
+        # street_instance = None
+        # ward_instance = Ward.objects.get(name__iexact=ward.strip())
+        # street_instance = Street.objects.get(name__iexact=street.strip(), ward=ward_instance)
+
+
+        # if ward:
+        #     try:
+        #         ward_instance = Ward.objects.get(id=ward)
+        #     except Ward.DoesNotExist:
+        #         raise ValidationError("Ward not found")
+
+        # if street:
+        #     try:
+        #         street_instance = Street.objects.get(id=street, ward=ward_instance)
+        #     except Street.DoesNotExist:
+        #         raise ValidationError("Street not found in the given ward")
+            
+        #     print("Received ward:", ward)
+        #     print("Received street:", street)
+        
+        ward_instance = None
+        street_instance = None
+
+        if ward:
+            try:
+                ward_instance = Ward.objects.get(id=ward)
+            except Ward.DoesNotExist:
+                raise ValidationError("Ward not found")
+
+        if street:
+            try:
+                if ward_instance:
+                    street_instance = Street.objects.get(id=street, ward=ward_instance)
+                else:
+                    street_instance = Street.objects.get(id=street)
+            except Street.DoesNotExist:
+                raise ValidationError("Street not found in the given ward")
+
+        # <-- Add validation here
+        if ward_instance and street_instance and street_instance.ward_id != ward_instance.id:
+            raise ValidationError("Street does not belong to the selected ward")
+
+        print("Received ward:", ward)
+        print("Received street:", street)
+
+
+
+        user = CustomUser(
+            username=username,
+            role=role,
+            email=email,
+            ward=ward_instance,
+            street=street_instance,
+            registered_by=registered_by
+        )
+
         user.set_password(password)
         user.is_superuser = False
         user.is_staff = role == 'staff'
@@ -138,19 +223,46 @@ class UserBuilder:
         return all_reports
     
    
+    # @staticmethod
+    # def open_space(name, latitude, longitude, district):
+    #     if district not in UserBuilder.VALID_DISTRICTS:
+    #         raise ValueError(f"Invalid district: {district}. Must be one of {', '.join(UserBuilder.VALID_DISTRICTS)}")
+    #     openspace=OpenSpace(name=name, latitude=latitude, longitude=longitude, district=district, is_active=True)
+    #     openspace.save()
+    #     return openspace
+    
     @staticmethod
-    def open_space(name, latitude, longitude, district):
-        if district not in UserBuilder.VALID_DISTRICTS:
-            raise ValueError(f"Invalid district: {district}. Must be one of {', '.join(UserBuilder.VALID_DISTRICTS)}")
-        openspace=OpenSpace(name=name, latitude=latitude, longitude=longitude, district=district, is_active=True)
+    def open_space(name, latitude, longitude, district_name, street_name):
+        # Validate district by querying Ward model
+        try:
+            ward_instance = Ward.objects.get(name__iexact=district_name)
+        except Ward.DoesNotExist:
+            raise ValidationError(f"District '{district_name}' not found")
+
+        # Validate street belongs to ward
+        try:
+            street_instance = Street.objects.get(name__iexact=street_name, ward=ward_instance)
+        except Street.DoesNotExist:
+            raise ValidationError(f"Street '{street_name}' not found in district '{district_name}'")
+
+        openspace = OpenSpace(
+            name=name,
+            latitude=latitude,
+            longitude=longitude,
+            district=ward_instance,   # FK to Ward model
+            street=street_instance,   # FK to Street model
+            is_active=True
+        )
         openspace.save()
         return openspace
 
-def register_user(input):
+
+def register_user(input, registered_by=None):
     try:
         role = getattr(input, 'role', 'user') or 'user'
         ward = getattr(input, 'ward', None)
-        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role, email=getattr(input, 'email', ''), ward=ward)
+        street = getattr(input, 'street', None)
+        user = UserBuilder.register_user(input.username, input.password, input.passwordConfirm, role=role, email=getattr(input, 'email', ''), ward=ward, street=street, registered_by=registered_by)
         
         if hasattr(input, 'sessionId') and input.sessionId:
             Report.objects.filter(submitted_by=input.sessionId).update(submitted_by=user.id)
@@ -163,9 +275,10 @@ def register_user(input):
     except ValidationError as e:
         return RegistrationResponse(message=str(e), success=False, user=None)
 
+
 def open_space(input):
     try:
-        openspace = UserBuilder.open_space(input.name, input.latitude, input.longitude, input.district)
+        openspace = UserBuilder.open_space(input.name, input.latitude, input.longitude, input.district, input.street)
         return OpenspaceResponse(
             message = "Openspace registred successfully",
             success=True,

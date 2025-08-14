@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
-    'myapprest',
+    # 'myapprest',
     #third party apps
     "rest_framework",
     "graphene_django",
@@ -217,7 +217,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:42217",
     "https://9a41-196-249-98-217.ngrok-free.app",
     "http://127.0.0.1:8001",
-    "http://192.168.1.124:4200"
+    "http://192.168.1.124:4200",
+    "http://localhost:5173"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -253,7 +254,7 @@ os.environ["FERNET_KEY"] = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 # ZTc3NGYxOTY3ODhjMmRlMWExNWZiMmIyOWY0OTIzNDVhODdhMGVmNThlYWY0ZDdlMDcwMzQxNzExMDI4MTY5Ng==
 
 
-AUTH_USER_MODEL = 'myapprest.CustomUser'
+AUTH_USER_MODEL = 'myapp.CustomUser'
 
 
 
@@ -270,10 +271,11 @@ FERNET_KEY = os.getenv("FERNET_KEY")
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
-from celery.schedules import crontab
+from celery.schedules import crontab # type: ignore
+
 CELERY_BEAT_SCHEDULE = {
     'check-expired-bookings-daily': {
-        'task': 'myapprest.notification_task.check_expired_bookings_task',
+        'task': 'myapp.notification_task.check_expired_bookings_task',
         'schedule': crontab(hour=0, minute=0),  # every midnight
     },
 }

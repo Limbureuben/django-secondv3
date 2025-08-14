@@ -1,7 +1,51 @@
 from django.urls import path, include
 from .views import *
+from . import views
+
+# urlpatterns = [
+#     path('reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
+# ]
 
 
 urlpatterns = [
+    path('upload/', FileUploadView.as_view(), name='file-upload'),
+    path('ussd/', views.submit_problem_report, name='ussd'),
+    path('confirm-report/<int:report_id>/', views.confirm_report, name='confirm_report'),
+    path('reply-report/<int:report_id>/', views.reply_to_report, name="reply-ussd-report"),
+    path('delete-report/<int:report_id>/', views.delete_report, name="delete-ussd-report"),
+    path('reference-ussd/<str:reference_number>/', get_report_status, name='get_report_status'),
+    path('profile/', UserProfileView.as_view(), name='user-profile'),
+    path('upload-profile-image/', ProfileImageUploadView.as_view(), name='upload-profile-image'),
+    path('password-reset/', SendResetPasswordEmailView.as_view(), name='password-reset'),
+    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    path('book-open-space/', OpenSpaceBookingView.as_view(), name='book-open-space'),
+    path('district-bookings/', DistrictBookingsAPIView.as_view(), name='district-bookings'),
+    path('accept-and-forward-booking/<int:booking_id>/', views.accept_and_forward_booking, name='accept-and-forward-booking'),
+    path('allbooking/', AllBookingsAdminAPIView.as_view(), name="all_booking"),
+    path('bookings/<int:booking_id>/reject/', reject_booking, name='reject-booking'),
+    path('my-bookings/', MyBookingsView.as_view(), name='user_bookings'),
+    path('bookings/<int:booking_id>/delete/', DeleteBookingAPIView.as_view(), name='delete-booking'),
+    path('bookings/<int:booking_id>/accept/', accept_booking, name='accept-booking'),
+    path('user-booking-stats/', views.user_booking_stats, name='Booking numbers'),
+    path('notify-ward-executives/', NotifyAllWardExecutivesView.as_view(), name='notify_ward_execs'),
+    path('notify-single-ward-executive/', NotifySingleWardExecutiveView.as_view(), name="Notify-single"),
+    path('user-reports/', UserReportHistoryAPIView.as_view(), name='user-report-history'),
+    path('delete-booking/<int:pk>/', DeleteBookingView.as_view(), name='delete-booking'),
+    path('send-notification/', SendNotificationView.as_view(), name='send-notification'),
+    path('notifications/unread-count/', UnreadNotificationCountAPIView.as_view()),
+    path('village-chairmen/', VillageChairmenByWardView.as_view(), name='village-chairmen-by-ward'),  
     path('reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
+    path('wards/', get_wards, name='get-wards'),
+    path('streets/', get_streets_for_loggedin_user_ward),
+    path('street-leaders/', get_street_leaders_for_ward_executive, name='street-leaders'),
+    path('wards-admin/', get_wards, name='get-wards'),
+    path('streets-admin/', get_streets_by_ward, name='get-streets-by-ward'),
+    path('reports/', create_report, name='create_report'),
+    path('street-reports/', reports_by_street_name_match, name='reports-by-street'),
+    path('reports/<int:report_id>/forward/', forward_report_to_ward_exec, name='forward-report'),
+    path('reports/<int:report_id>/reply/', reply_to_report, name='reply-to-report'),
+    path('reports/forwarded/', views.forwarded_reports_for_ward, name='forwarded-reports-for-ward'),
+    path('reports/<int:forward_id>/forward-to-admin/', forward_report_to_admin_from_village, name='forward-to-admin-from-village'),
+    path('reports/forwarded-to-admin/', forwarded_reports_to_admin, name='forwarded_reports_to_admin'),
 ]
+

@@ -2,16 +2,16 @@ from sightengine.client import SightengineClient # type: ignore
 from django.conf import settings
 import os
 
-# client = SightengineClient('159894964', 'hN3ySs6WQRKxENgNXgGmZF82RmPxpoLe')
+client = SightengineClient('159894964', 'hN3ySs6WQRKxENgNXgGmZF82RmPxpoLe')
 
-# def is_explicit_image(file_path):
-#     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
-#     result = client.check('nudity').set_file(full_path)
+def is_explicit_image(file_path):
+    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    result = client.check('nudity').set_file(full_path)
 
-#     nudity_data = result.get('nudity', {})
-#     raw_score = nudity_data.get('raw', 0)
+    nudity_data = result.get('nudity', {})
+    raw_score = nudity_data.get('raw', 0)
 
-#     return raw_score > 0.5
+    return raw_score > 0.5
 
 
 client = SightengineClient('159894964', 'hN3ySs6WQRKxENgNXgGmZF82RmPxpoLe')
@@ -41,3 +41,10 @@ def is_inappropriate_text(text):
 
     return bool(profanity_matches or insult_matches or personal_matches)
 
+
+from cryptography.fernet import Fernet
+from django.conf import settings
+
+def decrypt_phone_number(encrypted_number):
+    fernet = Fernet(settings.FERNET_KEY)
+    return fernet.decrypt(encrypted_number.encode()).decode()

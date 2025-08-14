@@ -1,19 +1,12 @@
-from django.core.mail import send_mail
-from django.conf import settings # type: ignore
 from celery import shared_task
+from django.core.mail import send_mail
+from django.conf import settings
 
 @shared_task
-def send_verification_email(email, verification_url):
-    """
-    Task to send email verification asynchronously.
-    """
-    subject = "Email Verification"
-    message = f"Please verify your email by clicking on this link: {verification_url}"
-    from_email = settings.DEFAULT_FROM_EMAIL
-
+def send_reset_email_task(email, reset_link):
     send_mail(
-        subject=subject,
-        message=message,
-        from_email=from_email,
-        recipient_list=[email],
+        subject='Password Reset',
+        message=f'Click the link to reset your password: {reset_link}',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[email]
     )

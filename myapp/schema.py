@@ -5,7 +5,7 @@ from openspaceBuilders.openspaceBuilders import *
 from openspace_dto.openspace import *
 from .views import *
 import graphql_jwt
-from myapprest.views import *
+from .views import *
 
 class Mutation(graphene.ObjectType):
     register_user = RegistrationMutation.Field()
