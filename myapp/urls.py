@@ -47,5 +47,8 @@ urlpatterns = [
     path('reports/forwarded/', views.forwarded_reports_for_ward, name='forwarded-reports-for-ward'),
     path('reports/<int:forward_id>/forward-to-admin/', forward_report_to_admin_from_village, name='forward-to-admin-from-village'),
     path('reports/forwarded-to-admin/', forwarded_reports_to_admin, name='forwarded_reports_to_admin'),
+    path('wards/register/', WardRegisterAPIView.as_view(), name='ward-register'),
+    path('streets/register/', StreetRegisterAPIView.as_view(), name='ward-street-register'),
+    path("reports/<int:pk>/forward/", ForwardReportView.as_view(), name="forward-report"),
 ]
 

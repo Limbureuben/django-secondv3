@@ -30,29 +30,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} Profile"
 
-# class OpenSpace(models.Model):
-#     DISTRICT_CHOICES = [
-#         ('Kinondoni', 'Kinondoni'),
-#         ('Ilala', 'Ilala'),
-#         ('Ubungo', 'Ubungo'),
-#         ('Temeke', 'Temeke'),
-#         ('Kigamboni', 'Kigamboni'),
-#     ]
-#     STATUS_CHOICES = [
-#         ('available', 'Available'),
-#         ('unavailable', 'Unavailable'),
-#     ]
-    
-#     name = models.CharField(max_length=255)
-#     latitude = models.FloatField()
-#     longitude = models.FloatField()
-#     district = models.CharField(max_length=50, choices=DISTRICT_CHOICES)
-#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     is_active = models.BooleanField(default=True)
-    
-#     def __str__(self):
-#         return self.name
     
 class ReportHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -91,7 +68,6 @@ class Report(models.Model):
     space_name = models.CharField(max_length=255, blank=True, null=True)
     district = models.CharField(max_length=255, blank=True, null=True)
     street = models.CharField(max_length=255, blank=True, null=True)
-    # street_name_backup = models.CharField(max_length=255, blank=True, null=True)
     street_name_backup = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
@@ -271,11 +247,34 @@ class ReportForward(models.Model):
         null=True,
         related_name='reports_received'
     )
-    message = models.TextField(blank=True, null=True)
     forwarded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Report {self.report.report_id} from {self.from_user} to {self.to_user}"
+
+
+# class ForwardedReport(models.Model):
+#     report = models.ForeignKey(
+#         'Report',
+#         on_delete=models.CASCADE,
+#         related_name='forwards'
+#     )
+#     forwarded_by = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,  # the Village Executive
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         related_name='reports_forwarded'
+#     )
+#     forwarded_to = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,  # the Ward Executive
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         related_name='reports_received'
+#     )
+#     forwarded_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"Report {self.report.report_id} forwarded by {self.forwarded_by} to {self.forwarded_to}"
 
 
 

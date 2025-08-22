@@ -69,7 +69,7 @@ admin.site.register(UssdReport, UssdReportAdmin)
 
 
 class ReportForwardAdmin(admin.ModelAdmin):
-    list_display = ('report','from_user', 'to_user',  'message')
+    list_display = ('report','from_user', 'to_user')
 admin.site.register(ReportForward, ReportForwardAdmin)
 
 class ReportReplyVillageExecutiveAdmin(admin.ModelAdmin):

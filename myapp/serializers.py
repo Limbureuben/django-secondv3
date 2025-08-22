@@ -175,3 +175,25 @@ class ReportReplySerializer(serializers.ModelSerializer):
         fields = ['id', 'report', 'from_user', 'message', 'created_at']
         read_only_fields = ['id', 'from_user', 'created_at']
 
+
+
+class WardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ward
+        fields = ['id', 'name']
+
+
+class StreetSerializer(serializers.ModelSerializer):
+    ward_name = serializers.CharField(source='ward.name', read_only=True)
+
+    class Meta:
+        model = Street
+        fields = ['id', 'name', 'ward', 'ward_name']
+        
+
+class ReportForwardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReportForward
+        fields = ['id', 'report', 'from_user', 'to_user', 'forwarded_at']
+        read_only_fields = ['id', 'from_user', 'forwarded_at']
+

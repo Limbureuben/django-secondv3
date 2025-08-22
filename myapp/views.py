@@ -73,11 +73,6 @@ def get_streets_for_loggedin_user_ward(request):
     return Response([])
 
 
-# class UserType(DjangoObjectType):
-#     class Meta:
-#         model = CustomUser
-#         fields = ("id", "username", "is_staff", "is_superuser", "ward_executive", "village_chairman")
-
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -1192,42 +1187,7 @@ def reports_by_street_name_match(request):
 
 
 
-
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def forward_report_to_ward_exec(request, report_id):
-#     user = request.user
-
-#     if user.role != 'village_chairman':
-#         return Response({'error': 'Only village chairmen can forward reports'}, status=status.HTTP_403_FORBIDDEN)
-    
-#     try:
-#         report = Report.objects.get(pk=report_id)
-#     except Report.DoesNotExist:
-#         return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#     # Ensure report belongs to chairman's street
-#     if report.street.strip().lower() != user.street.name.strip().lower():
-#         return Response({'error': 'This report does not belong to your street'}, status=status.HTTP_403_FORBIDDEN)
-
-#     # Get ward executive who registered this chairman
-#     ward_exec = user.registered_by
-#     if not ward_exec or ward_exec.role != 'ward_executive':
-#         return Response({'error': 'No ward executive assigned'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     # Create forwarding record
-#     ReportForward.objects.create(
-#         report=report,
-#         from_user=user,
-#         to_user=ward_exec,
-#         message=request.data.get('message', '')
-#     )
-
-#     return Response({'success': f'Report forwarded to {ward_exec.username}'}, status=status.HTTP_200_OK)
-
-
 import re
-
 def normalize_street(name):
     """Normalize street name: lowercase, remove parentheses content, trim spaces"""
     if not name:
@@ -1271,14 +1231,14 @@ def forward_report_to_ward_exec(request, report_id):
     forward_record = ReportForward.objects.create(
         report=report,
         from_user=user,
-        to_user=ward_exec,
-        message=message
+        to_user=ward_exec
     )
 
     # Log forwarding for debugging
     print(f"Report '{report.report_id}' forwarded from '{user.username}' to '{ward_exec.username}'")
 
     return Response({'success': f"Report forwarded to {ward_exec.username}"}, status=status.HTTP_200_OK)
+
 
 
 
@@ -1372,7 +1332,6 @@ def forwarded_reports_for_ward(request):
             'street': f.report.street,
             'description': f.report.description,
             'from_user': f.from_user.username if f.from_user else None,
-            'message': f.message,
             'forwarded_at': f.forwarded_at,
             # Check if already forwarded to admin by this ward executive
             'forwarded_to_admin': ReportForwardToadmin.objects.filter(
@@ -1408,9 +1367,6 @@ def forward_report_to_admin_from_village(request, forward_id):
     if not admin_user or getattr(admin_user, 'role', '') != 'staff':
         return Response({'error': 'No valid admin registered this ward executive'}, status=400)
 
-    # Use provided message or fall back to original forwarded message
-    message = request.data.get('message', forwarded_report.message or '')
-
     # Prevent duplicate forwarding to admin
     if ReportForwardToadmin.objects.filter(report=forwarded_report.report, from_user=user, to_user=admin_user).exists():
         return Response({'error': 'This report has already been forwarded to admin'}, status=400)
@@ -1420,7 +1376,6 @@ def forward_report_to_admin_from_village(request, forward_id):
         report=forwarded_report.report,
         from_user=user,
         to_user=admin_user,
-        message=message
     )
 
     return Response({'success': f"Report forwarded to admin {admin_user.username}"}, status=200)
@@ -1465,3 +1420,131 @@ def forwarded_reports_to_admin(request):
         })
 
     return Response(reports_data, status=200)
+
+
+
+class WardRegisterAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def post(self, request):
+        """
+        Register a new ward.
+        Example payload:
+        {
+            "name": "Ilala"
+        }
+        """
+        ward_name = request.data.get("name", "").strip()
+
+        if not ward_name:
+            return Response({"error": "Ward name is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if Ward.objects.filter(name__iexact=ward_name).exists():
+            return Response({"error": "Ward already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = WardSerializer(data={"name": ward_name})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"ward": serializer.data}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        """
+        List all wards for dropdowns.
+        """
+        wards = Ward.objects.all()
+        serializer = WardSerializer(wards, many=True)
+        return Response({"wards": serializer.data})
+
+class IsAdminUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_staff
+
+
+class StreetRegisterAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+
+    def get(self, request):
+        """
+        Return all wards for dropdown + optional list of streets
+        """
+        wards = Ward.objects.all()
+        streets = Street.objects.select_related('ward').all()
+
+        return Response({
+            "wards": WardSerializer(wards, many=True).data,
+            "streets": StreetSerializer(streets, many=True).data
+        })
+
+    def post(self, request):
+        """
+        Accept multiple streets for a ward.
+        Example payload:
+        {
+            "wardName": "Kinondoni",
+            "streets": ["Uhuru Street", "Mtaa wa Juu", "Kigogo"]
+        }
+        """
+        ward_name = request.data.get("wardName")
+        street_names = request.data.get("streets", [])
+
+        if not ward_name or not street_names:
+            return Response({"error": "Ward name and streets are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            ward = Ward.objects.get(name=ward_name)
+        except Ward.DoesNotExist:
+            return Response({"error": "Ward not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        created_streets = []
+        for name in street_names:
+            name = name.strip()
+            if name:  # avoid empty names
+                serializer = StreetSerializer(data={"name": name, "ward": ward.id})
+                if serializer.is_valid():
+                    serializer.save()
+                    created_streets.append(serializer.data)
+
+        return Response({"created": created_streets}, status=status.HTTP_201_CREATED)
+
+
+from django.shortcuts import get_object_or_404
+class ForwardReportView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):  
+        """
+        Forward a report (pk) from the logged-in village executive 
+        to the ward executive who registered that village executive.
+        """
+        # 1. Get the report
+        report = get_object_or_404(Report, pk=pk)
+
+        # 2. Check if the user is a village executive
+        if request.user.role != "village_chairman":
+            return Response(
+                {"error": "Only village executives can forward reports"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # 3. Find the ward executive who registered this village executive
+        ward_exec = request.user.registered_by
+
+        if not ward_exec or ward_exec.role != "ward_executive":
+            return Response(
+                {"error": "No ward executive linked to this village executive"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 4. Create a forward entry
+        ReportForward.objects.create(
+            report=report,
+            forwarded_by=request.user,
+            forwarded_to=ward_exec
+        )
+
+        return Response(
+            {"message": f"Report forwarded to {ward_exec.username}"},
+            status=status.HTTP_201_CREATED
+        )
