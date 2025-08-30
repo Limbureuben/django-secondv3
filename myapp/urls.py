@@ -34,7 +34,7 @@ urlpatterns = [
     path('send-notification/', SendNotificationView.as_view(), name='send-notification'),
     path('notifications/unread-count/', UnreadNotificationCountAPIView.as_view()),
     path('village-chairmen/', VillageChairmenByWardView.as_view(), name='village-chairmen-by-ward'),  
-    path('reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
+    # path('reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
     path('wards/', get_wards, name='get-wards'),
     path('streets/', get_streets_for_loggedin_user_ward),
     path('street-leaders/', get_street_leaders_for_ward_executive, name='street-leaders'),
@@ -50,5 +50,8 @@ urlpatterns = [
     path('wards/register/', WardRegisterAPIView.as_view(), name='ward-register'),
     path('streets/register/', StreetRegisterAPIView.as_view(), name='ward-street-register'),
     path("reports/<int:pk>/forward/", ForwardReportView.as_view(), name="forward-report"),
+    path('reports/reply/<int:id>/', ReportReplyView.as_view(), name='report-reply'),
+    path('reports/my-replies/', views.my_report_replies, name='my-report-replies'),
+    path('openspaces/count/ward/', WardDashboardCountView.as_view(), name="openspace-count"),
 ]
 

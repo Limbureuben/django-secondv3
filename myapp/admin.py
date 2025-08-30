@@ -16,7 +16,7 @@ admin.site.register(OpenSpace, OpenSpaceAdmin)
 
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('report_id','description', 'space_name', 'district', 'street', 'email', 'file', 'created_at', 'latitude', 'longitude','user')
+    list_display = ('id','report_id','description', 'space_name', 'district', 'street', 'email', 'file', 'created_at', 'latitude', 'longitude','user')
 admin.site.register(Report, ReportAdmin)
 
 class ReportHistoryAdmin(admin.ModelAdmin):
@@ -25,11 +25,11 @@ class ReportHistoryAdmin(admin.ModelAdmin):
     list_max_show_all = 10
 admin.site.register(ReportHistory, ReportHistoryAdmin)
 
-class ReportReplyAdmin(admin.ModelAdmin):
-    list_display = ('report', 'sender', 'message')
-    list_per_page = 10
-    list_max_show_all = 10
-admin.site.register(ReportReply, ReportReplyAdmin)
+# class ReportReplyAdmin(admin.ModelAdmin):
+#     list_display = ('report', 'sender', 'message')
+#     list_per_page = 10
+#     list_max_show_all = 10
+# admin.site.register(ReportReply, ReportReplyAdmin)
 
 
 @admin.register(Ward)
@@ -79,3 +79,10 @@ admin.site.register(ReportReplyVillageExecutive, ReportReplyVillageExecutiveAdmi
 class ReportForwardToadminAdmin(admin.ModelAdmin):
     list_display = ('report','from_user', 'to_user', 'message')
 admin.site.register(ReportForwardToadmin, ReportForwardToadminAdmin)
+
+
+class ReportReplyAdmin(admin.ModelAdmin):
+    list_display = ('report', 'replied_by', 'message')
+    list_per_page = 10
+    list_max_show_all = 10
+admin.site.register(ReportReply, ReportReplyAdmin)

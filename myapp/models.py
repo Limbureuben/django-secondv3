@@ -134,13 +134,10 @@ class Report(models.Model):
 
 
 class ReportReply(models.Model):
-    report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="replies")
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    report = models.ForeignKey('Report', on_delete=models.CASCADE, related_name='replies')
     message = models.TextField()
+    replied_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Reply to {self.report.report_id} by {self.sender}"
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (

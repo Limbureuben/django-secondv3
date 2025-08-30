@@ -433,42 +433,42 @@ class BookedOpenSpaceQuery(graphene.ObjectType):
 
 
 
-CustomerUser = get_user_model()
-class ReplyToReportAPIView(APIView):
-    permission_classes = [permissions.IsAdminUser]
+# CustomerUser = get_user_model()
+# class ReplyToReportAPIView(APIView):
+#     permission_classes = [permissions.IsAdminUser]
 
-    def post(self, request):
-        report_id = request.data.get('report_id')
-        message = request.data.get('message')
+#     def post(self, request):
+#         report_id = request.data.get('report_id')
+#         message = request.data.get('message')
 
-        if not report_id or not message:
-            return Response({'error': 'Missing report_id or message'}, status=400)
+#         if not report_id or not message:
+#             return Response({'error': 'Missing report_id or message'}, status=400)
 
-        try:
-            report = Report.objects.get(report_id=report_id)
-        except Report.DoesNotExist:
-            return Response({'error': 'Report not found'}, status=404)
+#         try:
+#             report = Report.objects.get(report_id=report_id)
+#         except Report.DoesNotExist:
+#             return Response({'error': 'Report not found'}, status=404)
 
-        try:
-            reply = ReportReply.objects.create(
-                report=report,
-                sender=request.user if request.user.is_authenticated else None,
-                message=message
-            )
-            reply.save()
+#         try:
+#             reply = ReportReply.objects.create(
+#                 report=report,
+#                 sender=request.user if request.user.is_authenticated else None,
+#                 message=message
+#             )
+#             reply.save()
 
-            # Send email if email exists
-            if report.email:
-                send_mail(
-                    subject="Reply to Your Report",
-                    message=message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[report.email],
-                    fail_silently=False,
-                )
-            return Response({'success': 'Reply sent successfully'}, status=200)
-        except Exception as e:
-            return Response({'error': str(e)}, status=400)
+#             # Send email if email exists
+#             if report.email:
+#                 send_mail(
+#                     subject="Reply to Your Report",
+#                     message=message,
+#                     from_email=settings.DEFAULT_FROM_EMAIL,
+#                     recipient_list=[report.email],
+#                     fail_silently=False,
+#                 )
+#             return Response({'success': 'Reply sent successfully'}, status=200)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=400)
 
 
 
@@ -1548,3 +1548,86 @@ class ForwardReportView(APIView):
             {"message": f"Report forwarded to {ward_exec.username}"},
             status=status.HTTP_201_CREATED
         )
+        
+        
+        
+        
+class ReportReplyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        """
+        Admin replies to a report. In-app notification stored in ReportReply
+        and optional email sent to reporter if email exists.
+        """
+        user = request.user  # Admin
+        try:
+            report = Report.objects.get(id=id)
+        except Report.DoesNotExist:
+            return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ReportReplySerializer(data=request.data)
+        if serializer.is_valid():
+            reply = serializer.save(report=report, replied_by=user)
+            message = serializer.validated_data['message']
+
+            # Optional: Send email to reporter
+            recipient_email = report.user.email if report.user and report.user.email else report.email
+            if recipient_email:
+                try:
+                    send_mail(
+                        subject=f"Response to your report {report.report_id}",
+                        message=message,
+                        from_email='limbureubenn@gmail.com',
+                        recipient_list=[recipient_email],
+                        fail_silently=True
+                    )
+                except Exception as e:
+                    print(f"Failed to send reply email: {e}")
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_report_replies(request):
+    replies = ReportReply.objects.filter(report__user=request.user).order_by('-created_at')
+    serializer = ReportReplySerializer(replies, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WardDashboardCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.role != 'ward_executive' or not user.ward:
+            return Response({"error": "Only ward executives can access this"}, status=403)
+
+        # --- OpenSpaces counts ---
+        total_openspaces = OpenSpace.objects.filter(district=user.ward).count()
+        available_openspaces = OpenSpace.objects.filter(district=user.ward, status="available").count()
+        unavailable_openspaces = OpenSpace.objects.filter(district=user.ward, status="unavailable").count()
+
+        # --- Reports counts ---
+        total_reports = ReportForward.objects.filter(to_user=user).count()
+        forwarded_to_admin = ReportForwardToadmin.objects.filter(from_user=user).count()
+        pending_reports = total_reports - forwarded_to_admin
+
+        return Response({
+            "ward": user.ward.name,
+            "openspaces": {
+                "total": total_openspaces,
+                "available": available_openspaces,
+                "unavailable": unavailable_openspaces,
+            },
+            "reports": {
+                "total": total_reports,
+                "forwarded_to_admin": forwarded_to_admin,
+                "pending": pending_reports,
+            }
+        })

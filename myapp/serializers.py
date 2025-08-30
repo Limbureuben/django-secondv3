@@ -167,14 +167,20 @@ class ReportSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+# class ReportReplySerializer(serializers.ModelSerializer):
+#     from_user = serializers.StringRelatedField(read_only=True)
+
+#     class Meta:
+#         model = ReportReplyVillageExecutive
+#         fields = ['id', 'report', 'from_user', 'message', 'created_at']
+#         read_only_fields = ['id', 'from_user', 'created_at']
+
+
 class ReportReplySerializer(serializers.ModelSerializer):
-    from_user = serializers.StringRelatedField(read_only=True)
-
     class Meta:
-        model = ReportReplyVillageExecutive
-        fields = ['id', 'report', 'from_user', 'message', 'created_at']
-        read_only_fields = ['id', 'from_user', 'created_at']
-
+        model = ReportReply
+        fields = ['id', 'report', 'message', 'replied_by', 'created_at']
+        read_only_fields = ['replied_by', 'created_at']
 
 
 class WardSerializer(serializers.ModelSerializer):
