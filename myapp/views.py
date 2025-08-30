@@ -1405,7 +1405,7 @@ def forwarded_reports_to_admin(request):
     reports_data = []
     for f in forwarded:
         reports_data.append({
-            'id': f.id,  # Forward record ID
+            'id': f.report.id,  # Forward record ID
             'report_id': f.report.report_id,
             'space_name': f.report.space_name,
             'latitude': f.report.latitude,

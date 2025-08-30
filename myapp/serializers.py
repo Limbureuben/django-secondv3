@@ -180,7 +180,7 @@ class ReportReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = ReportReply
         fields = ['id', 'report', 'message', 'replied_by', 'created_at']
-        read_only_fields = ['replied_by', 'created_at']
+        read_only_fields = ['report', 'replied_by', 'created_at']
 
 
 class WardSerializer(serializers.ModelSerializer):
