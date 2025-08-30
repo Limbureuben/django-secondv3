@@ -51,7 +51,7 @@ urlpatterns = [
     path('streets/register/', StreetRegisterAPIView.as_view(), name='ward-street-register'),
     path("reports/<int:pk>/forward/", ForwardReportView.as_view(), name="forward-report"),
     path('reports/reply/<int:id>/', ReportReplyView.as_view(), name='report-reply'),
-    path('reports/my-replies/', views.my_report_replies, name='my-report-replies'),
+    path('reports/my-replies/', views.get_report_replies, name='my-report-replies'),
     path('openspaces/count/ward/', WardDashboardCountView.as_view(), name="openspace-count"),
 ]
 

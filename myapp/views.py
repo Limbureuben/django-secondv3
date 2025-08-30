@@ -1591,12 +1591,32 @@ class ReportReplyView(APIView):
 
 
 
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def my_report_replies(request):
+#     replies = ReportReply.objects.filter(report__user=request.user).order_by('-created_at')
+#     serializer = ReportReplySerializer(replies, many=True)
+#     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def my_report_replies(request):
-    replies = ReportReply.objects.filter(report__user=request.user).order_by('-created_at')
-    serializer = ReportReplySerializer(replies, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+def get_report_replies(request):
+    user = request.user
+    reports = Report.objects.filter(user=user)  # only the user's reports
+    replies = ReportReply.objects.filter(report__in=reports).select_related('replied_by', 'report').order_by('-created_at')
+
+    data = [
+        {
+            'id': r.id,
+            'report_id': r.report.report_id,
+            'message': r.message,
+            'replied_by': r.replied_by.username if r.replied_by else None,
+            'created_at': r.created_at
+        }
+        for r in replies
+    ]
+    return Response(data)
 
 
 class WardDashboardCountView(APIView):
