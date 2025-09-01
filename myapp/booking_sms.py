@@ -12,7 +12,7 @@ def send_sms(phone, message):
         "recipients": [
             {
                 "recipient_id": 1,
-                "dest_addr": phone  # Make sure phone format is correct e.g. '2557xxxxxxx'
+                "dest_addr": phone
             }
         ]
     }
