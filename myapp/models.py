@@ -132,7 +132,6 @@ class Report(models.Model):
             fail_silently=False,
         )
 
-
 class ReportReply(models.Model):
     report = models.ForeignKey('Report', on_delete=models.CASCADE, related_name='replies')
     message = models.TextField()

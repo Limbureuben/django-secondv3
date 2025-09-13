@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "graphene_django",
     "rest_framework_simplejwt",
     "corsheaders",
-    "django_celery_beat"
+    "django_celery_beat",
+    "channels"
 ]
 
 SITE_ID = 1
@@ -81,6 +82,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'openspace.wsgi.application'
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 
 
 # Database

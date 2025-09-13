@@ -2,11 +2,6 @@ from django.urls import path, include
 from .views import *
 from . import views
 
-# urlpatterns = [
-#     path('reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
-# ]
-
-
 urlpatterns = [
     path('upload/', FileUploadView.as_view(), name='file-upload'),
     path('ussd/', views.submit_problem_report, name='ussd'),
@@ -34,7 +29,6 @@ urlpatterns = [
     path('send-notification/', SendNotificationView.as_view(), name='send-notification'),
     path('notifications/unread-count/', UnreadNotificationCountAPIView.as_view()),
     path('village-chairmen/', VillageChairmenByWardView.as_view(), name='village-chairmen-by-ward'),  
-    # path('reports/reply/', ReplyToReportAPIView.as_view(), name='reply-to-report'),
     path('wards/', get_wards, name='get-wards'),
     path('streets/', get_streets_for_loggedin_user_ward),
     path('street-leaders/', get_street_leaders_for_ward_executive, name='street-leaders'),
@@ -53,5 +47,6 @@ urlpatterns = [
     path('reports/reply/<int:id>/', ReportReplyView.as_view(), name='report-reply'),
     path('reports/my-replies/', views.get_report_replies, name='my-report-replies'),
     path('openspaces/count/ward/', WardDashboardCountView.as_view(), name="openspace-count"),
+    path("notifications/", NotificationView.as_view(), name="notifications"),
 ]
 
