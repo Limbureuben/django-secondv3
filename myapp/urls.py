@@ -47,6 +47,6 @@ urlpatterns = [
     path('reports/reply/<int:id>/', ReportReplyView.as_view(), name='report-reply'),
     path('reports/my-replies/', views.get_report_replies, name='my-report-replies'),
     path('openspaces/count/ward/', WardDashboardCountView.as_view(), name="openspace-count"),
-    path("notifications/", NotificationView.as_view(), name="notifications"),
+    path('notifications/', UserNotificationsView.as_view(), name='user-notifications'),
 ]
 

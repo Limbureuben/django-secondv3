@@ -1554,49 +1554,15 @@ class ForwardReportView(APIView):
         
         
         
-# class ReportReplyView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, id):
-#         """
-#         Admin replies to a report. In-app notification stored in ReportReply
-#         and optional email sent to reporter if email exists.
-#         """
-#         user = request.user  # Admin
-#         try:
-#             report = Report.objects.get(id=id)
-#         except Report.DoesNotExist:
-#             return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         serializer = ReportReplySerializer(data=request.data)
-#         if serializer.is_valid():
-#             reply = serializer.save(report=report, replied_by=user)
-#             message = serializer.validated_data['message']
-
-#             # Optional: Send email to reporter
-#             recipient_email = report.user.email if report.user and report.user.email else report.email
-#             if recipient_email:
-#                 try:
-#                     send_mail(
-#                         subject=f"Response to your report {report.report_id}",
-#                         message=message,
-#                         from_email='limbureubenn@gmail.com',
-#                         recipient_list=[recipient_email],
-#                         fail_silently=True
-#                     )
-#                 except Exception as e:
-#                     print(f"Failed to send reply email: {e}")
-
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class ReportReplyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
-        admin_user = request.user  # The admin replying
+        """
+        Admin replies to a report. In-app notification stored in ReportReply
+        and optional email sent to reporter if email exists.
+        """
+        user = request.user  # Admin
         try:
             report = Report.objects.get(id=id)
         except Report.DoesNotExist:
@@ -1604,16 +1570,11 @@ class ReportReplyView(APIView):
 
         serializer = ReportReplySerializer(data=request.data)
         if serializer.is_valid():
-            reply = serializer.save(report=report, replied_by=admin_user)
+            reply = serializer.save(report=report, replied_by=user)
             message = serializer.validated_data['message']
 
-            # Send email (optional)
-            recipient_email = None
-            if report.user and report.user.email:
-                recipient_email = report.user.email
-            elif hasattr(report, "email"):  # fallback if you store raw email
-                recipient_email = report.email
-
+            # Optional: Send email to reporter
+            recipient_email = report.user.email if report.user and report.user.email else report.email
             if recipient_email:
                 try:
                     send_mail(
@@ -1626,49 +1587,25 @@ class ReportReplyView(APIView):
                 except Exception as e:
                     print(f"Failed to send reply email: {e}")
 
-            # 🔹 WebSocket notification
-            if report.user:  # only send if the report is tied to a user
-                channel_layer = get_channel_layer()
-                async_to_sync(channel_layer.group_send)(
-                    f"user_{report.user.id}",  # send only to this user
-                    {
-                        "type": "send_notification",
-                        "message": message,
-                        "report_id": report.id,
-                        "replied_by": admin_user.username,
-                        "created_at": str(reply.created_at)
-                    }
-                )
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-class NotificationView(APIView):
+# views.py
+class UserNotificationsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         """
-        Fetch all notifications (report replies) for the logged-in user.
+        Fetch all replies as notifications for the logged-in user.
         """
-        user = request.user
-        replies = ReportReply.objects.filter(report__user=user).select_related("replied_by", "report").order_by("-created_at")
+        reports = Report.objects.filter(user=request.user)
+        replies = ReportReply.objects.filter(report__in=reports).order_by('-created_at')
+        serializer = ReportNotificationSerializer(replies, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        data = [
-            {
-                "id": reply.id,
-                "report_id": reply.report.id,
-                "report_code": reply.report.report_id,   # if you have a human-friendly ID
-                "message": reply.message,
-                "replied_by": reply.replied_by.username if reply.replied_by else None,
-                "created_at": reply.created_at,
-            }
-            for reply in replies
-        ]
 
-        return Response(data)
 
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])

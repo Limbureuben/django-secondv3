@@ -181,6 +181,17 @@ class ReportReplySerializer(serializers.ModelSerializer):
         model = ReportReply
         fields = ['id', 'report', 'message', 'replied_by', 'created_at']
         read_only_fields = ['report', 'replied_by', 'created_at']
+        
+
+# serializers.py
+class ReportNotificationSerializer(serializers.ModelSerializer):
+    report_id = serializers.CharField(source="report.report_id", read_only=True)
+    replied_by = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = ReportReply
+        fields = ['id', 'report_id', 'message', 'replied_by', 'created_at']
+
 
 
 class WardSerializer(serializers.ModelSerializer):
