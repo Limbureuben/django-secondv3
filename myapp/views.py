@@ -1523,7 +1523,6 @@ class ForwardReportView(APIView):
         # 1. Get the report
         report = get_object_or_404(Report, pk=pk)
 
-        # 2. Check if the user is a village executive
         if request.user.role != "village_chairman":
             return Response(
                 {"error": "Only village executives can forward reports"},
