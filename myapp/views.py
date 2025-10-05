@@ -901,8 +901,8 @@ class MyBookingsView(generics.ListAPIView):
 
 
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework.decorators import api_view # type: ignore
+from rest_framework.response import Response # type: ignore
 from .sms import send_sms
 from .utils import decrypt_phone_number
 
@@ -1013,7 +1013,7 @@ class NotifyAllWardExecutivesView(APIView):
             send_mail(
                 subject='Notification from Kinondoni Municipal',
                 message=message,
-                from_email='admin@example.com',  # Replace with your configured email
+                from_email='limbureubenn@gmail.com',
                 recipient_list=[executive.email],
                 fail_silently=True
             )
