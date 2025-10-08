@@ -215,16 +215,11 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:4200',
-# ]
-
-
 # for speficic  origin
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # Angular frontend (default port)
-    "http://127.0.0.1:8000",  # API itself
-    "http://10.0.2.2:8000",  # Flutter emulator (Android)
+    "http://localhost:4200",
+    "http://127.0.0.1:8000",
+    "http://10.0.2.2:8000",
     "http://localhost:5000",
     "http://127.0.0.1:42217",
     "https://9a41-196-249-98-217.ngrok-free.app",
@@ -235,13 +230,12 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'limbureubenn@gmail.com'
-EMAIL_HOST_PASSWORD = 'stlamceqmzjmbvxs'
+EMAIL_HOST_PASSWORD = 'egzcwbpkggcaadkr'
 DEFAULT_FROM_EMAIL = 'limbureubenn@gmail.com'
 FRONTEND_URL = 'http://localhost:4200'
 BACKEND_URL = 'http://127.0.0.1:8000'
@@ -249,7 +243,6 @@ BACKEND_URL = 'http://127.0.0.1:8000'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
 FERNET_KEY="1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
@@ -265,14 +258,11 @@ os.environ["FERNET_KEY"] = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
 
 # ZTc3NGYxOTY3ODhjMmRlMWExNWZiMmIyOWY0OTIzNDVhODdhMGVmNThlYWY0ZDdlMDcwMzQxNzExMDI4MTY5Ng==
 
-
 AUTH_USER_MODEL = 'myapp.CustomUser'
-
-
-
 from dotenv import load_dotenv # type: ignore
 
 load_dotenv()
+
 
 # Now fetch the keys from the environment
 BEEM_API_KEY = os.getenv("BEEM_API_KEY")
@@ -282,7 +272,6 @@ FERNET_KEY = os.getenv("FERNET_KEY")
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-
 from celery.schedules import crontab # type: ignore
 
 CELERY_BEAT_SCHEDULE = {

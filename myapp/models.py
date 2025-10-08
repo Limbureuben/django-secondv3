@@ -20,7 +20,6 @@ class UssdReport(models.Model):
         return self.reference_number
     
 
-
 class UserProfile(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
