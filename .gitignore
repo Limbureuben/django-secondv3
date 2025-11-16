@@ -1,5 +1,5 @@
 # ========================================
-# 🔐 SECURITY - NEVER COMMIT THESE FILES
+#  SECURITY - NEVER COMMIT THESE FILES
 # ========================================
 
 # Environment files (contain secrets)
@@ -156,3 +156,5 @@ nginx/ssl/                     # SSL certificate directory
 *.crt                         # Certificate files
 *.p12                         # PKCS#12 files
 *.pfx                         # Personal Information Exchange files
+.env
+reuben/
