@@ -29,9 +29,6 @@ db.sqlite3
 backups/
 backup_*.sql.gz
 
-migrations/*
-__pycache__/*
-
 # Logs (may contain sensitive data)
 *.log
 logs/
