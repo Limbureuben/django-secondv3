@@ -12,21 +12,56 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Smart environment detection
+def detect_environment():
+    env = os.getenv("DJANGO_ENVIRONMENT")
+    if env:
+        return env.lower()
+
+    # Auto-detect only inside container
+    if os.path.exists(os.path.join(BASE_DIR, ".env.prod")):
+        return "production"
+    if os.path.exists(os.path.join(BASE_DIR, ".env.dev")):
+        return "development"
+    return "local"
+
+ENVIRONMENT = detect_environment()
+
+env_files = {
+    "production": os.path.join(BASE_DIR, ".env.prod"),
+    "development": os.path.join(BASE_DIR, ".env.dev"),
+    "local": os.path.join(BASE_DIR, ".env"),
+}
+
+env_file = env_files.get(ENVIRONMENT)
+
+if os.path.exists(env_file):
+    load_dotenv(env_file)
+    print(f"✔ Loaded {ENVIRONMENT} environment from {env_file}")
+else:
+    load_dotenv()
+    print("⚠ No env file found, using default .env")
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-az!-qw*3r32ng7r7hs*wphv5k^8)9eaju6bf3m32f*m1gq0arz'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-az!-qw*3r32ng7r7hs*wphv5k^8)9eaju6bf3m32f*m1gq0arz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Force DEBUG=False in production
+if ENVIRONMENT == 'production':
+    DEBUG = False
+
+# Environment indicator
+ENVIRONMENT_NAME = ENVIRONMENT.upper()
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -88,7 +123,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/0')],
         },
     },
 }
@@ -98,24 +133,39 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Environment-aware database configuration
+if ENVIRONMENT == 'production':
+    # Force PostgreSQL in production
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB','openspace_prod'),
+            'USER': os.getenv('POSTGRES_USER','openspace_user'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD','db_password'),
+            'HOST': os.getenv('DATABASE_HOST'),
+            'PORT': os.getenv('DATABASE_PORT'),
+        }
     }
-}
-
-# import os
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'openspace',
-#         'USER': 'postgres',             # Use existing PostgreSQL user
-#         'PASSWORD': '12345', # Replace with actual password
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+elif ENVIRONMENT == 'development' and os.getenv('DB_HOST'):
+    # PostgreSQL for Docker development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB', 'openspace'),
+            'USER': os.getenv('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', '12345'),
+            'HOST': os.getenv('DB_HOST', 'db'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
+    }
+else:
+    # SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 
@@ -153,7 +203,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -213,70 +264,89 @@ SIMPLE_JWT = {
 }
 
 
-CORS_ALLOW_ALL_ORIGINS = True
-
-# for speficic  origin
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
-    "http://127.0.0.1:8000",
-    "http://10.0.2.2:8000",
-    "http://localhost:5000",
-    "http://127.0.0.1:42217",
-    "https://9a41-196-249-98-217.ngrok-free.app",
-    "http://127.0.0.1:8001",
-    "http://192.168.1.124:4200",
-    "http://localhost:5173"
-]
+# Environment-aware CORS Configuration
+if ENVIRONMENT == 'production':
+    CORS_ALLOW_ALL_ORIGINS = False
+    cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(',') if origin.strip()]
+else:
+    CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'limbureubenn@gmail.com'
-EMAIL_HOST_PASSWORD = 'egzcwbpkggcaadkr'
-DEFAULT_FROM_EMAIL = 'limbureubenn@gmail.com'
-FRONTEND_URL = 'http://localhost:4200'
-BACKEND_URL = 'http://127.0.0.1:8000'
+# Email Configuration
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'limbureubenn@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'egzcwbpkggcaadkr')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'limbureubenn@gmail.com')
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://127.0.0.1:8000')
 
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
-FERNET_KEY="1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
+# SMS & Encryption Configuration
+AT_USERNAME = os.getenv('AT_USERNAME', 'sandbox')
+AT_API_KEY = os.getenv('AT_API_KEY', '')
+FERNET_KEY = os.getenv('FERNET_KEY', '1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs=')
 
-# my API key for sending an sms
-# atsk_ea83bd5ab23b2e68e1721ec3fd1ec4b491b52ea800a3a94ed0364e367b8d6e77aabd0916
-
-
-# Set environment variables directly in settings.py
-os.environ["AT_USERNAME"] = "sandbox"
-os.environ["AT_API_KEY"] = "atsk_ce5403b17335ff50b7e5d3b5a10469710fc73853a932daf7523692084de1911d196e23f3"
-os.environ["FERNET_KEY"] = "1r5qIiRHx6Jwjl1wXDxFIppfQbMCGhlW1ScTc7tmSYs="
-
-# ZTc3NGYxOTY3ODhjMmRlMWExNWZiMmIyOWY0OTIzNDVhODdhMGVmNThlYWY0ZDdlMDcwMzQxNzExMDI4MTY5Ng==
+BEEM_API_KEY = os.getenv('BEEM_API_KEY', '')
+BEEM_SECRET_KEY = os.getenv('BEEM_SECRET_KEY', '')
+BEEM_SENDER_ID = os.getenv('BEEM_SENDER_ID', 'OPENSPACE')
 
 AUTH_USER_MODEL = 'myapp.CustomUser'
-from dotenv import load_dotenv # type: ignore
 
-load_dotenv()
-
-
-# Now fetch the keys from the environment
-BEEM_API_KEY = os.getenv("BEEM_API_KEY")
-BEEM_SECRET_KEY = os.getenv("BEEM_SECRET_KEY")
-BEEM_SENDER_ID = os.getenv("BEEM_SENDER_ID")
-FERNET_KEY = os.getenv("FERNET_KEY")
-
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-from celery.schedules import crontab # type: ignore
+# Celery Configuration
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
     'check-expired-bookings-daily': {
         'task': 'myapp.notification_task.check_expired_bookings_task',
-        'schedule': crontab(hour=0, minute=0),  # every midnight
+        'schedule': crontab(hour=0, minute=0),
     },
 }
+
+# Environment-aware Security Settings
+if ENVIRONMENT == 'production':
+    # Force production security settings
+    SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
+    SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True') == 'True'
+    CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True') == 'True'
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # Production logging
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': '/app/logs/django.log',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'INFO',
+                'propagate': True,
+            },
+        },
+    }
+else:
+    # Development: relaxed security
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False

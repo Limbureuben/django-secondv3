@@ -1,24 +1,158 @@
-# Python
-*.pyc
-*.pyo
-__pycache__/
+# ========================================
+# 🔐 SECURITY - NEVER COMMIT THESE FILES
+# ========================================
 
-# Django
+# Environment files (contain secrets)
+.env
+.env.dev
+.env.prod
+.env
+
+production_keys_backup.txt
+
+# SSL Certificates and Keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+nginx/ssl/
+ssl/
+certs/
+
+# Database files and backups
 *.db
 *.sqlite3
 db.sqlite3
+*.sql
+*.dump
+backups/
+backup_*.sql.gz
+
+# Logs (may contain sensitive data)
+*.log
+logs/
+django.log   
+
+# ========================================
+# PYTHON & DJANGO
+# ========================================
+
+# Python bytecode
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
 media/
 staticfiles/
+static_root/
+*.pot
+local_settings.py
 
-# Virtual Environment
+# ========================================
+#  DEVELOPMENT ENVIRONMENT
+# ========================================
+
+# Virtual environments
 venv/
+env/
 myenv/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
 
-# IDEs
+# IDEs and editors
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
 
-# OS-specific files
+# ========================================
+#  DOCKER & DEPLOYMENT
+# ========================================
+
+# Docker volumes data
+postgres_data/                # PostgreSQL data directory
+postgres_data_dev/            # Development PostgreSQL data
+postgres_data_prod/           # Production PostgreSQL data
+redis_data/  
+
+# Deployment scripts with secrets
+deploy_secrets.*
+production_deploy.*
+
+# ========================================
+#  OS SPECIFIC
+# ========================================
+
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
 Thumbs.db
-.env
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ========================================
+# 🧪 TESTING & COVERAGE
+# ========================================
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ========================================
+#  PACKAGE MANAGERS
+# ========================================
+
+# npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================================
+#  TEMPORARY FILES
+# ========================================
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# ========================================
+#  AI/ML TOOLS
+# ========================================
+
+# AI code analysis
+.qodo/
+.codacy/
+.github/instructions/
+.marscode/
+
+
+nginx/ssl/                     # SSL certificate directory
+*.pem                         # SSL certificates
+*.key                         # Private keys
+*.crt                         # Certificate files
+*.p12                         # PKCS#12 files
+*.pfx                         # Personal Information Exchange files
