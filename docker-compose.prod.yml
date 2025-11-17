@@ -41,7 +41,8 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
+      target: prod
     container_name: openspace_web_prod
     command: gunicorn openspace.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --timeout 120 --access-logfile - --error-logfile -
     volumes:
@@ -96,7 +97,8 @@ services:
   celery:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
+      target: prod
     container_name: openspace_celery_prod
     command: celery -A openspace worker --loglevel=info --concurrency=4 --max-tasks-per-child=1000
     volumes:
@@ -125,7 +127,8 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
+      target: prod
     container_name: openspace_celery_beat_prod
     command: celery -A openspace beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
@@ -154,7 +157,8 @@ services:
   flower:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
+      target: prod
     container_name: openspace_flower_prod
     command: celery -A openspace flower --port=5555
     expose:
