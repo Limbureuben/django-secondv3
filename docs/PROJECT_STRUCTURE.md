@@ -28,9 +28,7 @@ openspace/
 │       ├── generate_keys.py     # Generate secure keys
 │       ├── setup_production.py  # Production environment setup
 │       ├── db_access.py         # Database access utilities
-│       ├── test_environments.py # Environment testing
-│       ├── test_setup.py        # Setup verification
-│       └── test_environment.py  # Environment detection test
+│  
 │
 ├── 🚀 Quick Start Scripts
 │   ├── setup_venv.bat          # Virtual environment setup

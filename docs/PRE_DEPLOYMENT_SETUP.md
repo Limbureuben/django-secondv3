@@ -35,14 +35,14 @@ ALLOWED_HOSTS=openspace.university.ac.tz,SERVER_IP_ADDRESS,localhost
 
 ### 2. Generate Production Keys
 
-Run these commands NOW and save the output:
+Run this command NOW and save the output by  copy and paste them keys in .env.prod:
 
 ```bash
-# Generate SECRET_KEY
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+cd scripts
+python generate_keys.py
+ 
+ 
 
-# Generate FERNET_KEY  
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
 Update `.env.prod`:
@@ -101,7 +101,7 @@ tar -czf openspace-deployment.tar.gz django-secondv3/
 
 ---
 
-## 🏫 At University Server (Quick Deploy)
+##  At University Server (Quick Deploy)
 
 ### Step 1: Transfer Files (5 minutes)
 
@@ -151,15 +151,8 @@ sudo chown $USER:$USER nginx/ssl/*.pem
 ### Step 4: Deploy (5 minutes)
 
 ```bash
-# Build and start
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
-
-# Wait 30 seconds, then create admin
-docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser
-
-# Check if running
-docker-compose -f docker-compose.prod.yml ps
+# Build and start But generaly this all are running in  just make the scripts executable .sh and .bat then running 
+start_prod.bat
 ```
 
 ### Step 5: Test
@@ -172,7 +165,7 @@ Open browser: `https://openspace.university.ac.tz/admin`
 
 ### If containers won't start:
 ```bash
-docker-compose -f docker-compose.prod.yml logs
+docker-compose --env-file .env.prod -f docker-compose.prod.yml logs
 ```
 
 ### If can't access website:
@@ -186,8 +179,8 @@ sudo ufw allow 443/tcp
 ### If database errors:
 ```bash
 # Reset database
-docker-compose -f docker-compose.prod.yml down -v
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose --env-file .env.prod -f docker-compose.prod.yml down -v
+docker-compose --env-file .env.prod -f docker-compose.prod.yml up -d
 ```
 
 ---
@@ -195,14 +188,14 @@ docker-compose -f docker-compose.prod.yml up -d
 ## 📋 Deployment Checklist (Print This!)
 
 **BEFORE Going to University:**
-- [ ] Updated `.env.prod` with university domain
-- [ ] Generated new SECRET_KEY
-- [ ] Generated new FERNET_KEY  
-- [ ] Changed POSTGRES_PASSWORD
-- [ ] Updated nginx config with domain
-- [ ] Enabled SSL security settings
-- [ ] Pushed to GitHub OR copied to USB
-- [ ] Printed this checklist
+- [ ] Update `.env.prod` with university domain
+- [ ] Generate new SECRET_KEY
+- [ ] Generate new FERNET_KEY  
+- [ ] Change POSTGRES_PASSWORD
+- [ ] Update nginx config with domain
+- [ ] Enable SSL security settings
+- [ ] Push to GitHub OR copied to USB
+
 
 **AT University (Ask IT Department):**
 - [ ] Server IP address: _______________
@@ -213,7 +206,7 @@ docker-compose -f docker-compose.prod.yml up -d
 - [ ] Ports 80, 443 opened? Yes/No
 
 **Deployment Steps:**
-- [ ] Transferred files to server
+- [ ] Transferr iles to server
 - [ ] Installed Docker
 - [ ] Copied SSL certificates to nginx/ssl/
 - [ ] Built Docker images
@@ -222,23 +215,4 @@ docker-compose -f docker-compose.prod.yml up -d
 - [ ] Tested website access
 - [ ] Setup auto-start service
 
----
 
-## 📞 Emergency Contacts
-
-**If something goes wrong:**
-1. Check logs: `docker-compose -f docker-compose.prod.yml logs`
-2. Restart: `docker-compose -f docker-compose.prod.yml restart`
-3. Contact university IT support
-
-**Save these commands:**
-```bash
-# Stop everything
-docker-compose -f docker-compose.prod.yml down
-
-# Start fresh
-docker-compose -f docker-compose.prod.yml up -d
-
-# View logs
-docker-compose -f docker-compose.prod.yml logs -f web
-```

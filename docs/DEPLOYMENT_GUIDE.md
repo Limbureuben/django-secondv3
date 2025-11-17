@@ -15,11 +15,9 @@ FERNET_KEY=<generate-new-fernet-key>
 ### 2. Generate Secure Keys
 
 ```bash
-# Generate SECRET_KEY
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-
-# Generate FERNET_KEY
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+##Generate keys 
+cd scripts
+python generate_keys.py
 ```
 
 ### 3. Update Nginx Configuration
@@ -31,7 +29,7 @@ server_name your-university-domain.edu www.your-university-domain.edu;
 
 ---
 
-## 🏫 On University Server
+##  On University Server
 
 ### Step 1: Install Docker
 
@@ -105,14 +103,14 @@ CSRF_COOKIE_SECURE=True
 chmod +x *.sh *.bat
 
 # Build and start
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose --env-file .env.prod-f docker-compose.prod.yml build
+docker-compose --nev-file .env.prod -f docker-compose.prod.yml up -d
 
 # Create superuser
-docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser
+docker-compose --env-file .env.prod -f docker-compose.prod.yml exec web python manage.py createsuperuser
 
 # Check logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker-compose --env-file .env.prod -f docker-compose.prod.yml logs -f
 ```
 
 ### Step 6: Setup Firewall
@@ -141,8 +139,8 @@ After=docker.service
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=/opt/django-secondv3
-ExecStart=/usr/bin/docker-compose -f docker-compose.prod.yml up -d
-ExecStop=/usr/bin/docker-compose -f docker-compose.prod.yml down
+ExecStart=/usr/bin/start_prod.bat
+ExecStop=/usr/bin/docker-compose --env-file .env.prod -f docker-compose.prod.yml down
 TimeoutStartSec=0
 
 [Install]
@@ -155,26 +153,6 @@ sudo systemctl enable openspace.service
 sudo systemctl start openspace.service
 ```
 
----
-
-## 🔒 SSL Certificate Setup
-
-### Current Status
-- `nginx/ssl/cert.pem` - Self-signed certificate (for testing only)
-- `nginx/ssl/key.pem` - Self-signed key (for testing only)
-
-### For Production
-**Delete test certificates and use real ones:**
-
-```bash
-# Remove test certificates
-rm nginx/ssl/cert.pem nginx/ssl/key.pem
-
-# Add real certificates (choose one method above)
-```
-
----
-
 ## 📊 Post-Deployment
 
 ### Access Your Application
@@ -186,23 +164,23 @@ rm nginx/ssl/cert.pem nginx/ssl/key.pem
 
 ```bash
 # View logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker-compose --env-file .env.prod -f docker-compose.prod.yml logs -f
 
 # Restart services
-docker-compose -f docker-compose.prod.yml restart
+docker-compose --env-file .env.prod -f docker-compose.prod.yml restart
 
 # Stop everything
-docker-compose -f docker-compose.prod.yml down
+docker-compose --env-file .env.prod -f docker-compose.prod.yml down
 
 # Database backup
-docker-compose -f docker-compose.prod.yml exec -T db pg_dump -U openspace_user openspace_prod > backup.sql
+docker-compose --env-file .env.prod -f docker-compose.prod.yml exec -T db pg_dump -U openspace_user openspace_prod > backup.sql
 
 # Update application
 git pull origin main
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
-docker-compose -f docker-compose.prod.yml exec web python manage.py migrate
-docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --noinput
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml build
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml up -d
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml exec web python manage.py migrate
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml exec web python manage.py collectstatic --noinput
 ```
 
 ---
@@ -211,7 +189,7 @@ docker-compose -f docker-compose.prod.yml exec web python manage.py collectstati
 
 ### Check Container Status
 ```bash
-docker-compose -f docker-compose.prod.yml ps
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml ps
 ```
 
 ### View Specific Logs
@@ -223,13 +201,13 @@ docker logs openspace_nginx_prod
 
 ### Restart Specific Service
 ```bash
-docker-compose -f docker-compose.prod.yml restart web
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml restart web
 ```
 
 ### Clean Restart
 ```bash
-docker-compose -f docker-compose.prod.yml down
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml down
+docker-compose --env-file ..env.prod -f docker-compose.prod.yml up -d
 ```
 
 ---
@@ -244,16 +222,16 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ---
 
-## ✅ Deployment Checklist
+##  Deployment Checklist
 
-- [ ] Updated `.env.prod` with university domain
-- [ ] Generated new SECRET_KEY and FERNET_KEY
-- [ ] Changed database password
-- [ ] Obtained real SSL certificates
-- [ ] Updated nginx configuration with domain
-- [ ] Tested on university server
-- [ ] Created superuser account
+- [ ] Update `.env.prod` with university domain
+- [ ] Generate new SECRET_KEY and FERNET_KEY
+- [ ] Change database password
+- [ ] Obtaine real SSL certificates
+- [ ] Update nginx configuration with domain
+- [ ] Test on university server
+- [ ] Create superuser account
 - [ ] Setup firewall rules
-- [ ] Configured auto-start service
+- [ ] Configure auto-start service
 - [ ] Setup backup automation
-- [ ] Documented admin credentials (securely)
+- [ ] Document admin credentials (securely)

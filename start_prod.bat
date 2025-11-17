@@ -80,7 +80,6 @@ echo    Shell:     docker-compose -f docker-compose.prod.yml exec web bash
 echo.
 echo   Security Notes:
 echo    - Create superuser: docker-compose --env-file .env.prod -f docker-compose.prod.yml exec web python manage.py createsuperuser
-echo    - Check headers: curl -I http://localhost
 echo ========================================
 
 pause

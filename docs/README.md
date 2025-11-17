@@ -75,99 +75,20 @@ openspace/
 git clone https://github.com/yourusername/openspace.git
 cd openspace
 
-# Run setup script
-chmod +x setup.sh
-./setup.sh
-```
-
-### Option 3: Manual Setup
-
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/openspace.git
 cd openspace
 
-# Create directories
-mkdir -p nginx/conf.d nginx/ssl media staticfiles backups
-
-# Make scripts executable
-chmod +x entrypoint.dev.sh entrypoint.prod.sh
-
-# Copy environment files
-cp .env.dev.example .env.dev
-cp .env.prod.example .env.prod
-
-# Build and start development
-docker-compose -f docker-compose.dev.yml build
-docker-compose -f docker-compose.dev.yml up -d
-
-# View logs
-docker-compose -f docker-compose.dev.yml logs -f
-```
-
-
-
-
-### Common Development Tasks
-
-```bash
-# Run migrations
-make dev-migrate
-
-# Create superuser
-make dev-superuser
-
-# Access Django shell
-make dev-shell
-
-# Access container bash
-make dev-bash
-
-# View logs
-make dev-logs
-
-# Run tests
-make dev-test
-
-# Collect static files
-make dev-collectstatic
-
-# Stop development
-make dev-down
-```
-
-### Database Access
-
-```bash
-# PostgreSQL shell
-make db-shell-dev
-
-# Or directly
-docker-compose -f docker-compose.dev.yml exec db psql -U postgres -d openspace
-```
-
-### Celery Monitoring
-
-```bash
-# View Celery logs
-make dev-logs-celery
-
-# Check active tasks
-docker-compose -f docker-compose.dev.yml exec celery celery -A openspace inspect active
-
-# Check registered tasks
-docker-compose -f docker-compose.dev.yml exec celery celery -A openspace inspect registered
-```
-
-##  Production Deployment
+cp .env.prod.example .env.prod  ##for porduction environemnt variables
+cp .env.dev.example  .env.dev  ##for development environment variables
 
 ### Pre-deployment Checklist
-
 1. **Update `.env.prod` file**:
    ```bash
    # Generate new keys
-   make generate-secret-key
-   make generate-fernet-key
+   cd scripts/
+   Run python generate_keys.py
    ```
 
 2. **Critical settings to update**:

@@ -59,7 +59,7 @@ if errorlevel 1 (
 )
 
 REM Install additional development tools
-echo 🛠️ Installing development tools...
+echo Installing development tools...
 pip install requests python-dotenv
 
 REM Create .env file if it doesn't exist

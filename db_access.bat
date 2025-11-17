@@ -14,7 +14,7 @@ if not exist .env.prod (
 echo  .env.prod file found
 
 REM Check if production containers are running
-docker-compose -f docker-compose.prod.yml ps | findstr "openspace_db_prod" >nul
+docker-compose --env-file .env.prod -f docker-compose.prod.yml ps | findstr "openspace_db_prod" >nul
 if errorlevel 1 (
     echo Production database container not running
     echo  Start production first: start_prod.bat
