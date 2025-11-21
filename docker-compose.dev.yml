@@ -223,6 +223,7 @@ services:
       - .:/app
       - media_volume_dev:/app/media
       - static_volume_dev:/app/staticfiles
+      - ./logs:/app/logs
     ports:
       - "8000:8000"
     environment:
