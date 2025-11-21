@@ -17,6 +17,7 @@ echo "Waiting for Redis..."
 while ! nc -z redis 6379; do
   sleep 0.1
 done
+# ---------- Produ
 echo " Redis is ready!"
 
 # Run migrations
@@ -48,3 +49,5 @@ echo "========================================="
 
 # Execute the main command
 exec "$@"
+
+
