@@ -83,7 +83,7 @@ services:
       - media_volume_prod:/app/media:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     ports:
-      - "80:80"
+      - "8002:80"
       - "443:443"
     depends_on:
       - web
