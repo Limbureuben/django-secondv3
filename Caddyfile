@@ -1,0 +1,15 @@
+http://95.111.247.129:8080 {
+    encode gzip
+
+    reverse_proxy web:8000
+
+    handle_path /static/* {
+        root * /app/staticfiles
+        file_server
+    }
+
+    handle_path /media/* {
+        root * /app/media
+        file_server
+    }
+}
