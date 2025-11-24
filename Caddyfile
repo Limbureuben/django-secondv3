@@ -1,12 +1,12 @@
 # Listen on port 555 for HTTPS
-:555 {
+*:555 {
     # Use self-signed internal TLS (browser will warn)
     tls {
         issuer acme
     }
 
     # Reverse proxy to Django Gunicorn container
-    reverse_proxy http://95.111.247.129:8000
+    reverse_proxy *:8000
 
     # Serve static files
     handle_path /static/* {
