@@ -1,5 +1,7 @@
-http://95.111.247.129:555 {
-    
+http://0.0.0.0:555 {
+
+    bind 0.0.0.0
+
     reverse_proxy web:8000
 
     handle_path /static/* {
