@@ -142,8 +142,8 @@ if ENVIRONMENT == 'production':
             'NAME': os.getenv('POSTGRES_DB','openspace_prod'),
             'USER': os.getenv('POSTGRES_USER','openspace_user'),
             'PASSWORD': os.getenv('POSTGRES_PASSWORD','db_password'),
-            'HOST': os.getenv('DATABASE_HOST'),
-            'PORT': os.getenv('DATABASE_PORT'),
+            'HOST': os.getenv('DATABASE_HOST', 'db'),
+            'PORT': os.getenv('DATABASE_PORT', '5432'),
         }
     }
 elif ENVIRONMENT == 'development' and os.getenv('DB_HOST'):
@@ -153,7 +153,7 @@ elif ENVIRONMENT == 'development' and os.getenv('DB_HOST'):
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('POSTGRES_DB', 'openspace'),
             'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', '12345'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', '1234'),
             'HOST': os.getenv('DB_HOST', 'db'),
             'PORT': os.getenv('DB_PORT', '5432'),
         }
