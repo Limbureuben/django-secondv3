@@ -49,7 +49,7 @@ services:
       - media_volume_prod:/app/media
       - static_volume_prod:/app/staticfiles
     ports:
-      -"8000:8000"
+      - "8000:8000"
     environment:
       - DJANGO_ENVIRONMENT=production
       - DEBUG=False
