@@ -1,29 +1,14 @@
-https://95.111.247.129:555 {
-    tls internal
+http://0.0.0.0:555 {
 
-    # Serve static files
-    handle /static/* {
+    reverse_proxy web:8000
+
+    handle_path /static/* {
         root * /app/staticfiles
         file_server
     }
 
-    # Serve media files
-    handle /media/* {
+    handle_path /media/* {
         root * /app/media
         file_server
-    }
-
-    # Everything else goes to Django
-    handle {
-        reverse_proxy web:8000 {
-            header_up X-Forwarded-Proto {scheme}
-            header_up X-Forwarded-Host {host}
-            header_up X-Forwarded-For {remote_host}
-        }
-    }
-
-    log {
-        output file /data/caddy/access.log
-        format console
     }
 }
