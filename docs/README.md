@@ -103,4 +103,20 @@ cp .env.dev.example  .env.dev  ##for development environment variables
 3. **Update Nginx configuration**:
    - Edit `nginx/conf.d/default.conf`
    - Update `server_name` with your domain
+   - 
+
+
+
+   How to run both development and production containers in server
+   - access the server to the IP Address
+   - navigate to cd /var/www/
+   - navigate to cd django-secondv3
+   - run docker ps to see the container running
+   - run these commands below to test development and production
+   - development: docker compose -f docker-compose.dev.yml up -d --build
+   - Production: docker compose -f docker-compose.prod.yml up -d --build
+   - To quite the containers for development or production use the below command
+   - For development: docker compose -f docker-compose.dev.yml down -v or For production: docker compose -f docker-compose.prod.yml down -v
+   - To see containers running run the below command
+   - docker ps
 
