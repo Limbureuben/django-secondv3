@@ -80,7 +80,7 @@ services:
     container_name: openspace_caddy_prod
     restart: always
     ports:
-      - "555:555"
+      - "444:444"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - static_volume_prod:/app/staticfiles:ro

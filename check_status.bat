@@ -1,6 +1,0 @@
-@echo off
-echo Checking container status...
-docker-compose --env-file .env.prod -f docker-compose.prod.yml ps
-echo.
-echo Checking web container logs...
-docker logs openspace_web_prod --tail 20
