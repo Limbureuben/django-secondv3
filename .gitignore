@@ -159,3 +159,8 @@ nginx/ssl/                     # SSL certificate directory
 *.pfx                         # Personal Information Exchange files
 .env
 reuben/
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md
+docs/*
