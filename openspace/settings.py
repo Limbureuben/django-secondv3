@@ -226,8 +226,6 @@ GRAPHENE = {
     ],
 }
 
-
-
 import datetime
 
 GRAPHENE_JWT = {
