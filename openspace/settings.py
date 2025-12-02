@@ -311,6 +311,10 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+# Create logs directory for both dev and production
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
 # Environment-aware Security Settings
 if ENVIRONMENT == 'production':
     # Force production security settings
@@ -324,7 +328,7 @@ if ENVIRONMENT == 'production':
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
     
-    # Production logging
+    # Production logging (safe path)
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -332,7 +336,7 @@ if ENVIRONMENT == 'production':
             'file': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': '/app/logs/django.log',
+                'filename': os.path.join(LOG_DIR, 'django.log'),
             },
         },
         'loggers': {
@@ -343,12 +347,9 @@ if ENVIRONMENT == 'production':
             },
         },
     }
+
 else:
     # Development: relaxed security
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
-
-
-LOG_DIR = os.path.join(BASE_DIR, "logs")
-os.makedirs(LOG_DIR, exist_ok=True)
